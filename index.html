@@ -320,7 +320,7 @@ ol.safety b{display:block}
       <p class="warnbox" id="safetyPrep"></p>
     </div>
     <p class="note">機種によらない一般的な目安です。必ず主治医の指示と事業所の手順を優先してください。</p>
-    <button class="btn" type="button" id="toCommit">実行宣言へ</button>
+    <button class="btn" type="button" id="toCommit">次へ</button>
   </div>
 </section>
 
@@ -328,18 +328,13 @@ ol.safety b{display:block}
 <section class="view" id="v-commit" aria-labelledby="h-commit">
   <div class="wrap">
     <ul class="steps" aria-hidden="true"><li class="on"></li><li class="on"></li><li class="on"></li><li class="on"></li><li class="on"></li></ul>
-    <div class="stepname">5 / 5　実行宣言</div>
-    <h2 id="h-commit">今日の体験を、明日の行動に</h2>
+    <div class="stepname">5 / 5　学びのメモ</div>
+    <h2 id="h-commit">今の学びを、メモしておきましょう</h2>
     <div class="card" id="commitLook"></div>
-    <label for="cmReflect"><b>① 体験して思ったこと</b></label>
-    <p class="note">2つの場面を体験して、心に残ったことを自分の言葉でまとめてください。</p>
-    <textarea id="cmReflect" placeholder="例：処置を急ぐほど、佐藤さんを置き去りにしていた。顔を見るだけで安心が変わると感じた。"></textarea>
-    <label for="cmTask"><b>② 行動レベルの課題</b></label>
-    <p class="note">「気をつける」ではなく、誰が見ても分かる行動で書きます。</p>
-    <textarea id="cmTask" placeholder="例：アラームが鳴ったら、呼吸器を触る前に、利用者さんの顔と胸の動きを見て名前を呼ぶ。"></textarea>
-    <label for="cmPledge"><b>③ 実行宣言</b></label>
-    <div class="pledge"><span>私は、</span><input type="text" id="cmPledge" placeholder="次の訪問で、まず目を見て名乗ってから処置"><span>します。</span></div>
-    <button class="btn" type="button" id="doCommit" disabled>宣言して記録する</button>
+    <label for="cmReflect" class="note">気づいたこと、心に残ったことを自由に（任意・書かなくても大丈夫です）</label>
+    <textarea id="cmReflect" placeholder="例：処置を急ぐほど、佐藤さんを置き去りにしていた。顔を見るだけで安心が変わる。"></textarea>
+    <input type="hidden" id="cmTask"><input type="hidden" id="cmPledge">
+    <button class="btn" type="button" id="doCommit">記録する</button>
     <button class="btn ghost back" type="button" data-go="card">← 安全行動カードに戻る</button>
   </div>
 </section>
@@ -1113,7 +1108,7 @@ function openCard(){
 
 /* ===== 保存画面 ===== */
 function pledgeText(r){ return r.pledge ? `私は、${r.pledge}します。` : ''; }
-function canCommit(){ $('#doCommit').disabled = !($('#cmTask').value.trim() && $('#cmPledge').value.trim()); }
+function canCommit(){}
 $('#toCommit').addEventListener('click', () => {
   $('#commitLook').innerHTML = `<h3>振り返り</h3>
     ${feelSummary(draft.thoughts, 'bad').size ? `<p class="note">1回目に浮かんだ気持ち：${esc([...feelSummary(draft.thoughts, 'bad').keys()].join('、'))}</p>` : ''}
@@ -1140,7 +1135,7 @@ function renderSave(){
     ${draft.emotions.length ? `<h3>感じたこと</h3><p>${esc(draft.emotions.join('、'))}</p>` : ''}
     ${draft.memo ? `<p class="quote voice">${esc(draft.memo)}</p>` : ''}
     <h3>次の訪問で最初にすること</h3><p class="quote">${esc(declText(draft))}</p>
-    ${draft.reflection ? `<h3>体験して思ったこと</h3><p class="quote voice">${esc(draft.reflection)}</p>` : ''}
+    ${draft.reflection ? `<h3>今日の学びのメモ</h3><p class="quote voice">${esc(draft.reflection)}</p>` : ''}
     ${draft.task ? `<h3>行動レベルの課題</h3><p class="quote">${esc(draft.task)}</p>` : ''}
     ${draft.pledge ? `<h3>実行宣言</h3><p class="pledgebox">${esc(pledgeText(draft))}</p>` : ''}
     <p class="note">この端末に保存しました。</p>`;
@@ -1273,6 +1268,7 @@ $('#makeReport').addEventListener('click', async () => {
   const tw = (r.thoughts || []).slice(0, 4).map(x => '「' + x.text + '」').join('\n');
   section('体験して感じたこと', [tw, r.emotions.join('、'), r.memo ? '「' + r.memo + '」' : ''].filter(Boolean).join('\n'));
   section('次の訪問で最初にすること', declText(r));
+  if(r.reflection) section('学びのメモ', r.reflection);
   if(r.task) section('行動レベルの課題', r.task);
   if(r.pledge) section('実行宣言', pledgeText(r));
   if(r.revisit){
@@ -1281,7 +1277,7 @@ $('#makeReport').addEventListener('click', async () => {
   ctx.fillStyle = '#56676B'; ctx.font = `400 24px ${F}`;
   ctx.fillText('学習補助用の教材です。実際のケアは主治医の指示と事業所の手順を優先します。', 70, 1710);
   reportText = [`【受講完了＆気づきレポート】`, `受講日：${fmtDate(new Date(r.date))}`, `テーマ：${r.themeTitle}`, name?`氏名：${name}`:'', office?`事業所：${office}`:'',
-    (r.thoughts||[]).length?`体験中に浮かんだ気持ち：${r.thoughts.map(x=>x.text).join('／')}`:'', r.emotions.length?`感じたこと：${r.emotions.join('、')}`:'', r.memo?`メモ：${r.memo}`:'', `次の訪問で最初にすること：${declText(r)}`, r.reflection?`体験して思ったこと：${r.reflection}`:'', r.task?`行動レベルの課題：${r.task}`:'', r.pledge?`実行宣言：${pledgeText(r)}`:'',
+    (r.thoughts||[]).length?`体験中に浮かんだ気持ち：${r.thoughts.map(x=>x.text).join('／')}`:'', r.emotions.length?`感じたこと：${r.emotions.join('、')}`:'', r.memo?`メモ：${r.memo}`:'', `次の訪問で最初にすること：${declText(r)}`, r.reflection?`学びのメモ：${r.reflection}`:'', r.task?`行動レベルの課題：${r.task}`:'', r.pledge?`実行宣言：${pledgeText(r)}`:'',
     r.revisit?`臨床後の振り返り：${r.revisit.result}${r.revisit.insight?'／'+r.revisit.insight:''}`:''].filter(Boolean).join('\n');
   c.toBlob(b => { reportBlob = b; const img = $('#reportImg'); img.src = URL.createObjectURL(b); img.hidden = false; $('#repActions').hidden = false; }, 'image/png');
 });
