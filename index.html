@@ -1,0 +1,1726 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>患者目線の体験ライブラリ</title>
+<meta name="theme-color" content="#2C716E">
+<meta name="description" content="寝たきりの患者さんの目線で学ぶ、看護師のための体験型学習アプリ（KenMaP）">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icons/icon-192.png">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="患者目線">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Klee+One:wght@400;600&family=Zen+Kaku+Gothic+New:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+/* 一画面アプリ：落ち着いた病室の色（青みのグレー）＋ ティールのアクセント。単一テーマ。
+   レイアウト：縦1列のカード画面と、全画面の360度体験ステージ */
+:root{
+  --bg:#EDF1F1;
+  --surface:#FBFCFC;
+  --ink:#1C2A2E;
+  --muted:#56676B;
+  --line:#CBD6D6;
+  --accent:#2C716E;
+  --accent-soft:#DCEBEA;
+  --warn:#B4441A;
+  --display:'Zen Kaku Gothic New','Hiragino Kaku Gothic ProN','Yu Gothic',sans-serif;
+  --body:'Zen Kaku Gothic New','Hiragino Kaku Gothic ProN','Yu Gothic',sans-serif;
+  --voice:'Klee One','Hiragino Mincho ProN','Yu Mincho',serif;
+  color-scheme:light;
+}
+*{box-sizing:border-box}
+html,body{height:100%;margin:0}
+body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.75;-webkit-text-size-adjust:100%}
+button,input,textarea{font:inherit;color:inherit}
+h1,h2,h3{font-family:var(--display);line-height:1.4;text-wrap:balance;margin:0}
+h1{font-size:1.55rem;font-weight:700}
+h2{font-size:1.25rem;font-weight:700}
+h3{font-size:1.02rem;font-weight:700}
+p{margin:0}
+a{color:var(--accent)}
+:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+
+.view{display:none;min-height:100%;padding:20px 16px 40px}
+.view.on{display:block}
+.wrap{max-width:560px;margin:0 auto;display:flex;flex-direction:column;gap:18px}
+.brand{font-size:.8rem;letter-spacing:.12em;color:var(--accent);font-weight:700}
+.lead{color:var(--muted)}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:18px;display:flex;flex-direction:column;gap:10px}
+.note{font-size:.9rem;color:var(--muted)}
+.voice{font-family:var(--voice);font-weight:600}
+
+.btn{appearance:none;border:0;border-radius:12px;padding:14px 18px;background:var(--accent);color:#fff;font-weight:700;cursor:pointer;text-align:center;min-height:52px}
+.btn:hover{filter:brightness(1.06)}
+.btn.sub{background:var(--surface);color:var(--accent);border:1.5px solid var(--accent)}
+.btn.ghost{background:transparent;color:var(--muted);border:1px solid var(--line);font-weight:500}
+.btn[disabled]{opacity:.45;cursor:not-allowed}
+.row{display:flex;gap:10px;flex-wrap:wrap}
+.row>.btn{flex:1 1 200px}
+.btn.back{margin-top:6px}
+
+/* ライブラリ */
+.theme{display:grid;grid-template-columns:1fr auto;gap:6px 12px;align-items:center;text-align:left;width:100%;cursor:pointer;background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:16px}
+.theme.ready{border:2px solid var(--accent)}
+.theme[disabled]{cursor:default;opacity:.62}
+.theme .meta{font-size:.85rem;color:var(--muted);grid-column:1/-1}
+.cycle{grid-column:1/-1;display:flex;flex-wrap:wrap;align-items:center;gap:4px;font-size:.78rem}
+.cycle i{font-style:normal;padding:2px 8px;border-radius:999px;background:#E3E7E7;color:var(--muted)}
+.cycle i.on{background:var(--accent);color:#fff}
+.cycle b{color:var(--muted);font-weight:400}
+.banner{border:2px solid var(--warn);background:#FFF8F4}
+.pill{font-size:.75rem;font-weight:700;border-radius:999px;padding:3px 10px;white-space:nowrap}
+.pill.go{background:var(--accent);color:#fff}
+.pill.wait{background:#E3E7E7;color:var(--muted)}
+.pill.done{background:var(--accent-soft);color:var(--accent)}
+.pill.todo{background:#F6E3D9;color:var(--warn)}
+
+/* 進行ステップ */
+.steps{display:flex;gap:6px;list-style:none;padding:0;margin:0}
+.steps li{flex:1;height:6px;border-radius:3px;background:var(--line)}
+.steps li.on{background:var(--accent)}
+.stepname{font-size:.85rem;color:var(--accent);font-weight:700}
+
+/* チップ */
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{appearance:none;border:1.5px solid var(--line);background:var(--surface);border-radius:999px;padding:9px 14px;cursor:pointer;font-size:.95rem;line-height:1.4}
+.chip[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:#fff}
+textarea,input[type=text],input[type=date]{width:100%;border:1.5px solid var(--line);border-radius:10px;padding:10px 12px;background:#fff}
+textarea{min-height:84px;resize:vertical}
+label.chk{display:flex;gap:10px;align-items:flex-start;font-size:.92rem}
+label.chk input{margin-top:6px;width:18px;height:18px}
+
+.patient{display:grid;grid-template-columns:auto 1fr;gap:4px 12px;font-size:.95rem}
+.patient dt{color:var(--muted)}
+.patient dd{margin:0}
+
+ol.thoughts{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:12px}
+ol.thoughts li{display:flex;flex-direction:column;gap:2px}
+ol.thoughts small{color:var(--muted);font-size:.82rem}
+ol.thoughts .voice{font-size:1.1rem}
+ol.safety{margin:0;padding:0;list-style:none;counter-reset:s;display:flex;flex-direction:column;gap:10px}
+ol.safety li{counter-increment:s;display:grid;grid-template-columns:34px 1fr;gap:10px;align-items:start}
+ol.safety li::before{content:counter(s);width:34px;height:34px;border-radius:50%;background:var(--accent);color:#fff;font-weight:700;display:grid;place-items:center}
+ol.safety b{display:block}
+.warnbox{border-left:4px solid var(--warn);background:#FBF0EA;padding:10px 12px;border-radius:6px;font-size:.9rem}
+
+.mem{display:flex;flex-direction:column;gap:6px;text-align:left;width:100%;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:14px;cursor:pointer}
+.mem .top{display:flex;justify-content:space-between;gap:8px;align-items:center}
+.mem small{color:var(--muted)}
+.quote{border-left:3px solid var(--accent);padding:4px 12px;background:var(--accent-soft);border-radius:4px}
+#reportImg{width:100%;border-radius:10px;border:1px solid var(--line)}
+.toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:var(--ink);color:#fff;padding:10px 16px;border-radius:10px;font-size:.9rem;opacity:0;pointer-events:none;transition:opacity .25s;z-index:50;max-width:90vw}
+.toast.on{opacity:1}
+
+/* ===== 360度体験ステージ ===== */
+#vr{position:fixed;inset:0;background:#0E1517;display:none;z-index:20;overflow:hidden;touch-action:none;user-select:none;-webkit-user-select:none}
+#vr.on{display:block}
+#stage{position:absolute;inset:0;overflow:hidden;cursor:grab}
+#stage:active{cursor:grabbing}
+#stage canvas{display:block;width:100%;height:100%}
+#stage img.flat{width:100%;height:100%;object-fit:cover}
+#faceSrc,#spriteSrc{display:none}
+#vignette{position:absolute;inset:0;pointer-events:none;background:radial-gradient(ellipse at 50% 45%,transparent 38%,rgba(5,10,12,.55) 78%,rgba(5,10,12,.85) 100%);transition:background .8s}
+#vr.alarm #vignette{animation:redpulse 1.6s infinite}
+@keyframes redpulse{0%,100%{box-shadow:inset 0 0 0 0 rgba(200,40,20,0)}50%{box-shadow:inset 0 0 120px 20px rgba(200,40,20,.35)}}
+#glare{position:absolute;inset:0;pointer-events:none;background:radial-gradient(circle at 50% 38%,rgba(255,255,255,.95),rgba(255,255,255,0) 42%);opacity:0;transition:opacity 1.2s}
+#glare.on{opacity:.4}
+#blink{position:absolute;inset:0;background:#000;opacity:0;pointer-events:none}
+#blink.go{animation:blink .5s ease}
+@keyframes blink{0%{opacity:0}40%{opacity:1}60%{opacity:1}100%{opacity:0}}
+#fade{position:absolute;inset:0;background:#0E1517;opacity:1;pointer-events:none;transition:opacity 1.2s}
+#fade.off{opacity:0}
+
+.vrtop{position:absolute;top:0;left:0;right:0;display:flex;justify-content:space-between;align-items:center;gap:8px;padding:12px 12px 0;z-index:8}
+#vrMenu{position:absolute;top:60px;right:12px;z-index:9;background:#FBFCFC;border-radius:14px;padding:6px;display:flex;flex-direction:column;min-width:240px;box-shadow:0 10px 30px rgba(0,0,0,.4)}
+#vrMenu[hidden]{display:none}
+#vrMenu button{appearance:none;border:0;background:transparent;text-align:left;padding:12px 14px;border-radius:10px;font-size:.95rem;cursor:pointer;color:var(--ink)}
+#vrMenu button:hover,#vrMenu button:focus-visible{background:var(--accent-soft)}
+#vrMenu button[data-act="close"]{color:var(--muted)}
+.vrtag{background:rgba(14,21,23,.72);color:#E8EEEE;border-radius:999px;padding:6px 12px;font-size:.8rem}
+.vrtag.alarm{background:#B4441A;color:#fff;display:none}
+#vr.alarm .vrtag.alarm{display:inline-block}
+.vrbtn{appearance:none;border:1px solid rgba(232,238,238,.4);background:rgba(14,21,23,.72);color:#E8EEEE;border-radius:999px;padding:8px 14px;font-size:.85rem;cursor:pointer;min-height:40px}
+
+#subs{position:absolute;left:0;right:0;bottom:150px;display:flex;flex-direction:column;align-items:center;gap:10px;padding:0 16px;pointer-events:none;z-index:3}
+#inner{font-family:var(--voice);font-weight:600;font-size:1.35rem;color:#fff;text-align:center;text-shadow:0 2px 10px rgba(0,0,0,.85),0 0 2px #000;max-width:540px;opacity:0;transition:opacity .5s;line-height:1.6}
+#inner.on{opacity:1}
+#speech{background:rgba(250,252,252,.94);color:var(--ink);border-radius:12px;padding:10px 14px;font-size:1rem;max-width:540px;opacity:0;transition:opacity .4s;line-height:1.6}
+#speech.on{opacity:1}
+#speech b{color:var(--accent);margin-right:6px;font-size:.85rem}
+
+.jump{position:absolute;left:0;right:0;bottom:0;padding:10px 10px 16px;display:grid;grid-template-columns:repeat(4,1fr);gap:6px;z-index:3;background:linear-gradient(transparent,rgba(14,21,23,.85) 40%)}
+.jump button{appearance:none;border:1px solid rgba(232,238,238,.35);background:rgba(30,42,46,.85);color:#F1F5F5;border-radius:10px;padding:8px 4px;font-size:.8rem;line-height:1.3;cursor:pointer;min-height:48px}
+.jump button.hint{border-color:#F2B48F;box-shadow:0 0 0 2px rgba(242,180,143,.6);animation:hint 1.2s infinite}
+@keyframes hint{50%{box-shadow:0 0 0 5px rgba(242,180,143,.25)}}
+
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+#thinkForm{position:absolute;left:10px;right:10px;bottom:84px;z-index:4;display:flex;gap:6px}
+#thinkInput{flex:1;min-width:0;border:1px solid rgba(232,238,238,.5);background:rgba(250,252,252,.92);border-radius:999px;padding:10px 14px;font-size:16px}
+#thinkForm button{appearance:none;border:0;border-radius:999px;padding:0 16px;background:var(--accent);color:#fff;font-weight:700;cursor:pointer;min-height:44px}
+#bubbles{position:absolute;right:10px;top:112px;z-index:4;display:flex;flex-direction:column;align-items:flex-end;gap:6px;max-width:68%;pointer-events:none}
+.bub{background:#8DE055;color:#10220A;border-radius:14px 14px 4px 14px;padding:6px 10px;font-size:.85rem;line-height:1.45;box-shadow:0 2px 6px rgba(0,0,0,.25);animation:pop .25s ease}
+.bub small{display:block;font-size:.68rem;opacity:.7;text-align:right}
+@keyframes pop{from{transform:scale(.8);opacity:0}}
+.mythoughts{display:flex;flex-direction:column;align-items:flex-start;gap:6px}
+.mythoughts .bub{border-radius:14px 14px 14px 4px;font-size:.92rem;animation:none}
+#story{position:absolute;inset:0;z-index:6;background:#121A1C;display:none;flex-direction:column;align-items:center;justify-content:center;gap:18px;padding:24px 16px}
+#story.on{display:flex}
+#story .panel{width:min(420px,100%);background:#F7F4EE;border-radius:6px;padding:14px;box-shadow:0 0 0 5px #F7F4EE,0 0 0 8px #2B2321;display:flex;flex-direction:column;gap:12px;opacity:0;transition:opacity .6s}
+#story .panel.on{opacity:1}
+#panelArt svg,#panelArt img{width:100%;height:auto;display:block;border:3px solid #2B2321;border-radius:3px;background:#fff;aspect-ratio:4/3;object-fit:cover}
+#panelText{font-family:var(--voice);font-weight:600;font-size:1.05rem;line-height:1.7;color:#2B2321;min-height:3.4em}
+.dots{display:flex;gap:8px}
+.dots span{width:9px;height:9px;border-radius:50%;background:#4A5A5D}
+.dots span.on{background:#F2B48F}
+#vr.calm #vignette{background:radial-gradient(ellipse at 50% 45%,transparent 55%,rgba(5,10,12,.35) 85%,rgba(5,10,12,.6) 100%)}
+#vr.alarm:not(.calm) #vignette{background:radial-gradient(ellipse at 50% 45%,transparent 26%,rgba(5,10,12,.65) 66%,rgba(5,10,12,.92) 100%)}
+#vrEnd{position:absolute;inset:0;display:none;align-items:center;justify-content:center;padding:24px;background:rgba(14,21,23,.88);z-index:5}
+#vrEnd.on{display:flex}
+#vrEnd .box{max-width:460px;background:var(--surface);border-radius:16px;padding:22px;display:flex;flex-direction:column;gap:14px}
+
+@media (prefers-reduced-motion:reduce){
+  *{animation:none!important;transition:none!important}
+}
+</style>
+</head>
+<body>
+
+<!-- ===== ホーム（ライブラリ） ===== -->
+<section class="view on" id="v-home" aria-labelledby="h-home">
+  <div class="wrap">
+    <div class="brand">KenMaP</div>
+    <h1 id="h-home">患者さんの目線で学ぶ<br>体験ライブラリ</h1>
+    <p class="lead">寝たきりで天井を見上げる患者さんの目線を、スマホで体験します。いま学びたいテーマを、自分で選んでください。</p>
+    <div id="homeBanner"></div>
+    <div id="themeList" class="wrap" style="gap:10px"></div>
+    <button class="btn sub" id="toMemories" type="button">わたしの振り返り記録 <span id="memCount"></span></button>
+    <div class="card">
+      <h3>ベテランの方へ</h3>
+      <p class="note">あなたが普段、意識せずにしている気配りを言葉にして、次の世代に手渡すための教材です。「自分ならこうする」を、ぜひ記録に残してください。</p>
+    </div>
+    <div class="card">
+      <h3>使う前に</h3>
+      <ul class="note" style="margin:0;padding-left:1.2em">
+        <li>学習を補助するための教材です。実際のケアは、主治医の指示と事業所の手順を優先してください。</li>
+        <li>体験の途中でつらくなったら、いつでも止めてかまいません。</li>
+        <li>記録はこの端末のブラウザの中だけに保存されます。患者さんが特定できる情報は書かないでください。</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- ===== テーマ紹介 ===== -->
+<section class="view" id="v-intro" aria-labelledby="h-intro">
+  <div class="wrap">
+    <div class="brand" id="introTag"></div>
+    <h1 id="h-intro"></h1>
+    <div class="card">
+      <h3>今回の利用者さん（架空の事例です）</h3>
+      <dl class="patient" id="patientInfo"></dl>
+    </div>
+    <div class="card">
+      <h3>体験の流れ（約10分）</h3>
+      <ol class="note" style="margin:0;padding-left:1.3em">
+        <li>佐藤さんの人生を知り、よくある場面を佐藤さんの目線で体験する</li>
+        <li>頭に浮かんだ言葉を残し、佐藤さんの心の声と比べる</li>
+        <li>自分なら最初に何をするか決める</li>
+        <li>関わり方を変えた場面を体験する</li>
+        <li>記録を残し、臨床のあとで振り返る</li>
+      </ol>
+    </div>
+    <div class="card">
+      <h3>操作のしかた</h3>
+      <p class="note">画面をドラッグするか、下のボタンで視線を動かします。スマホを動かして見回せる端末もあります。佐藤さんは首を動かせないため、目を動かして見える範囲しか見えません。佐藤さんの心の声は字幕に出ません。音と、あなた自身の頭に浮かぶ言葉を大切にしてください。音が出るので、音量を確認してください。</p>
+    </div>
+    <button class="btn" id="startBad" type="button">体験を始める</button>
+    <button class="btn ghost back" type="button" data-go="home">← ライブラリへ</button>
+  </div>
+</section>
+
+<!-- ===== 感情の言語化 ===== -->
+<section class="view" id="v-reflect" aria-labelledby="h-reflect">
+  <div class="wrap">
+    <ul class="steps" aria-hidden="true"><li class="on"></li><li class="on"></li><li></li><li></li><li></li></ul>
+    <div class="stepname">2 / 5　浮かんだ言葉を残す</div>
+    <h2 id="h-reflect">佐藤さんの目線で、どんな気持ちになりましたか？</h2>
+    <div class="card"><h3>体験中のあなたのつぶやき</h3><div class="mythoughts" id="reflectThoughts"></div></div>
+    <p class="note">当てはまるものをタップしてください（いくつでも）。うまく言葉にならなくても大丈夫です。</p>
+    <div class="chips" id="emoChips"></div>
+    <label for="emoMemo" class="note">いま振り返って、つけ足したい言葉（任意）</label>
+    <textarea id="emoMemo" placeholder="例：なんで誰もこっちを見ないの"></textarea>
+    <button class="btn ghost" type="button" data-story-only style="align-self:flex-start;min-height:40px;padding:8px 14px">佐藤さんの物語を読み返す</button>
+    <div class="row">
+      <button class="btn ghost" type="button" id="replayBad">もう一度体験する</button>
+      <button class="btn" type="button" id="toDeclare" disabled>次へ</button>
+    </div>
+  </div>
+</section>
+
+<!-- ===== 心の声との比較 ===== -->
+<section class="view" id="v-voices" aria-labelledby="h-voices">
+  <div class="wrap">
+    <ul class="steps" aria-hidden="true"><li class="on"></li><li class="on"></li><li></li><li></li><li></li></ul>
+    <div class="stepname">2 / 5　佐藤さんの心の声</div>
+    <h2 id="h-voices">あなたが感じたことと、比べてみましょう</h2>
+    <div class="card" id="myWords"></div>
+    <div class="card">
+      <h3>そのとき、佐藤さんは</h3>
+      <ol class="thoughts" id="thoughtList"></ol>
+      <p class="note">公表されている当事者の語りなどを参考に作った、架空の心の声です。</p>
+    </div>
+    <p class="note">重なったところも、違ったところも、どちらも大切な気づきです。</p>
+    <button class="btn ghost" type="button" data-story-only style="align-self:flex-start;min-height:40px;padding:8px 14px">佐藤さんの物語を読み返す</button>
+    <button class="btn" type="button" id="toDeclare2">次へ</button>
+  </div>
+</section>
+
+<!-- ===== 行動宣言 ===== -->
+<section class="view" id="v-declare" aria-labelledby="h-declare">
+  <div class="wrap">
+    <ul class="steps" aria-hidden="true"><li class="on"></li><li class="on"></li><li class="on"></li><li></li><li></li></ul>
+    <div class="stepname">3 / 5　自分ならどうするか</div>
+    <h2 id="h-declare">次に訪問したとき、最初に何をしますか？</h2>
+    <p class="note">1〜3個選んでください。自分の言葉で書いてもかまいません。</p>
+    <div class="chips" id="actChips"></div>
+    <label for="actOwn" class="note">自分の言葉で（任意）</label>
+    <input type="text" id="actOwn" placeholder="例：アラームより先に、佐藤さんの顔を見る">
+    <button class="btn ghost" type="button" data-story-only style="align-self:flex-start;min-height:40px;padding:8px 14px">佐藤さんの物語を読み返す</button>
+    <button class="btn" type="button" id="startGood" disabled>関わり方を変えた場面を体験する</button>
+  </div>
+</section>
+
+<!-- ===== 30秒安全行動カード ===== -->
+<section class="view" id="v-card" aria-labelledby="h-card">
+  <div class="wrap">
+    <ul class="steps" aria-hidden="true"><li class="on"></li><li class="on"></li><li class="on"></li><li class="on"></li><li></li></ul>
+    <div class="stepname">4 / 5　最低限これだけは確認</div>
+    <h2 id="h-card">30秒安全行動カード</h2>
+    <div class="card">
+      <ol class="safety" id="safetyList"></ol>
+      <p class="warnbox" id="safetyPrep"></p>
+    </div>
+    <p class="note">機種によらない一般的な目安です。必ず主治医の指示と事業所の手順を優先してください。</p>
+    <button class="btn" type="button" data-go="save">記録を残す</button>
+  </div>
+</section>
+
+<!-- ===== 記録の保存 ===== -->
+<section class="view" id="v-save" aria-labelledby="h-save">
+  <div class="wrap">
+    <ul class="steps" aria-hidden="true"><li class="on"></li><li class="on"></li><li class="on"></li><li class="on"></li><li class="on"></li></ul>
+    <div class="stepname">5 / 5　記録を残す</div>
+    <h2 id="h-save">今日の気づき</h2>
+    <div class="card" id="saveSummary"></div>
+    <div class="card">
+      <h3>実際の場面に出会ったら、ここで振り返りましょう</h3>
+      <p class="note">人工呼吸器の利用者さんを訪問したとき、今日のことを思い出してみてください。そのあとでホームの「わたしの振り返り記録」から振り返ると、この体験があなた自身の経験とつながります。何か月先になってもかまいません。</p>
+    </div>
+    <div class="row">
+      <button class="btn sub" type="button" id="toReport">受講レポートを作る</button>
+      <button class="btn" type="button" data-go="home">ライブラリに戻る</button>
+    </div>
+  </div>
+</section>
+
+<!-- ===== 振り返り記録の一覧 ===== -->
+<section class="view" id="v-memories" aria-labelledby="h-mem">
+  <div class="wrap">
+    <h1 id="h-mem">わたしの振り返り記録</h1>
+    <p class="lead">臨床で経験したあとに、記録を開いて振り返りを追記できます。</p>
+    <div id="memList" class="wrap" style="gap:10px"></div>
+    <button class="btn ghost back" type="button" data-go="home">← ライブラリへ</button>
+  </div>
+</section>
+
+<!-- ===== 臨床後の振り返り ===== -->
+<section class="view" id="v-revisit" aria-labelledby="h-rev">
+  <div class="wrap">
+    <h1 id="h-rev">臨床のあとで振り返る</h1>
+    <div class="card" id="revPast"></div>
+    <h3>実際の場面で、決めたことはどうでしたか？</h3>
+    <div class="chips" id="resultChips"></div>
+    <label for="revReaction" class="note">利用者さんやご家族の反応（任意）</label>
+    <textarea id="revReaction" placeholder="例：名前を呼んで目を合わせたら、まばたきで返してくれた"></textarea>
+    <label for="revInsight" class="note">次の訪問で大切にしたいことを、ひとことで（任意）</label>
+    <input type="text" id="revInsight" placeholder="例：処置の前に、まず顔を見る">
+    <h3>新しく出てきた疑問はありますか？</h3>
+    <div class="chips" id="qChips"></div>
+    <button class="btn" type="button" id="saveRevisit" disabled>振り返りを保存する</button>
+    <button class="btn ghost back" type="button" data-go="memories">← 記録の一覧へ</button>
+  </div>
+</section>
+
+<!-- ===== 次のおすすめ ===== -->
+<section class="view" id="v-recommend" aria-labelledby="h-reco">
+  <div class="wrap">
+    <h1 id="h-reco">振り返りから見えたこと</h1>
+    <div class="card" id="recoSummary"></div>
+    <h2>次に学ぶとよさそうなテーマ</h2>
+    <div id="recoList" class="wrap" style="gap:10px"></div>
+    <div class="row">
+      <button class="btn sub" type="button" id="toReport2">受講レポートを作る</button>
+      <button class="btn" type="button" data-go="home">ライブラリに戻る</button>
+    </div>
+  </div>
+</section>
+
+<!-- ===== 受講レポート ===== -->
+<section class="view" id="v-report" aria-labelledby="h-rep">
+  <div class="wrap">
+    <h1 id="h-rep">受講完了＆気づきレポート</h1>
+    <p class="lead">事業所の研修記録として提出できる画像を作ります。</p>
+    <label for="repName" class="note">氏名（任意）</label>
+    <input type="text" id="repName" autocomplete="name">
+    <label for="repOffice" class="note">事業所名（任意）</label>
+    <input type="text" id="repOffice">
+    <label class="chk"><input type="checkbox" id="repConsent"> 氏名と事業所名をレポートに載せることに同意します</label>
+    <button class="btn sub" type="button" id="makeReport">レポートを作る</button>
+    <img id="reportImg" alt="受講完了レポートのプレビュー" hidden>
+    <div class="row" id="repActions" hidden>
+      <button class="btn" type="button" id="saveReport">画像を保存する</button>
+      <button class="btn sub" type="button" id="copyReport">テキストをコピー</button>
+    </div>
+    <p class="note">保存できない場合は、画像を長押しして保存してください。研修システムや外部フォームへの送信は、今後の連携で対応する予定です。</p>
+    <button class="btn ghost back" type="button" data-go="memories">← 記録の一覧へ</button>
+  </div>
+</section>
+
+<!-- ===== 360度体験 ===== -->
+<div id="vr" role="dialog" aria-label="患者さんの目線での体験">
+  <div id="stage"></div>
+  <div id="faceSrc" hidden>
+      <!-- 正面：天井 -->
+      <div class="face" data-face="front">
+        <svg viewBox="0 0 1024 1024" aria-hidden="true">
+          <defs>
+            <radialGradient id="lamp" cx="50%" cy="50%" r="50%"><stop offset="0" stop-color="#FFFFFF"/><stop offset=".55" stop-color="#FFFEF6"/><stop offset="1" stop-color="#FFFEF6" stop-opacity="0"/></radialGradient>
+            <linearGradient id="tube" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FFFFFF"/><stop offset=".5" stop-color="#F7FBFF"/><stop offset="1" stop-color="#E4EAF0"/></linearGradient>
+          </defs>
+          <rect width="1024" height="1024" fill="#F5F4F0"/>
+          <g stroke="#ECEAE4" stroke-width="2"><line x1="0" y1="341" x2="1024" y2="341"/><line x1="0" y1="682" x2="1024" y2="682"/></g>
+          <rect x="0" y="0" width="1024" height="1024" fill="none" stroke="#B89A76" stroke-width="16"/>
+          <ellipse cx="512" cy="430" rx="420" ry="180" fill="url(#lamp)" opacity=".9"/>
+          <rect x="262" y="398" width="500" height="64" rx="8" fill="#F0F0EC" stroke="#C9CBC6" stroke-width="3"/>
+          <rect x="276" y="408" width="472" height="18" rx="9" fill="url(#tube)" stroke="#D5DADF" stroke-width="2"/>
+          <rect x="276" y="434" width="472" height="18" rx="9" fill="url(#tube)" stroke="#D5DADF" stroke-width="2"/>
+          <path d="M512 462 L512 520" stroke="#C9C6BE" stroke-width="2"/><circle cx="512" cy="524" r="5" fill="#C9C6BE"/>
+        </svg>
+      </div>
+      <!-- 右：入口側 -->
+      <div class="face" data-face="right">
+        <svg viewBox="0 0 1024 1024" aria-hidden="true">
+          <defs><pattern id="wpR" width="24" height="24" patternUnits="userSpaceOnUse"><rect width="24" height="24" fill="#E7DAC4"/><circle cx="6" cy="6" r="1.4" fill="#DCCDB4"/><circle cx="18" cy="18" r="1.4" fill="#DCCDB4"/></pattern></defs>
+          <rect width="1024" height="1024" fill="url(#wpR)"/>
+          <rect x="0" y="0" width="16" height="1024" fill="#B89A76"/>
+          <rect x="704" y="0" width="30" height="1024" fill="#8E6E4E"/>
+          <g transform="matrix(0,1,1,0,137,520)">
+            <rect x="-14" y="-14" width="288" height="604" fill="#9C7650"/>
+            <rect x="0" y="0" width="260" height="590" fill="#C89F72" stroke="#7E5D3E" stroke-width="5"/>
+            <rect x="22" y="22" width="216" height="300" fill="#F6F1E4" stroke="#7E5D3E" stroke-width="5"/>
+            <g stroke="#9C7650" stroke-width="5"><line x1="94" y1="22" x2="94" y2="322"/><line x1="166" y1="22" x2="166" y2="322"/>
+              <line x1="22" y1="97" x2="238" y2="97"/><line x1="22" y1="172" x2="238" y2="172"/><line x1="22" y1="247" x2="238" y2="247"/></g>
+            <rect x="22" y="344" width="216" height="224" fill="#BD9467" stroke="#7E5D3E" stroke-width="4"/>
+            <g stroke="#B08659" stroke-width="2"><line x1="40" y1="360" x2="40" y2="552"/><line x1="80" y1="360" x2="80" y2="552"/><line x1="130" y1="360" x2="130" y2="552"/><line x1="190" y1="360" x2="190" y2="552"/></g>
+            <rect x="222" y="300" width="22" height="70" rx="10" fill="#5C4430" stroke="#3A2A1E" stroke-width="3"/>
+          </g>
+          <rect x="420" y="180" width="70" height="40" rx="6" fill="#F4F1EA" stroke="#B9AD98" stroke-width="3"/>
+        </svg>
+      </div>
+      <!-- 左：呼吸器側 -->
+      <div class="face" data-face="left">
+        <svg viewBox="0 0 1024 1024" aria-hidden="true">
+          <defs><pattern id="wpL" width="24" height="24" patternUnits="userSpaceOnUse"><rect width="24" height="24" fill="#E7DAC4"/><circle cx="6" cy="6" r="1.4" fill="#DCCDB4"/><circle cx="18" cy="18" r="1.4" fill="#DCCDB4"/></pattern></defs>
+          <rect width="1024" height="1024" fill="url(#wpL)"/>
+          <rect x="1008" y="0" width="16" height="1024" fill="#B89A76"/>
+          <rect x="290" y="0" width="30" height="1024" fill="#8E6E4E"/>
+          <rect x="430" y="260" width="40" height="70" rx="6" fill="#F4F1EA" stroke="#B9AD98" stroke-width="3"/>
+          <circle cx="450" cy="283" r="6" fill="#9A9080"/><circle cx="450" cy="307" r="6" fill="#9A9080"/>
+          <g transform="translate(720,560)">
+            <rect x="0" y="0" width="170" height="230" fill="#FFFFFF" stroke="#9C7650" stroke-width="8"/>
+            <rect x="14" y="14" width="142" height="202" fill="#CFE0D6"/>
+            <path d="M14 150 Q60 110 90 140 T156 120 L156 216 L14 216 Z" fill="#8FB59A"/>
+          </g>
+        </svg>
+      </div>
+      <!-- 上：頭側の壁 -->
+      <div class="face" data-face="top">
+        <svg viewBox="0 0 1024 1024" aria-hidden="true">
+          <defs><pattern id="wpT" width="24" height="24" patternUnits="userSpaceOnUse"><rect width="24" height="24" fill="#E7DAC4"/><circle cx="6" cy="6" r="1.4" fill="#DCCDB4"/><circle cx="18" cy="18" r="1.4" fill="#DCCDB4"/></pattern></defs>
+          <rect width="1024" height="1024" fill="url(#wpT)"/>
+          <rect x="0" y="290" width="1024" height="30" fill="#8E6E4E"/>
+          <rect x="0" y="1008" width="1024" height="16" fill="#B89A76"/>
+          <rect x="330" y="470" width="364" height="26" fill="#A47C55"/>
+          <rect x="420" y="496" width="190" height="120" rx="16" fill="#8C5A3C"/><circle cx="470" cy="556" r="34" fill="#3A2A22"/>
+          <rect x="530" y="526" width="60" height="10" fill="#E6D2B5"/><rect x="530" y="551" width="60" height="10" fill="#E6D2B5"/><rect x="530" y="576" width="60" height="10" fill="#E6D2B5"/>
+          <rect x="640" y="500" width="40" height="110" rx="8" fill="#6E8F7A"/>
+          <g transform="translate(512,820) scale(1,-1)">
+            <circle r="80" fill="#FBF8F2" stroke="#7E5D3E" stroke-width="10"/>
+            <line x1="0" y1="0" x2="0" y2="-52" stroke="#2A2220" stroke-width="7" stroke-linecap="round"/>
+            <line x1="0" y1="0" x2="40" y2="18" stroke="#2A2220" stroke-width="5" stroke-linecap="round"/>
+          </g>
+        </svg>
+      </div>
+      <!-- 下：足元と家族 -->
+      <div class="face" data-face="bottom">
+        <svg viewBox="0 0 1024 1024" aria-hidden="true">
+          <defs><pattern id="wpB" width="24" height="24" patternUnits="userSpaceOnUse"><rect width="24" height="24" fill="#E7DAC4"/><circle cx="6" cy="6" r="1.4" fill="#DCCDB4"/><circle cx="18" cy="18" r="1.4" fill="#DCCDB4"/></pattern></defs>
+          <rect width="1024" height="1024" fill="url(#wpB)"/>
+          <rect x="0" y="0" width="1024" height="16" fill="#B89A76"/>
+          <rect x="0" y="704" width="1024" height="30" fill="#8E6E4E"/>
+          <rect x="300" y="150" width="424" height="300" fill="#DDEBF2" stroke="#E9E6DF" stroke-width="14"/>
+          <line x1="512" y1="150" x2="512" y2="450" stroke="#E9E6DF" stroke-width="10"/>
+          <path d="M320 180 Q420 230 500 200" stroke="#FFFFFF" stroke-width="10" fill="none" opacity=".7"/>
+          <rect x="280" y="128" width="464" height="14" rx="7" fill="#9C7650"/>
+          <path d="M260 136 L360 136 C350 240 360 360 340 470 L250 470 C266 360 256 240 260 136 Z" fill="#E3CDA5" stroke="#C7AE84" stroke-width="3"/>
+          <path d="M764 136 L664 136 C674 240 664 360 684 470 L774 470 C758 360 768 240 764 136 Z" fill="#E3CDA5" stroke="#C7AE84" stroke-width="3"/>
+        </svg>
+      </div>
+      <!-- 後ろ：枕 -->
+      <div class="face" data-face="back">
+        <svg viewBox="0 0 1024 1024" aria-hidden="true"><rect width="1024" height="1024" fill="#E7DAC4"/></svg>
+      </div>
+  </div>
+  <!-- 人物・機器：部屋の中に立てる板（billboard）。患者さんは仰向けなので、左側のものは頭が画面の右（天井側）を向くよう回転して描く -->
+  <div id="spriteSrc" hidden>
+    <svg data-sprite="vent" viewBox="0 0 500 800">
+      <defs>
+        <linearGradient id="vBody" x1="0" x2="1"><stop offset="0" stop-color="#F6F8F9"/><stop offset="1" stop-color="#D6DDE0"/></linearGradient>
+        <linearGradient id="vPole" x1="0" x2="1"><stop offset="0" stop-color="#B5BEC0"/><stop offset=".5" stop-color="#E3E8E9"/><stop offset="1" stop-color="#8F999B"/></linearGradient>
+      </defs>
+      <g stroke="#3a3330" stroke-width="3" stroke-linejoin="round">
+        <!-- 回路（患者さんへ向かう蛇腹） -->
+        <path d="M404 250 C470 236 486 130 496 0" fill="none" stroke="#9FB3BA" stroke-width="34"/>
+        <path d="M404 250 C470 236 486 130 496 0" fill="none" stroke="#E4EEF1" stroke-width="27"/>
+        <path d="M404 250 C470 236 486 130 496 0" fill="none" stroke="#BFD0D6" stroke-width="27" stroke-dasharray="3 9"/>
+        <!-- 台車 -->
+        <rect x="236" y="350" width="30" height="380" fill="url(#vPole)"/>
+        <path d="M96 744 L250 716 L404 744 L392 760 L250 738 L108 760 Z" fill="#7E888A"/>
+        <circle cx="112" cy="772" r="18" fill="#3F4648"/><circle cx="388" cy="772" r="18" fill="#3F4648"/><circle cx="250" cy="752" r="16" fill="#3F4648"/>
+        <rect x="150" y="560" width="200" height="34" rx="8" fill="#C9D1D3"/>
+        <!-- 本体 -->
+        <rect x="78" y="66" width="344" height="296" rx="26" fill="url(#vBody)"/>
+        <rect x="78" y="300" width="344" height="62" rx="0" fill="#C7D0D3" stroke="none" opacity=".7"/>
+        <rect x="78" y="66" width="344" height="296" rx="26" fill="none"/>
+        <rect x="106" y="94" width="214" height="160" rx="10" fill="#18232E"/>
+        <rect x="114" y="102" width="198" height="20" fill="#24364A" stroke="none"/>
+        <path d="M120 160 l20 0 l8 -30 l10 30 l40 0 l8 -30 l10 30 l40 0 l8 -30 l10 30 l26 0" fill="none" stroke="#F5D14A" stroke-width="3"/>
+        <path d="M120 222 q14 -26 28 0 t28 0 t28 0 t28 0 t28 0 t28 0" fill="none" stroke="#5CD6A4" stroke-width="3"/>
+        <text x="122" y="118" font-size="14" fill="#CFE6FF" stroke="none" font-family="sans-serif">PIP 18  VT 420  RR 14</text>
+        <circle cx="370" cy="130" r="22" fill="#E9EDEE"/><circle cx="370" cy="130" r="8" fill="#9AA4A7"/>
+        <circle cx="370" cy="206" r="22" fill="#E9EDEE"/><circle cx="370" cy="206" r="8" fill="#9AA4A7"/>
+        <rect x="106" y="276" width="70" height="24" rx="6" fill="#DDE3E5"/><rect x="190" y="276" width="70" height="24" rx="6" fill="#DDE3E5"/>
+        <rect x="300" y="36" width="92" height="34" rx="14" fill="#E9A23A"/>
+        <rect x="312" y="42" width="40" height="8" rx="4" fill="#FFF2D2" stroke="none" opacity=".8"/>
+      </g>
+    </svg>
+
+    <svg data-sprite="overGood" viewBox="0 0 600 1500">
+      <g>
+        <use href="#nurseBody"/>
+        <use href="#nurseHead"/>
+        <g id="faceGood" stroke-linecap="round" fill="none">
+          <path d="M254 196 Q272 186 290 192" stroke="#2A2220" stroke-width="5"/>
+          <path d="M310 192 Q328 186 346 196" stroke="#2A2220" stroke-width="5"/>
+          <path d="M256 218 Q272 208 288 218" stroke="#3a2e2a" stroke-width="4"/>
+          <path d="M312 218 Q328 208 344 218" stroke="#3a2e2a" stroke-width="4"/>
+          <ellipse cx="272" cy="226" rx="9" ry="11" fill="#2B211D" stroke="none"/>
+          <ellipse cx="328" cy="226" rx="9" ry="11" fill="#2B211D" stroke="none"/>
+          <circle cx="275" cy="222" r="3.4" fill="#fff" stroke="none"/><circle cx="331" cy="222" r="3.4" fill="#fff" stroke="none"/>
+          <path d="M300 238 Q295 256 305 262" stroke="#C4927A" stroke-width="3"/>
+          <path d="M282 280 Q300 294 318 280" stroke="#9C4F45" stroke-width="4"/>
+          <ellipse cx="258" cy="258" rx="14" ry="7" fill="#EF9F98" stroke="none" opacity=".35"/>
+          <ellipse cx="342" cy="258" rx="14" ry="7" fill="#EF9F98" stroke="none" opacity=".35"/>
+        </g>
+      </g>
+    </svg>
+
+    <svg data-sprite="overBad" viewBox="0 0 600 1500">
+      <g>
+        <use href="#nurseBody"/>
+        <g transform="rotate(24 300 330)">
+          <use href="#nurseHead"/>
+          <g stroke-linecap="round" fill="none">
+            <path d="M254 194 L290 200" stroke="#2A2220" stroke-width="5"/>
+            <path d="M310 200 L346 194" stroke="#2A2220" stroke-width="5"/>
+            <path d="M258 226 Q272 234 288 226" stroke="#3a2e2a" stroke-width="4"/>
+            <path d="M312 226 Q328 234 342 226" stroke="#3a2e2a" stroke-width="4"/>
+            <path d="M262 228 L284 228" stroke="#2B211D" stroke-width="5"/>
+            <path d="M316 228 L338 228" stroke="#2B211D" stroke-width="5"/>
+            <path d="M300 240 Q295 258 305 264" stroke="#C4927A" stroke-width="3"/>
+            <path d="M286 284 L314 282" stroke="#9C4F45" stroke-width="4"/>
+          </g>
+        </g>
+        <!-- 回路をつかむ両手（目線は呼吸器へ） -->
+        <path d="M430 470 C480 560 520 640 540 700 L500 712 C470 650 430 580 400 520 Z" fill="#2F4A68" stroke="#3a2e2a" stroke-width="3"/>
+        <path d="M170 470 C190 580 260 660 330 700 L310 724 C230 690 160 600 140 500 Z" fill="#2F4A68" stroke="#3a2e2a" stroke-width="3"/>
+        <path d="M300 712 C330 690 520 690 540 700 C560 720 540 748 520 744 C470 734 360 744 320 740 Z" fill="#E4EEF1" stroke="#3a2e2a" stroke-width="3"/>
+        <ellipse cx="320" cy="724" rx="26" ry="20" fill="#F1CDB0" stroke="#3a2e2a" stroke-width="3"/>
+        <ellipse cx="520" cy="716" rx="26" ry="20" fill="#F1CDB0" stroke="#3a2e2a" stroke-width="3"/>
+      </g>
+    </svg>
+
+    <svg data-sprite="sideNurse" viewBox="0 0 600 1500">
+      <g>
+        <use href="#nurseBody"/>
+        <path d="M200 340 L420 760" stroke="#5A4636" stroke-width="18" fill="none"/>
+        <rect x="380" y="690" width="150" height="110" rx="16" fill="#7A5C46" stroke="#3a2e2a" stroke-width="3"/>
+        <ellipse cx="150" cy="800" rx="24" ry="30" fill="#F1CDB0" stroke="#3a2e2a" stroke-width="3"/>
+        <use href="#nurseHead"/>
+        <g stroke-linecap="round" fill="none">
+          <path d="M254 196 Q272 190 290 196" stroke="#2A2220" stroke-width="5"/>
+          <path d="M310 196 Q328 190 346 196" stroke="#2A2220" stroke-width="5"/>
+          <ellipse cx="266" cy="226" rx="8" ry="10" fill="#2B211D" stroke="none"/>
+          <ellipse cx="322" cy="226" rx="8" ry="10" fill="#2B211D" stroke="none"/>
+          <circle cx="268" cy="222" r="3" fill="#fff" stroke="none"/><circle cx="324" cy="222" r="3" fill="#fff" stroke="none"/>
+          <path d="M256 216 Q268 208 282 216 M312 216 Q324 208 338 216" stroke="#3a2e2a" stroke-width="4"/>
+          <path d="M298 238 Q293 256 303 262" stroke="#C4927A" stroke-width="3"/>
+          <path d="M286 282 Q300 288 314 282" stroke="#9C4F45" stroke-width="4"/>
+        </g>
+      </g>
+    </svg>
+
+    <svg data-sprite="wife" viewBox="0 0 600 1500">
+      <g stroke="#3a2e2a" stroke-width="3" stroke-linejoin="round">
+        <path d="M220 1260 L240 1450 L290 1450 L296 1260 Z M304 1260 L310 1450 L360 1450 L380 1260 Z" fill="#D8C8BC"/>
+        <path d="M226 1440 L292 1440 C298 1464 292 1484 278 1488 L214 1488 C206 1470 212 1452 226 1440 Z M308 1440 L374 1440 C388 1452 394 1470 386 1488 L322 1488 C308 1484 302 1464 308 1440 Z" fill="#5B4A43"/>
+        <path d="M150 860 L450 860 L470 1280 L130 1280 Z" fill="#7F8A8F"/>
+        <path d="M200 900 L180 1270 M300 900 L300 1270 M400 900 L420 1270" stroke="#6B767B" stroke-width="3" fill="none"/>
+        <!-- 体：ピンクのカーディガン -->
+        <path d="M120 940 L130 520 C134 440 200 400 262 392 L338 392 C400 400 466 440 470 520 L480 900 Z" fill="#D99AA6"/>
+        <path d="M262 392 L300 470 L338 392 Z" fill="#F4EEE6"/>
+        <path d="M300 470 L300 940" stroke="#B87884" stroke-width="4"/>
+        <path d="M150 600 C150 520 170 470 200 450 L210 640 Z M450 600 C450 520 430 470 400 450 L390 640 Z" fill="#C98593" stroke="none" opacity=".6"/>
+        <!-- 胸の前で組んだ手 -->
+        <path d="M170 520 C190 600 240 640 300 640 C360 640 410 600 430 520 L400 510 C380 570 340 600 300 600 C260 600 220 570 200 510 Z" fill="#D99AA6"/>
+        <path d="M262 612 C262 586 280 572 300 572 C320 572 338 586 338 612 C338 636 320 650 300 650 C280 650 262 636 262 612 Z" fill="#EFC8AA"/>
+        <path d="M282 590 L282 640 M300 584 L300 646 M318 590 L318 640" stroke="#C9977B" stroke-width="2.5"/>
+        <!-- 首・頭 -->
+        <path d="M274 330 L274 398 L326 398 L326 330 Z" fill="#E4B898"/>
+        <path d="M222 236 C210 140 252 104 300 104 C352 104 394 140 380 236 C376 270 368 286 360 296 L240 296 C232 286 224 270 222 236 Z" fill="#8E8A87"/>
+        <ellipse cx="236" cy="240" rx="13" ry="20" fill="#EFC8AA"/><ellipse cx="364" cy="240" rx="13" ry="20" fill="#EFC8AA"/>
+        <path d="M238 222 C238 160 268 132 300 132 C332 132 362 160 362 222 C362 278 334 318 300 322 C266 318 238 278 238 222 Z" fill="#EFC8AA"/>
+        <path d="M330 150 C356 170 362 210 360 240 C356 280 336 310 310 320 C336 290 346 240 330 150 Z" fill="#DDAE8E" stroke="none"/>
+        <path d="M236 214 C240 150 280 120 320 126 C352 132 368 160 364 206 C340 176 300 160 262 170 C252 184 242 198 236 214 Z" fill="#9A9693"/>
+        <path d="M262 168 C290 150 330 150 352 172" fill="none" stroke="#B9B5B2" stroke-width="3"/>
+      </g>
+      <g stroke-linecap="round" fill="none">
+        <path d="M254 206 L286 198" stroke="#5E5A57" stroke-width="5"/>
+        <path d="M314 198 L346 206" stroke="#5E5A57" stroke-width="5"/>
+        <path d="M258 232 Q272 240 286 232 M314 232 Q328 240 342 232" stroke="#3a2e2a" stroke-width="4"/>
+        <ellipse cx="272" cy="236" rx="7" ry="6" fill="#2B211D" stroke="none"/>
+        <ellipse cx="328" cy="236" rx="7" ry="6" fill="#2B211D" stroke="none"/>
+        <path d="M254 252 Q262 258 270 254 M330 254 Q338 258 346 252" stroke="#D2A182" stroke-width="2.5"/>
+        <path d="M300 246 Q296 266 306 270" stroke="#C4927A" stroke-width="3"/>
+        <path d="M284 292 Q300 284 316 292" stroke="#8E4A42" stroke-width="4"/>
+        <path d="M282 304 Q300 300 318 304" stroke="#D9AA8C" stroke-width="2"/>
+      </g>
+    </svg>
+    <svg data-sprite="wifeSmile" viewBox="0 0 600 1500">
+      <g stroke="#3a2e2a" stroke-width="3" stroke-linejoin="round">
+        <path d="M220 1260 L240 1450 L290 1450 L296 1260 Z M304 1260 L310 1450 L360 1450 L380 1260 Z" fill="#D8C8BC"/>
+        <path d="M226 1440 L292 1440 C298 1464 292 1484 278 1488 L214 1488 C206 1470 212 1452 226 1440 Z M308 1440 L374 1440 C388 1452 394 1470 386 1488 L322 1488 C308 1484 302 1464 308 1440 Z" fill="#5B4A43"/>
+        <path d="M150 860 L450 860 L470 1280 L130 1280 Z" fill="#7F8A8F"/>
+        <path d="M200 900 L180 1270 M300 900 L300 1270 M400 900 L420 1270" stroke="#6B767B" stroke-width="3" fill="none"/>
+        <!-- 体：ピンクのカーディガン -->
+        <path d="M120 940 L130 520 C134 440 200 400 262 392 L338 392 C400 400 466 440 470 520 L480 900 Z" fill="#D99AA6"/>
+        <path d="M262 392 L300 470 L338 392 Z" fill="#F4EEE6"/>
+        <path d="M300 470 L300 940" stroke="#B87884" stroke-width="4"/>
+        <path d="M150 600 C150 520 170 470 200 450 L210 640 Z M450 600 C450 520 430 470 400 450 L390 640 Z" fill="#C98593" stroke="none" opacity=".6"/>
+        <!-- 胸の前で組んだ手 -->
+        <path d="M170 520 C190 600 240 640 300 640 C360 640 410 600 430 520 L400 510 C380 570 340 600 300 600 C260 600 220 570 200 510 Z" fill="#D99AA6"/>
+        <path d="M262 612 C262 586 280 572 300 572 C320 572 338 586 338 612 C338 636 320 650 300 650 C280 650 262 636 262 612 Z" fill="#EFC8AA"/>
+        <path d="M282 590 L282 640 M300 584 L300 646 M318 590 L318 640" stroke="#C9977B" stroke-width="2.5"/>
+        <!-- 首・頭 -->
+        <path d="M274 330 L274 398 L326 398 L326 330 Z" fill="#E4B898"/>
+        <path d="M222 236 C210 140 252 104 300 104 C352 104 394 140 380 236 C376 270 368 286 360 296 L240 296 C232 286 224 270 222 236 Z" fill="#8E8A87"/>
+        <ellipse cx="236" cy="240" rx="13" ry="20" fill="#EFC8AA"/><ellipse cx="364" cy="240" rx="13" ry="20" fill="#EFC8AA"/>
+        <path d="M238 222 C238 160 268 132 300 132 C332 132 362 160 362 222 C362 278 334 318 300 322 C266 318 238 278 238 222 Z" fill="#EFC8AA"/>
+        <path d="M330 150 C356 170 362 210 360 240 C356 280 336 310 310 320 C336 290 346 240 330 150 Z" fill="#DDAE8E" stroke="none"/>
+        <path d="M236 214 C240 150 280 120 320 126 C352 132 368 160 364 206 C340 176 300 160 262 170 C252 184 242 198 236 214 Z" fill="#9A9693"/>
+        <path d="M262 168 C290 150 330 150 352 172" fill="none" stroke="#B9B5B2" stroke-width="3"/>
+      </g>
+      <g stroke-linecap="round" fill="none">
+        <path d="M254 202 Q270 194 286 200" stroke="#5E5A57" stroke-width="5"/>
+        <path d="M314 200 Q330 194 346 202" stroke="#5E5A57" stroke-width="5"/>
+        <path d="M258 238 Q272 226 286 238 M314 238 Q328 226 342 238" stroke="#2B211D" stroke-width="5"/>
+        <path d="M254 250 Q262 256 270 252 M330 252 Q338 256 346 250" stroke="#D2A182" stroke-width="2.5"/>
+        <path d="M300 246 Q296 266 306 270" stroke="#C4927A" stroke-width="3"/>
+        <path d="M280 286 Q300 304 320 286" stroke="#8E4A42" stroke-width="4"/>
+        <ellipse cx="258" cy="268" rx="14" ry="7" fill="#EF9F98" stroke="none" opacity=".35"/>
+        <ellipse cx="342" cy="268" rx="14" ry="7" fill="#EF9F98" stroke="none" opacity=".35"/>
+      </g>
+    </svg>
+
+    <svg data-sprite="board" viewBox="0 0 600 420">
+      <g font-family="'Hiragino Maru Gothic ProN','Yu Gothic',sans-serif" text-anchor="middle">
+        <rect x="8" y="8" width="584" height="404" rx="26" fill="#FFFDF6" stroke="#3a2e2a" stroke-width="5"/>
+        <rect x="8" y="8" width="584" height="404" rx="26" fill="none" stroke="#E6DCC8" stroke-width="14" transform="translate(0,0)" opacity=".6"/>
+        <g font-size="46" fill="#2b2522">
+          <text x="70" y="88">わ</text><text x="120" y="88">ら</text><text x="170" y="88">や</text><text x="220" y="88">ま</text><text x="270" y="88">は</text>
+          <text x="330" y="88">な</text><text x="380" y="88">た</text><text x="430" y="88">さ</text><text x="480" y="88">か</text><text x="530" y="88">あ</text>
+          <text x="120" y="148">り</text><text x="220" y="148">み</text><text x="270" y="148">ひ</text><text x="330" y="148">に</text><text x="380" y="148">ち</text><text x="430" y="148">し</text><text x="480" y="148">き</text><text x="530" y="148">い</text>
+          <text x="120" y="208">る</text><text x="170" y="208">ゆ</text><text x="220" y="208">む</text><text x="270" y="208">ふ</text><text x="330" y="208">ぬ</text><text x="380" y="208">つ</text><text x="430" y="208">す</text><text x="480" y="208">く</text><text x="530" y="208">う</text>
+        </g>
+        <rect x="70" y="270" width="200" height="110" rx="20" fill="#DCEFE6" stroke="#3E8E6E" stroke-width="5"/>
+        <rect x="330" y="270" width="200" height="110" rx="20" fill="#F7E0DC" stroke="#B25A4E" stroke-width="5"/>
+        <text x="170" y="342" font-size="54" fill="#2D6E54" font-weight="bold">はい</text>
+        <text x="430" y="342" font-size="54" fill="#93453B" font-weight="bold">いいえ</text>
+      </g>
+    </svg>
+
+    <!-- 共通パーツ：看護師（直立で描き、各スプライトで回転） -->
+    <svg viewBox="0 0 600 800" style="position:absolute;width:0;height:0">
+      <defs>
+        <g id="nurseBody" stroke="#3a2e2a" stroke-width="3" stroke-linejoin="round">
+          <path d="M160 770 L440 770 L432 1440 L322 1440 L302 960 L298 960 L278 1440 L168 1440 Z" fill="#24364C"/>
+          <path d="M300 900 L300 960" stroke="#1A2838" stroke-width="3"/>
+          <path d="M160 1432 L282 1432 C290 1460 286 1484 270 1488 L150 1488 C140 1470 146 1446 160 1432 Z" fill="#F4F4F2"/>
+          <path d="M318 1432 L440 1432 C454 1446 460 1470 450 1488 L330 1488 C314 1484 310 1460 318 1432 Z" fill="#F4F4F2"/>
+          <path d="M276 288 L276 344 L324 344 L324 288 Z" fill="#E2B596"/>
+          <path d="M140 800 L150 450 C156 380 214 348 262 340 L338 340 C386 348 444 380 450 450 L460 800 Z" fill="#2F4A68"/>
+          <path d="M150 470 C160 420 190 390 222 376 L230 800 L146 800 Z" fill="#263E58" stroke="none"/>
+          <path d="M262 340 L300 392 L338 340 L356 356 L300 420 L244 356 Z" fill="#3E5F84"/>
+          <path d="M300 392 L300 470" stroke="#22374F" stroke-width="4"/>
+          <circle cx="300" cy="430" r="5" fill="#F4F4F4"/><circle cx="300" cy="456" r="5" fill="#F4F4F4"/>
+          <rect x="350" y="430" width="62" height="30" rx="5" fill="#F7F7F2"/>
+          <path d="M358 440 L402 440 M358 450 L388 450" stroke="#7E8A96" stroke-width="3"/>
+          <path d="M412 360 C420 340 430 330 446 340" fill="none" stroke="#6C7A86" stroke-width="5"/>
+        </g>
+        <g id="nurseHead" stroke="#3a2e2a" stroke-width="3" stroke-linejoin="round">
+          <path d="M226 232 C212 140 254 96 300 96 C354 96 392 140 376 232 C372 262 362 280 354 292 L246 292 C238 280 230 262 226 232 Z" fill="#2A2220"/>
+          <ellipse cx="384" cy="196" rx="34" ry="30" fill="#2A2220"/>
+          <ellipse cx="236" cy="232" rx="13" ry="20" fill="#F1CDB0"/><ellipse cx="364" cy="232" rx="13" ry="20" fill="#F1CDB0"/>
+          <path d="M238 214 C238 152 268 122 300 122 C332 122 362 152 362 214 C362 268 334 306 300 310 C266 306 238 268 238 214 Z" fill="#F1CDB0"/>
+          <path d="M334 142 C356 166 364 204 360 236 C356 274 336 300 312 308 C336 278 346 230 334 142 Z" fill="#E2B596" stroke="none"/>
+          <path d="M236 206 C238 146 276 112 318 116 C354 120 370 152 364 200 C350 176 324 158 296 160 C286 182 262 198 236 206 Z" fill="#2A2220"/>
+          <path d="M272 132 C300 120 334 124 352 146" fill="none" stroke="#5A4A44" stroke-width="3"/>
+        </g>
+      </defs>
+    </svg>
+  </div>
+  <div id="glare"></div>
+  <div id="vignette"></div>
+  <div id="blink"></div>
+  <div id="fade"></div>
+
+  <div class="vrtop">
+    <div class="row" style="gap:6px">
+      <span class="vrtag" id="vrPhase"></span>
+      <span class="vrtag alarm">アラーム音</span>
+    </div>
+    <div class="row" style="gap:6px">
+      <button class="vrbtn" id="menuBtn" type="button" aria-expanded="false" aria-controls="vrMenu">メニュー</button>
+      <button class="vrbtn" id="stopBtn" type="button">体験を止める</button>
+    </div>
+  </div>
+  <div id="vrMenu" hidden>
+    <button type="button" data-act="story">佐藤さんの物語をもう一度読む</button>
+    <button type="button" data-act="restart">この場面を最初から</button>
+    <button type="button" data-act="mute" id="muteBtn" aria-pressed="false">音：あり（タップで消す）</button>
+    <button type="button" data-act="tts" id="ttsBtn" aria-pressed="false">読み上げ：あり（タップで消す）</button>
+    <button type="button" data-act="home">ホームに戻る</button>
+    <button type="button" data-act="close">閉じる</button>
+  </div>
+  <div id="subs" aria-live="polite">
+    <div id="inner"></div>
+    <div id="speech"></div>
+  </div>
+  <div id="bubbles" aria-live="polite" aria-label="あなたのつぶやき"></div>
+  <form id="thinkForm" autocomplete="off">
+    <label for="thinkInput" class="sr">いま浮かんだ言葉</label>
+    <input type="text" id="thinkInput" placeholder="いま頭に浮かんだ言葉を、そのまま" enterkeyhint="send">
+    <button type="submit">送る</button>
+  </form>
+  <div class="jump" role="group" aria-label="視線を移す">
+    <button type="button" data-look="ceiling">正面（天井）</button>
+    <button type="button" data-look="vent">目を左へ（呼吸器）</button>
+    <button type="button" data-look="door">目を右へ（入口）</button>
+    <button type="button" data-look="family">目を下へ（家族）</button>
+  </div>
+  <div id="story" aria-live="polite">
+    <div class="panel"><div id="panelArt"></div><p id="panelText"></p></div>
+    <div class="dots" id="storyDots"></div>
+    <div class="row" style="justify-content:center;gap:8px">
+      <button class="vrbtn" type="button" id="storyPrev">戻る</button>
+      <button class="vrbtn" type="button" id="storyNext">次へ</button>
+      <button class="vrbtn" type="button" id="storySkip">とばして体験へ</button>
+    </div>
+  </div>
+  <div id="vrEnd"><div class="box">
+    <p id="vrEndText"></p>
+    <div class="row"><button class="btn ghost" type="button" id="vrReplay">この場面をもう一度</button><button class="btn" type="button" id="vrNext"></button></div>
+    <div class="row"><button class="btn ghost" type="button" id="vrStory">物語を読み返す</button><button class="btn ghost" type="button" id="vrHome">ホームに戻る</button></div>
+  </div></div>
+</div>
+
+<div class="toast" id="toast" role="status"></div>
+
+<script src="js/three.min.js"></script>
+<script>
+'use strict';
+/* =========================================================
+   テーマ定義：ここを差し替えれば、ほかの在宅テーマ（看取り・BPSD・急変対応など）を量産できる
+   ========================================================= */
+const THEMES = [
+  {
+    id:'home-vent', ready:true, minutes:10,
+    tag:'在宅 × 人工呼吸器',
+    view:{yaw:35, up:25, down:-38, note:'首は動かせず、目だけを動かせる範囲が見えます'},
+    title:'在宅人工呼吸器ケア編',
+    lead:'アラームが鳴ったとき、患者さんには何が見えて、何が聞こえているのか。',
+    patient:[
+      ['名前','佐藤 一郎さん（仮名）・68歳・男性'],
+      ['病気','ALS（筋萎縮性側索硬化症）'],
+      ['呼吸','気管切開をして、人工呼吸器を24時間使用'],
+      ['伝え方','声は出せない。まばたきと文字盤で伝える'],
+      ['暮らし','自宅で妻と二人暮らし。訪問看護は週3回。ラジオの野球中継が好き']
+    ],
+    story:[
+      {sec:5, img:'story-1.jpg', text:'佐藤一郎さん。40年、大工として家を建ててきた。自慢は、この手。'},
+      {sec:5, img:'story-2.jpg', text:'妻の和子さんと二人三脚。夜はラジオの野球中継を聴くのが楽しみだった。'},
+      {sec:5, img:'story-3.jpg', text:'ある日、道具を握る手に力が入らなくなった。ALSだった。'},
+      {sec:7, img:'story-4.jpg', text:'和子さんと何度も話し合い、気管切開をして生きることを選んだ。いまは自宅のベッドで、ラジオをつけて過ごしている。'}
+    ],
+    bad:{ label:'1 / 5　よくある場面', cues:[
+      {t:0.5, glare:true},
+      {t:5, alarm:true},
+      {t:10, sfx:'steps'},
+      {t:12, show:'sideNurse', hint:'door', speech:['看護師','あ、鳴ってますね。']},
+      {t:14.5, hide:'sideNurse', show:'overBad', look:'ceiling', speech:['看護師','えーと、回路……ああ、ここ外れてたか。']},
+      {t:20, alarm:false, speech:['看護師','はい、つけました。大丈夫です。']},
+      {t:24, speech:['看護師','次の訪問があるので、また来週来ますね。奥さん、何かあったら連絡ください。']},
+      {t:28.5, hide:'overBad', sfx:'door', speech:null},
+      {t:30.5, hint:'family', speech:['妻','……あの、さっきのは……']},
+      {t:34, speech:null},
+      {t:44, end:true}
+    ],
+      endText:'この看護師も、次の訪問に追われていました。忙しいとき、誰にでも起こりうる場面です。天井を見上げながら、あなたの頭の中にはどんな言葉が浮かびましたか？',
+      endNext:'浮かんだ言葉を残す'
+    },
+    good:{ label:'4 / 5　もう一度、同じ場面', cues:[
+      {t:0.5, glare:true},
+      {t:5, alarm:true},
+      {t:5.8, sfx:'steps'},
+      {t:7.5, show:'sideNurse', hint:'door', speech:['看護師','佐藤さん、訪問看護の田中です。今、行きますね。']},
+      {t:10.5, hide:'sideNurse', show:'overGood', glare:false, calm:true, look:'ceiling', speech:['看護師','呼吸器の音が鳴りましたね。先に、佐藤さんの顔と胸を見せてください。']},
+      {t:16, speech:['看護師','胸は動いていますね。管が外れていないか、一緒に確かめます。']},
+      {t:20.5, alarm:false, speech:['看護師','ここが少し外れていました。つなぎ直したので、もう空気が入っていますよ。']},
+      {t:26, show:'board', speech:['看護師','苦しかったですね。今は楽になりましたか？ 楽なら、まばたき1回で教えてください。']},
+      {t:32, blink:true, speech:null},
+      {t:34, speech:['看護師','ありがとうございます。安心しました。']},
+      {t:37.5, hide:'board', speech:['看護師','そういえば昨日の試合、勝ちましたね。ラジオ、つけたままにしておきますね。']},
+      {t:43, hint:'family', speech:['看護師','奥さんも驚かれましたよね。次に鳴ったときの確かめ方を、一緒に見ておきましょうか。']},
+      {t:48.5, hide:'wife', show:'wifeSmile', speech:['妻','はい……ありがとうございます。お願いします。']},
+      {t:52, speech:null},
+      {t:57, end:true}
+    ],
+      endText:'同じアラームでも、関わり方で患者さんの体験はここまで変わります。最後に、ひとりの訪問でも安全を守るための確認を見ておきましょう。',
+      endNext:'安全行動カードへ'
+    },
+    thoughts:[
+      ['天井を見上げているとき','まぶしい。でも、目をそらすこともできない。'],
+      ['アラームが鳴ったとき','何の音？ 息が、入ってこない気がする。'],
+      ['看護師が呼吸器だけを見ていたとき','こっちを見て。苦しいって伝えたいのに、声が出ない。'],
+      ['「大丈夫です」と言われたとき','何が起きてたの？ 本当に、もう大丈夫なの？'],
+      ['扉が閉まったあと','行ってしまった。私は、ここにいるのに。']
+    ],
+    emotions:['声が出せない怖さ','何が起きているか分からない不安','機械のほうが大事にされている寂しさ','息苦しさ','置いていかれた孤独','家族に申し訳ない気持ち','看護師の焦りも分かる','うまく言葉にならない'],
+    actions:['目を合わせて名前を呼ぶ','自分が誰かを名乗る','何が起きているか伝えてから処置する','処置の前に、顔と胸の動きを見る','文字盤やまばたきで気持ちを聞く','家族にも声をかける','帰る前に「大丈夫」の理由を伝える'],
+    safety:[
+      ['まず患者さんを見る','顔色、表情、胸の上がり、SpO2。アラームより先に人を見ます。'],
+      ['名乗って、声をかける','誰が来て、これから何をするのかを伝えます。'],
+      ['アラームの表示を読む','低圧（外れ・漏れ）か、高圧（痰・詰まり・咳）かで、確かめる場所が変わります。'],
+      ['つながりを手でたどる','呼吸器から回路、カニューレまで、手で触れて確かめます。'],
+      ['胸が上がらない・苦しそうなら','蘇生バッグに切り替えて手で換気し、すぐに主治医や緊急連絡先へ連絡します。']
+    ],
+    safetyPrep:'訪問のはじめに、蘇生バッグと予備のカニューレの場所を、ご家族と一緒に確認しておきましょう。',
+    questions:[
+      {id:'alarm', label:'アラームの種類と対応を知りたい'},
+      {id:'comm', label:'文字盤や意思伝達装置の使い方'},
+      {id:'family', label:'家族への説明や声かけ'},
+      {id:'emergency', label:'急変時の連絡と動き方'},
+      {id:'cannula', label:'気管カニューレのトラブル'},
+      {id:'feeling', label:'患者さんの気持ちをもっと知りたい'}
+    ]
+  },
+  {id:'eol', ready:false, tag:'在宅 × 看取り', title:'看取り期の関わり編', lead:'最期の時間を過ごす人と家族の目線から。'},
+  {id:'bpsd', ready:false, tag:'在宅 × 認知症', title:'認知症のBPSD編', lead:'「拒否」に見える行動の、その人の側の理由。'},
+  {id:'sudden', ready:false, tag:'在宅 × 急変', title:'急変時の対応編', lead:'ひとりの訪問中に、状態が変わったとき。'}
+];
+/* 疑問タグ → 次のテーマ（ルールで推薦。将来AIに置き換え可能） */
+const RECO = {
+  alarm:{title:'呼吸器道場：アラーム編', why:'アラームの意味と確かめ方を、波形を動かしながら学べます。'},
+  comm:{title:'意思伝達の体験編', why:'文字盤や視線入力を、患者さんの側から体験します。'},
+  family:{title:'家族の目線編', why:'アラームを見守る家族が、何に不安を感じているかを体験します。'},
+  emergency:{title:'急変時の対応編', why:'ひとりの訪問中に状態が変わったときの動き方を学びます。'},
+  cannula:{title:'気管カニューレのトラブル編', why:'事故抜去や閉塞のサインと、最初の対応を学びます。'},
+  feeling:{title:'ALSと共に生きる人の語り', why:'公表されている当事者の語りから、気持ちの移り変わりを知ります。'}
+};
+
+const PANELS = {
+  p1:`<svg viewBox="0 0 400 260"><rect width="400" height="260" fill="#FFF8EC"/>
+    <g stroke="#B9874F" stroke-width="10" stroke-linecap="round"><line x1="250" y1="230" x2="250" y2="60"/><line x1="360" y1="230" x2="360" y2="60"/><line x1="230" y1="70" x2="380" y2="70"/><line x1="250" y1="150" x2="360" y2="150"/></g>
+    <path d="M 220 70 L 305 20 L 390 70" fill="none" stroke="#B9874F" stroke-width="10" stroke-linecap="round"/>
+    <path d="M 70 260 C 70 190 100 165 140 165 C 180 165 210 190 210 260 Z" fill="#5E7F94"/>
+    <circle cx="140" cy="120" r="42" fill="#E9C2A0"/>
+    <path d="M 98 108 C 110 84 170 84 182 108" stroke="#FFFFFF" stroke-width="14" fill="none"/>
+    <circle cx="126" cy="124" r="4" fill="#2B2321"/><circle cx="154" cy="124" r="4" fill="#2B2321"/>
+    <path d="M 126 142 Q 140 152 154 142" stroke="#8A4A36" stroke-width="4" fill="none" stroke-linecap="round"/>
+    <circle cx="205" cy="190" r="16" fill="#E9C2A0"/>
+    <rect x="198" y="120" width="12" height="70" rx="4" fill="#8A6A44" transform="rotate(20 204 160)"/>
+    <rect x="210" y="104" width="40" height="22" rx="4" fill="#5B6B6D" transform="rotate(20 230 115)"/>
+  </svg>`,
+  p2:`<svg viewBox="0 0 400 260"><rect width="400" height="260" fill="#FFF3E2"/>
+    <rect x="0" y="190" width="400" height="70" fill="#D9B98E"/>
+    <path d="M 40 260 C 40 200 65 180 100 180 C 135 180 160 200 160 260 Z" fill="#5E7F94"/>
+    <circle cx="100" cy="140" r="36" fill="#E9C2A0"/><path d="M 66 132 C 70 104 130 100 134 132 C 120 118 82 118 66 132 Z" fill="#6B625C"/>
+    <circle cx="90" cy="142" r="3.5" fill="#2B2321"/><circle cx="112" cy="142" r="3.5" fill="#2B2321"/><path d="M 90 158 Q 101 166 112 158" stroke="#8A4A36" stroke-width="3.5" fill="none" stroke-linecap="round"/>
+    <path d="M 240 260 C 240 200 265 180 300 180 C 335 180 360 200 360 260 Z" fill="#B98A7A"/>
+    <circle cx="300" cy="140" r="34" fill="#E9C2A0"/><path d="M 264 140 C 262 100 338 100 336 140 C 330 116 272 116 264 140 Z" fill="#7C716B"/>
+    <circle cx="290" cy="142" r="3.5" fill="#2B2321"/><circle cx="310" cy="142" r="3.5" fill="#2B2321"/><path d="M 290 156 Q 300 164 310 156" stroke="#8A4A36" stroke-width="3.5" fill="none" stroke-linecap="round"/>
+    <rect x="172" y="150" width="56" height="40" rx="6" fill="#8C5A3C"/><circle cx="188" cy="170" r="10" fill="#3A2A22"/><rect x="204" y="160" width="16" height="4" fill="#E6D2B5"/><rect x="204" y="170" width="16" height="4" fill="#E6D2B5"/>
+    <text x="200" y="120" text-anchor="middle" font-size="28" fill="#C0583A">♪ ⚾</text>
+  </svg>`,
+  p3:`<svg viewBox="0 0 400 260"><rect width="400" height="260" fill="#EEF0F2"/>
+    <path d="M 120 260 C 120 200 150 180 200 180 C 250 180 280 200 280 260 Z" fill="#5E7F94"/>
+    <circle cx="200" cy="130" r="40" fill="#E9C2A0"/><path d="M 160 120 C 166 90 234 90 240 120 C 224 106 176 106 160 120 Z" fill="#6B625C"/>
+    <circle cx="186" cy="138" r="3.5" fill="#2B2321"/><circle cx="214" cy="138" r="3.5" fill="#2B2321"/>
+    <path d="M 186 158 Q 200 152 214 158" stroke="#8A4A36" stroke-width="3.5" fill="none" stroke-linecap="round"/>
+    <path d="M 176 124 L 192 128 M 224 124 L 208 128" stroke="#2B2321" stroke-width="3" stroke-linecap="round"/>
+    <circle cx="150" cy="212" r="18" fill="#E9C2A0"/><circle cx="250" cy="212" r="18" fill="#E9C2A0"/>
+    <rect x="300" y="200" width="60" height="12" rx="4" fill="#8A6A44" transform="rotate(-25 330 206)"/>
+    <rect x="340" y="214" width="34" height="20" rx="4" fill="#5B6B6D" transform="rotate(-25 357 224)"/>
+    <path d="M 290 180 q 8 -10 16 0 M 300 160 q 8 -10 16 0" stroke="#9AA5A6" stroke-width="3" fill="none"/>
+  </svg>`,
+  p4:`<svg viewBox="0 0 400 260"><rect width="400" height="260" fill="#F4F1EA"/>
+    <rect x="40" y="150" width="270" height="70" rx="10" fill="#A9C7D9"/><rect x="40" y="120" width="60" height="40" rx="10" fill="#FFFFFF"/>
+    <circle cx="80" cy="120" r="26" fill="#E9C2A0"/><path d="M 56 112 C 60 92 100 92 104 112 C 94 102 66 102 56 112 Z" fill="#8F8780"/>
+    <path d="M 70 122 L 78 122 M 86 122 L 94 122" stroke="#2B2321" stroke-width="3" stroke-linecap="round"/>
+    <path d="M 80 146 C 70 160 60 160 50 150" stroke="#A9C4D6" stroke-width="7" fill="none"/>
+    <rect x="320" y="90" width="60" height="70" rx="8" fill="#F2F5F5" stroke="#8F9C9D" stroke-width="3"/><rect x="328" y="98" width="44" height="26" rx="3" fill="#1F3337"/>
+    <path d="M 320 140 C 260 140 150 170 100 150" stroke="#A9C4D6" stroke-width="6" fill="none"/>
+    <path d="M 170 260 C 170 205 190 185 220 185 C 250 185 270 205 270 260 Z" fill="#B98A7A"/>
+    <circle cx="220" cy="150" r="30" fill="#E9C2A0"/><path d="M 188 150 C 186 116 254 116 252 150 C 246 128 194 128 188 150 Z" fill="#7C716B"/>
+    <circle cx="211" cy="152" r="3" fill="#2B2321"/><circle cx="229" cy="152" r="3" fill="#2B2321"/><path d="M 211 166 Q 220 172 229 166" stroke="#8A4A36" stroke-width="3" fill="none" stroke-linecap="round"/>
+    <circle cx="150" cy="176" r="14" fill="#E9C2A0"/>
+    <rect x="300" y="190" width="50" height="34" rx="6" fill="#8C5A3C"/><circle cx="314" cy="207" r="8" fill="#3A2A22"/>
+    <text x="345" y="186" font-size="20" fill="#C0583A">♪</text>
+  </svg>`
+};
+const RESULTS = ['決めたとおりにできた','一部できた','できなかった','まだその場面に出会っていない'];
+
+/* ===== 保存（端末内のみ。使えない環境ではメモリ上で動く） ===== */
+const KEY = 'kenmap-vr-v1';
+let memStore = [];
+function loadRecords(){ try{ const s = localStorage.getItem(KEY); return s ? JSON.parse(s) : memStore; }catch(e){ return memStore; } }
+function saveRecords(list){ memStore = list; try{ localStorage.setItem(KEY, JSON.stringify(list)); }catch(e){} }
+
+/* ===== 画面切り替え ===== */
+const $ = s => document.querySelector(s);
+const $$ = s => Array.from(document.querySelectorAll(s));
+let currentView = 'home';
+function go(name){
+  currentView = name;
+  $$('.view').forEach(v => v.classList.toggle('on', v.id === 'v-' + name));
+  window.scrollTo(0,0);
+  if(name === 'home') renderHome();
+  if(name === 'memories') renderMemories();
+  if(name === 'save') renderSave();
+}
+document.addEventListener('click', e => {
+  const g = e.target.closest('[data-go]');
+  if(g) go(g.dataset.go);
+});
+function toast(msg){ const t = $('#toast'); t.textContent = msg; t.classList.add('on'); clearTimeout(toast._t); toast._t = setTimeout(()=>t.classList.remove('on'), 2600); }
+const fmtDate = d => `${d.getFullYear()}年${d.getMonth()+1}月${d.getDate()}日`;
+
+/* ===== 状態 ===== */
+let theme = THEMES[0];
+let draft = null;      // いま体験中の記録
+let currentRecId = null;
+
+/* ===== ホーム ===== */
+const daysAgo = iso => Math.max(0, Math.floor((Date.now() - new Date(iso).getTime()) / 86400000));
+function themeStatus(id){
+  const recs = loadRecords().filter(r => r.theme === id);
+  const revisits = recs.reduce((n, r) => n + (r.revisits ? r.revisits.length : (r.revisit ? 1 : 0)), 0);
+  const last = recs[0] ? recs[0].date : null;
+  return {count: recs.length, revisits, waiting: recs[0] && !(recs[0].revisits || recs[0].revisit), last};
+}
+function renderHome(){
+  const list = $('#themeList'); list.innerHTML = '';
+  THEMES.forEach(t => {
+    const b = document.createElement('button');
+    b.type = 'button'; b.className = 'theme' + (t.ready ? ' ready' : '');
+    if(!t.ready) b.disabled = true;
+    let pill = `<span class="pill ${t.ready?'go':'wait'}">${t.ready?'体験できます':'準備中'}</span>`, cycle = '';
+    if(t.ready){
+      const st = themeStatus(t.id);
+      if(st.revisits) pill = `<span class="pill done">臨床で振り返り ${st.revisits}回</span>`;
+      if(st.count && st.waiting) pill = `<span class="pill todo">臨床での振り返り待ち</span>`;
+      if(st.count){
+        const steps = [['体験', st.count > 0], ['臨床で経験', st.revisits > 0], ['振り返り', st.revisits > 0], ['もう一度体験', st.count > 1 && st.revisits > 0]];
+        cycle = `<span class="cycle">${steps.map(([n,on]) => `<i class="${on?'on':''}">${n}</i>`).join('<b>→</b>')}</span>
+          <span class="meta">学習 ${st.count}回・臨床での振り返り ${st.revisits}回・前回の学習は${daysAgo(st.last) ? daysAgo(st.last) + '日前' : '今日'}</span>`;
+      }
+    }
+    b.innerHTML = `<h3>${t.title}</h3>${pill}<span class="meta">${t.tag}${t.ready?'・約'+t.minutes+'分':''}　${t.lead}</span>${cycle}`;
+    if(t.ready) b.addEventListener('click', () => openIntro(t));
+    list.appendChild(b);
+  });
+  const recs = loadRecords();
+  $('#memCount').textContent = recs.length ? `（${recs.length}件）` : '';
+  const waitingThemes = THEMES.filter(t => t.ready && themeStatus(t.id).waiting);
+  const banner = $('#homeBanner');
+  if(waitingThemes.length){
+    const names = waitingThemes.map(t => t.title).join('、');
+    const d = daysAgo(themeStatus(waitingThemes[0].id).last);
+    banner.innerHTML = `<div class="card banner"><h3>実際の場面に出会ったら、振り返りへ</h3>
+      <p class="note">「${esc(names)}」の振り返りがまだです（最後の学習は${d ? d + '日前' : '今日'}）。人工呼吸器の利用者さんと関わったとき、あのとき決めた「最初にすること」を思い出せましたか？</p>
+      <button class="btn sub" type="button" data-go="memories">振り返りを書く</button></div>`;
+  } else banner.innerHTML = '';
+}
+function openIntro(t){
+  theme = t;
+  $('#introTag').textContent = t.tag;
+  $('#h-intro').textContent = t.title;
+  $('#patientInfo').innerHTML = t.patient.map(([k,v]) => `<dt>${k}</dt><dd>${v}</dd>`).join('');
+  draft = {id: 'r' + Date.now(), theme: t.id, themeTitle: t.title, date: new Date().toISOString(), emotions: [], memo: '', actions: [], actOwn: '', thoughts: [], revisit: null};
+  go('intro');
+}
+
+/* ===== チップ ===== */
+function makeChips(box, items, {max = 99, onChange} = {}){
+  box.innerHTML = '';
+  const sel = new Set();
+  items.forEach(item => {
+    const label = typeof item === 'string' ? item : item.label;
+    const val = typeof item === 'string' ? item : item.id;
+    const c = document.createElement('button');
+    c.type = 'button'; c.className = 'chip'; c.textContent = label; c.setAttribute('aria-pressed','false');
+    c.addEventListener('click', () => {
+      if(sel.has(val)){ sel.delete(val); c.setAttribute('aria-pressed','false'); }
+      else{
+        if(max === 1){ sel.clear(); box.querySelectorAll('.chip').forEach(x => x.setAttribute('aria-pressed','false')); }
+        else if(sel.size >= max){ toast(`選べるのは${max}個までです`); return; }
+        sel.add(val); c.setAttribute('aria-pressed','true');
+      }
+      onChange && onChange(sel);
+    });
+    box.appendChild(c);
+  });
+  return sel;
+}
+
+/* ===== 感情・宣言 ===== */
+let emoSel, actSel;
+function thoughtsHTML(list, sceneName){
+  const xs = (list || []).filter(x => !sceneName || x.scene === sceneName);
+  if(!xs.length) return '<p class="note">体験中の入力はありませんでした。下で選んだり、書いたりできます。</p>';
+  return xs.map(x => `<div class="bub">${esc(x.text)}<small>${x.scene === 'good' ? '2回目' : '1回目'}　${fmtSec(x.t)}</small></div>`).join('');
+}
+function canGoDeclare(){ $('#toDeclare').disabled = !((emoSel && emoSel.size) || $('#emoMemo').value.trim() || (draft.thoughts || []).some(x => x.scene === 'bad')); }
+function openReflect(){
+  emoSel = makeChips($('#emoChips'), theme.emotions, {onChange: canGoDeclare});
+  $('#reflectThoughts').innerHTML = thoughtsHTML(draft.thoughts, 'bad');
+  $('#emoMemo').value = ''; canGoDeclare();
+  go('reflect');
+}
+$('#emoMemo').addEventListener('input', () => draft && canGoDeclare());
+$('#toDeclare').addEventListener('click', () => {
+  draft.emotions = [...emoSel]; draft.memo = $('#emoMemo').value.trim();
+  $('#myWords').innerHTML = `<h3>あなたが感じたこと</h3><div class="mythoughts">${thoughtsHTML(draft.thoughts, 'bad')}</div>${draft.emotions.length ? `<p>${esc(draft.emotions.join('、'))}</p>` : ''}${draft.memo ? `<p class="quote voice">${esc(draft.memo)}</p>` : ''}`;
+  $('#thoughtList').innerHTML = theme.thoughts.map(([w,t]) => `<li><small>${w}</small><span class="voice">「${t}」</span></li>`).join('');
+  go('voices');
+});
+$('#toDeclare2').addEventListener('click', () => {
+  actSel = makeChips($('#actChips'), theme.actions, {max: 3, onChange: updateAct});
+  $('#actOwn').value = ''; updateAct();
+  go('declare');
+});
+function updateAct(){ $('#startGood').disabled = !(actSel && actSel.size) && !$('#actOwn').value.trim(); }
+$('#actOwn').addEventListener('input', updateAct);
+$('#replayBad').addEventListener('click', () => { startVR.skipStory = true; startVR('bad'); });
+$('#startBad').addEventListener('click', () => startVR('bad'));
+$('#startGood').addEventListener('click', () => {
+  draft.actions = [...actSel]; draft.actOwn = $('#actOwn').value.trim();
+  startVR('good');
+});
+
+/* ===== 安全カード ===== */
+function openCard(){
+  $('#safetyList').innerHTML = theme.safety.map(([b,s]) => `<li><span><b>${b}</b>${s}</span></li>`).join('');
+  $('#safetyPrep').textContent = theme.safetyPrep;
+  go('card');
+}
+
+/* ===== 保存画面 ===== */
+function declText(r){ return [...r.actions, r.actOwn].filter(Boolean).join('／'); }
+function renderSave(){
+  if(!draft) return;
+  const recs = loadRecords().filter(r => r.id !== draft.id);
+  recs.unshift(draft); saveRecords(recs);
+  $('#saveSummary').innerHTML = `
+    <small class="note">${fmtDate(new Date(draft.date))}　${draft.themeTitle}</small>
+    <h3>体験中のつぶやき</h3><div class="mythoughts">${thoughtsHTML(draft.thoughts)}</div>
+    ${draft.emotions.length ? `<h3>感じたこと</h3><p>${esc(draft.emotions.join('、'))}</p>` : ''}
+    ${draft.memo ? `<p class="quote voice">${esc(draft.memo)}</p>` : ''}
+    <h3>次の訪問で最初にすること</h3><p class="quote">${esc(declText(draft))}</p>
+    <p class="note">この端末に保存しました。</p>`;
+  currentRecId = draft.id;
+}
+function esc(s){ return String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
+
+/* ===== ファイル保存（Claudeの画面では保存機能、それ以外はダウンロード） ===== */
+async function saveFile(filename, blob){
+  try{
+    if(window.claude && typeof window.claude.use === 'function'){
+      const dl = await window.claude.use('downloads');
+      if(dl){
+        try{ await dl.save({filename, data: blob}); return true; }
+        catch(e){
+          if(e && /type|data/i.test(String(e.message || e))){
+            const buf = new Uint8Array(await blob.arrayBuffer());
+            await dl.save({filename, data: buf}); return true;
+          }
+          throw e;
+        }
+      }
+    }
+  }catch(e){ toast('保存が取り消されたか、できませんでした'); return false; }
+  try{
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob); a.download = filename;
+    document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(() => URL.revokeObjectURL(a.href), 4000);
+    return true;
+  }catch(e){ toast('この環境では保存できませんでした'); return false; }
+}
+/* ===== 振り返り一覧（テーマごとに1つ） ===== */
+const revisitsOf = r => r.revisits || (r.revisit ? [r.revisit] : []);
+function themeRecs(id){ return loadRecords().filter(r => r.theme === id); }
+function renderMemories(){
+  const recs = loadRecords(); const box = $('#memList'); box.innerHTML = '';
+  if(!recs.length){ box.innerHTML = '<div class="card"><p class="note">まだ記録はありません。ライブラリから体験を始めてください。</p></div>'; return; }
+  THEMES.filter(t => recs.some(r => r.theme === t.id)).forEach(t => {
+    const rs = themeRecs(t.id), latest = rs[0];
+    const nRev = rs.reduce((n, r) => n + revisitsOf(r).length, 0);
+    const waiting = !revisitsOf(latest).length;
+    const b = document.createElement('button'); b.type = 'button'; b.className = 'mem';
+    b.innerHTML = `<div class="top"><b>${esc(t.title)}</b><span class="pill ${waiting?'todo':'done'}">${waiting?'振り返り待ち':'振り返り済み'}</span></div>
+      <span>学習 ${rs.length}回・臨床での振り返り ${nRev}回</span>
+      <small>最新の学習：${fmtDate(new Date(latest.date))}</small>
+      <span>最初にすること：${esc(declText(latest))}</span>`;
+    b.addEventListener('click', () => openRevisit(t.id));
+    box.appendChild(b);
+  });
+}
+let resSel, qSel;
+function openRevisit(themeId){
+  const rs = themeRecs(themeId); if(!rs.length) return;
+  const r = rs[0];
+  currentRecId = r.id; theme = THEMES.find(t => t.id === themeId) || THEMES[0];
+  const history = rs.flatMap(x => revisitsOf(x).map(v => ({v, decl: declText(x)}))).sort((a,b) => b.v.date.localeCompare(a.v.date));
+  $('#revPast').innerHTML = `<small class="note">学習 ${rs.length}回　最新：${fmtDate(new Date(r.date))}</small>
+    <h3>体験中のつぶやき</h3><div class="mythoughts">${thoughtsHTML(r.thoughts)}</div>
+    ${r.emotions.length ? `<h3>感じたこと</h3><p>${esc(r.emotions.join('、'))}</p>` : ''}${r.memo?`<p class="quote voice">${esc(r.memo)}</p>`:''}
+    <h3>決めたこと</h3><p class="quote">${esc(declText(r))}</p>
+    ${history.length ? `<h3>これまでの振り返り</h3>${history.map(h => `<p class="note">${fmtDate(new Date(h.v.date))}：${esc(h.v.result)}${h.v.insight?'　「'+esc(h.v.insight)+'」':''}</p>`).join('')}` : ''}`;
+  resSel = makeChips($('#resultChips'), RESULTS, {max: 1, onChange: s => $('#saveRevisit').disabled = !s.size});
+  qSel = makeChips($('#qChips'), theme.questions);
+  $('#revReaction').value = ''; $('#revInsight').value = ''; $('#saveRevisit').disabled = true;
+  go('revisit');
+}
+$('#saveRevisit').addEventListener('click', () => {
+  const recs = loadRecords(); const r = recs.find(x => x.id === currentRecId); if(!r) return;
+  const v = {date: new Date().toISOString(), result: [...resSel][0], reaction: $('#revReaction').value.trim(), insight: $('#revInsight').value.trim(), questions: [...qSel]};
+  r.revisits = revisitsOf(r).concat(v); r.revisit = v;
+  saveRecords(recs);
+  renderRecommend(r);
+});
+function renderRecommend(r){
+  const v = r.revisit;
+  const resultLine = {'決めたとおりにできた':'実際の場面で、そのとおりに関わることができました。','一部できた':'実際の場面で、一部を実践できました。','できなかった':'今回はできませんでした。できなかった理由も、大切な学びです。','まだその場面に出会っていない':'まだその場面には出会っていません。出会ったときに、思い出してみてください。'}[v.result] || '';
+  $('#recoSummary').innerHTML = `<p>「${esc(declText(r))}」と決めて、${resultLine}</p>
+    ${v.reaction?`<h3>利用者さん・ご家族の反応</h3><p class="quote">${esc(v.reaction)}</p>`:''}
+    ${v.insight?`<h3>次の訪問で大切にしたいこと</h3><p class="quote voice">${esc(v.insight)}</p>`:'<p class="note">次の訪問で大切にしたいことを一言にしておくと、経験が自分の言葉として残ります。</p>'}`;
+  const ids = v.questions.length ? v.questions : ['feeling'];
+  $('#recoList').innerHTML = ids.map(id => RECO[id]).filter(Boolean).map(x =>
+    `<div class="card"><div class="row" style="justify-content:space-between;align-items:center"><h3>${x.title}</h3><span class="pill wait">準備中</span></div><p class="note">${x.why}</p></div>`).join('');
+  go('recommend');
+}
+
+/* ===== 受講レポート ===== */
+$('#toReport').addEventListener('click', () => openReport(currentRecId));
+$('#toReport2').addEventListener('click', () => openReport(currentRecId));
+let reportBlob = null, reportText = '';
+function openReport(id){ currentRecId = id; $('#reportImg').hidden = true; $('#repActions').hidden = true; go('report'); }
+function wrapText(ctx, text, x, y, maxW, lh){
+  let line = '', yy = y;
+  for(const ch of text){
+    if(ch === '\n'){ ctx.fillText(line, x, yy); line = ''; yy += lh; continue; }
+    const test = line + ch;
+    if(ctx.measureText(test).width > maxW && line){ ctx.fillText(line, x, yy); line = ch; yy += lh; }
+    else line = test;
+  }
+  if(line){ ctx.fillText(line, x, yy); yy += lh; }
+  return yy;
+}
+$('#makeReport').addEventListener('click', async () => {
+  const r = loadRecords().find(x => x.id === currentRecId);
+  if(!r){ toast('記録が見つかりませんでした'); return; }
+  const consent = $('#repConsent').checked;
+  const name = consent ? $('#repName').value.trim() : '';
+  const office = consent ? $('#repOffice').value.trim() : '';
+  if(($('#repName').value.trim() || $('#repOffice').value.trim()) && !consent) toast('同意がないため、氏名と事業所名は載せていません');
+  try{ await document.fonts.ready; }catch(e){}
+  const c = document.createElement('canvas'); c.width = 1080; c.height = 1440;
+  const ctx = c.getContext('2d');
+  const F = '"Zen Kaku Gothic New","Hiragino Kaku Gothic ProN",sans-serif';
+  ctx.fillStyle = '#FBFCFC'; ctx.fillRect(0,0,1080,1440);
+  ctx.fillStyle = '#2C716E'; ctx.fillRect(0,0,1080,170);
+  ctx.fillStyle = '#fff'; ctx.font = `700 30px ${F}`; ctx.fillText('KenMaP 患者目線の体験ライブラリ', 70, 70);
+  ctx.font = `700 52px ${F}`; ctx.fillText('受講完了＆気づきレポート', 70, 135);
+  ctx.fillStyle = '#1C2A2E'; ctx.font = `500 32px ${F}`;
+  let y = 240;
+  const rows = [['受講日', fmtDate(new Date(r.date))], ['テーマ', r.themeTitle]];
+  if(name) rows.push(['氏名', name]);
+  if(office) rows.push(['事業所', office]);
+  rows.forEach(([k,v]) => { ctx.fillStyle = '#56676B'; ctx.fillText(k, 70, y); ctx.fillStyle = '#1C2A2E'; ctx.fillText(v, 260, y); y += 56; });
+  const section = (title, body) => {
+    y += 24; ctx.fillStyle = '#2C716E'; ctx.font = `700 34px ${F}`; ctx.fillText(title, 70, y); y += 54;
+    ctx.fillStyle = '#1C2A2E'; ctx.font = `400 32px ${F}`; y = wrapText(ctx, body, 70, y, 940, 50);
+  };
+  const tw = (r.thoughts || []).slice(0, 4).map(x => '「' + x.text + '」').join('\n');
+  section('体験して感じたこと', [tw, r.emotions.join('、'), r.memo ? '「' + r.memo + '」' : ''].filter(Boolean).join('\n'));
+  section('次の訪問で最初にすること', declText(r));
+  if(r.revisit){
+    section('臨床後の振り返り', `${fmtDate(new Date(r.revisit.date))}：${r.revisit.result}` + (r.revisit.insight ? '\n大切にしたいこと：' + r.revisit.insight : ''));
+  }
+  ctx.fillStyle = '#56676B'; ctx.font = `400 24px ${F}`;
+  ctx.fillText('学習補助用の教材です。実際のケアは主治医の指示と事業所の手順を優先します。', 70, 1390);
+  reportText = [`【受講完了＆気づきレポート】`, `受講日：${fmtDate(new Date(r.date))}`, `テーマ：${r.themeTitle}`, name?`氏名：${name}`:'', office?`事業所：${office}`:'',
+    (r.thoughts||[]).length?`体験中のつぶやき：${r.thoughts.map(x=>x.text).join('／')}`:'', r.emotions.length?`感じたこと：${r.emotions.join('、')}`:'', r.memo?`メモ：${r.memo}`:'', `次の訪問で最初にすること：${declText(r)}`,
+    r.revisit?`臨床後の振り返り：${r.revisit.result}${r.revisit.insight?'／'+r.revisit.insight:''}`:''].filter(Boolean).join('\n');
+  c.toBlob(b => { reportBlob = b; const img = $('#reportImg'); img.src = URL.createObjectURL(b); img.hidden = false; $('#repActions').hidden = false; }, 'image/png');
+});
+$('#saveReport').addEventListener('click', async () => { if(reportBlob && await saveFile('kenmap-report.png', reportBlob)) toast('レポート画像を保存しました'); });
+$('#copyReport').addEventListener('click', async () => {
+  try{ await navigator.clipboard.writeText(reportText); toast('テキストをコピーしました'); }
+  catch(e){ toast('コピーできませんでした'); }
+});
+
+/* =========================================================
+   360度体験（CSS 3Dの立方体。画像なしで動く仮背景）
+   ========================================================= */
+const vr = $('#vr'), stage = $('#stage');
+let LIMIT = {yaw:35, pitchUp:25, pitchDown:-38};   // テーマごとに、利用者さんが見られる範囲（目だけ・首も動く など）
+let LOOKS = {ceiling:[0,0], vent:[-35,0], door:[35,0], family:[0,-38]};
+function applyViewRange(v){
+  v = v || {yaw:70, up:55, down:-62};
+  v = {yaw:105, up:45, down:-65};  /* 試作中：首の可動域の制限を一時的に外して、床まで見回せるようにしている */
+  LIMIT = {yaw:v.yaw, pitchUp:v.up, pitchDown:v.down};
+  LOOKS = {ceiling:[0,0], vent:[-72,26], door:[62,-8], family:[0,-48]};
+}
+const view = {yaw:0, pitch:0, ty:0, tp:0};
+const clamp = (v,a,b) => Math.max(a, Math.min(b, v));
+function setTarget(y, p){ view.ty = clamp(y, -LIMIT.yaw, LIMIT.yaw); view.tp = clamp(p, LIMIT.pitchDown, LIMIT.pitchUp); }
+
+/* 部屋：6面（正面＝天井、上＝頭側の壁、下＝足元、左右＝壁）。人物などは同じ大きさの透明な板を手前に重ねる */
+const FACE_POSE = {
+  front:{pos:[0,0,-5], rot:[0,0,0]}, right:{pos:[5,0,0], rot:[0,-Math.PI/2,0]}, left:{pos:[-5,0,0], rot:[0,Math.PI/2,0]},
+  top:{pos:[0,5,0], rot:[Math.PI/2,0,0]}, bottom:{pos:[0,-5,0], rot:[-Math.PI/2,0,0]}, back:{pos:[0,0,5], rot:[0,Math.PI,0]}
+};
+let world = null, worldPromise = null, raf = 0;
+const figs = {};   // id -> {mesh, target}
+function svgToCanvas(svg){
+  return new Promise((res, rej) => {
+    const c = svg.cloneNode(true);
+    const vb = (c.getAttribute('viewBox') || '0 0 1024 1024').split(/\s+/).map(Number);
+    const W = 1024, H = Math.round(1024 * vb[3] / vb[2]);
+    c.setAttribute('xmlns','http://www.w3.org/2000/svg'); c.setAttribute('width', W); c.setAttribute('height', H);
+    const img = new Image();
+    img.onload = () => { const cv = document.createElement('canvas'); cv.width = W; cv.height = H; cv.getContext('2d').drawImage(img, 0, 0, W, H); res(cv); };
+    img.onerror = rej;
+    img.src = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(new XMLSerializer().serializeToString(c));
+  });
+}
+function buildWorld(){
+  if(worldPromise) return worldPromise;
+  worldPromise = (async () => {
+    if(typeof THREE === 'undefined') throw new Error('no three');
+    const renderer = new THREE.WebGLRenderer({antialias:true});
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+    stage.appendChild(renderer.domElement);
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(80, 1, 0.05, 50);
+    camera.rotation.order = 'YXZ';
+    const geo = new THREE.PlaneGeometry(10.02, 10.02);
+    const place = (mesh, pose, inset) => {
+      mesh.position.set(pose.pos[0]*inset, pose.pos[1]*inset, pose.pos[2]*inset);
+      mesh.rotation.set(pose.rot[0], pose.rot[1], pose.rot[2]);
+      scene.add(mesh);
+    };
+    const jobs = [];
+    $$('#faceSrc .face').forEach(face => {
+      const name = face.dataset.face, svg = face.querySelector('svg'), pose = FACE_POSE[name];
+      const base = svg.cloneNode(true); base.querySelectorAll('.fig').forEach(g => g.remove());
+      jobs.push(svgToCanvas(base).then(cv => place(new THREE.Mesh(geo, new THREE.MeshBasicMaterial({map: new THREE.CanvasTexture(cv)})), pose, 1)));
+    });
+
+    /* 床・ベッド（立体）。人も機器も、この床の上に立つ */
+    const cvs = (w, h, draw) => { const c = document.createElement('canvas'); c.width = w; c.height = h; draw(c.getContext('2d'), w, h); return new THREE.CanvasTexture(c); };
+    const shadowTex = cvs(128, 128, (x) => { const g = x.createRadialGradient(64,64,0,64,64,64); g.addColorStop(0,'rgba(40,30,25,.75)'); g.addColorStop(.6,'rgba(40,30,25,.3)'); g.addColorStop(1,'rgba(40,30,25,0)'); x.fillStyle = g; x.fillRect(0,0,128,128); });
+    const floorTex = cvs(512, 512, (x, W, H) => {
+      x.fillStyle = '#C9A782'; x.fillRect(0,0,W,H);
+      for(let i = 0; i < 8; i++){ x.fillStyle = i % 2 ? '#C29F79' : '#CDAD89'; x.fillRect(0, i * 64, W, 62); x.fillStyle = '#A88661'; x.fillRect(0, i * 64 + 62, W, 2); x.fillRect((i * 173) % W, i * 64, 2, 64); }
+    });
+    const floor = new THREE.Mesh(new THREE.PlaneGeometry(10, 10), new THREE.MeshBasicMaterial({map: floorTex}));
+    floor.position.set(0, 0, FLOOR); floor.rotation.set(Math.PI, 0, 0); scene.add(floor);
+    const box = (sx, sy, sz, px, py, pz, cols) => {
+      const mats = cols.map(c => new THREE.MeshBasicMaterial({color: c}));
+      const b = new THREE.Mesh(new THREE.BoxGeometry(sx, sy, sz), mats); b.position.set(px, py, pz); scene.add(b); return b;
+    };
+    /* BoxGeometry の面順：+X, -X, +Y, -Y, +Z(床側), -Z(天井側) */
+    const bl = BED.head - BED.foot, by = (BED.head + BED.foot) / 2;
+    box(BED.half * 2, bl, 0.8, 0, by, BED.top + 0.4, ['#E9EEF0','#E9EEF0','#DDE3E6','#DDE3E6','#CFD6D9','#F3F6F7']);          // マットレス
+    box(BED.half * 2 + 0.2, bl + 0.2, 0.35, 0, by, BED.top + 0.98, ['#9FA9AE','#9FA9AE','#8E989D','#8E989D','#7C868B','#B3BCC0']); // フレーム
+    [[-1,1],[1,1],[-1,-1],[1,-1]].forEach(([sx, sy]) => box(0.18, 0.18, FLOOR - BED.top - 1.15, sx * (BED.half - 0.1), by + sy * (bl / 2 - 0.2), (BED.top + 1.15 + FLOOR) / 2, Array(6).fill('#6F797E')));
+    box(BED.half * 2 - 0.1, 3.4, 0.28, 0, BED.foot + 1.75, BED.top - 0.12, ['#C9DCE6','#C9DCE6','#BFD3DE','#BFD3DE','#B3C8D4','#D7E6EE']);   // 掛け布団
+    [-0.45, 0.45].forEach(fx => box(0.55, 0.5, 0.35, fx, BED.foot + 0.6, BED.top - 0.42, ['#CFE0E9','#CFE0E9','#C3D6E0','#C3D6E0','#B8CCD8','#DCEAF1'])); // 足先のふくらみ
+    /* サイドレール：板状（高さ約35cm）。立っている人や機器の下半身は、この向こうに隠れる */
+    const railTex = cvs(512, 160, (x, W, H) => {
+      x.fillStyle = '#A9B4B9'; x.beginPath(); x.roundRect(4, 4, W - 8, H - 8, 30); x.fill();
+      x.fillStyle = '#E6EBED'; x.beginPath(); x.roundRect(14, 14, W - 28, H - 28, 24); x.fill();
+      x.fillStyle = '#D3DADD'; x.fillRect(14, H - 50, W - 28, 30);
+      x.globalCompositeOperation = 'destination-out';
+      [[60, 34, 120, 34], [W - 180, 34, 120, 34]].forEach(([px, py, w, h]) => { x.beginPath(); x.roundRect(px, py, w, h, 17); x.fill(); });
+    });
+    const RAIL_H = 0.8;
+    [[-1, BED.head - 0.2, -1.0], [-1, -1.4, BED.foot + 0.3], [1, BED.head - 0.2, -1.0], [1, -1.4, BED.foot + 0.3]].forEach(([sx, y1, y2]) => {
+      const len = y1 - y2;
+      const r = new THREE.Mesh(new THREE.PlaneGeometry(len, RAIL_H), new THREE.MeshBasicMaterial({map: railTex, transparent:true, side: THREE.DoubleSide, alphaTest: 0.5}));
+      r.position.set(sx * (BED.half + 0.05), (y1 + y2) / 2, BED.top - RAIL_H / 2);
+      r.quaternion.setFromRotationMatrix(new THREE.Matrix4().makeBasis(new THREE.Vector3(0, 1, 0), new THREE.Vector3(0, 0, -1), new THREE.Vector3(-sx, 0, 0).multiplyScalar(-1).cross(new THREE.Vector3(0,0,0)).length() ? new THREE.Vector3(sx,0,0) : new THREE.Vector3(sx,0,0)));
+      scene.add(r);
+    });
+    /* 人物・機器は、部屋の中に立てた板（billboard）。yaw：左がマイナス、pitch：頭側がプラス・足元がマイナス */
+    const inlineUse = svg => { svg.querySelectorAll('use').forEach(u => {
+      const ref = document.getElementById((u.getAttribute('href') || '').slice(1)); if(!ref) return u.remove();
+      const c = ref.cloneNode(true); c.removeAttribute('id'); u.replaceWith(c); }); return svg; };
+    SPRITES.forEach(sp => {
+      const src = inlineUse($(`#spriteSrc [data-sprite="${sp.id}"]`).cloneNode(true));
+      const vb = src.getAttribute('viewBox').split(/\s+/).map(Number);
+      const h = sp.type === 'stand' ? sp.h : sp.w * vb[3] / vb[2], w = sp.type === 'stand' ? sp.h * vb[2] / vb[3] : sp.w;
+      sp.w = w;
+      jobs.push(svgToCanvas(src).then(cv => {
+        const tex = new THREE.CanvasTexture(cv); tex.anisotropy = 4;
+        const mat = new THREE.MeshBasicMaterial({map: tex, transparent:true, opacity: sp.static ? 1 : 0, depthWrite:false, side: THREE.DoubleSide, alphaTest: 0.02});
+        const m = new THREE.Mesh(new THREE.PlaneGeometry(w, h), mat);
+        if(sp.type === 'stand'){
+          /* 床から重力の逆向き（天井側）に立て、正面を患者さんに向ける */
+          const L = (sp.lean || 0) * Math.PI / 180;
+          const toward = new THREE.Vector3(-sp.x, -sp.y, 0).normalize(), sky = new THREE.Vector3(0, 0, -1);
+          const up = sky.clone().multiplyScalar(Math.cos(L)).add(toward.clone().multiplyScalar(Math.sin(L)));
+          const nrm = toward.clone().multiplyScalar(Math.cos(L)).sub(sky.clone().multiplyScalar(Math.sin(L)));
+          const xax = new THREE.Vector3().crossVectors(up, nrm);
+          m.quaternion.setFromRotationMatrix(new THREE.Matrix4().makeBasis(xax, up, nrm));
+          m.position.set(sp.x, sp.y, FLOOR).addScaledVector(up, h / 2);
+          /* 足元の影 */
+          const sh = new THREE.Mesh(new THREE.PlaneGeometry(w * 0.9, w * 0.5), new THREE.MeshBasicMaterial({map: shadowTex, transparent:true, opacity: sp.static ? .55 : 0, depthWrite:false}));
+          sh.position.set(sp.x, sp.y, FLOOR - 0.01); sh.rotation.set(Math.PI, 0, Math.atan2(toward.y, toward.x) + Math.PI / 2);
+          scene.add(sh); m.userData.shadow = sh;
+        } else {
+          const y = sp.yaw * Math.PI / 180, pt = sp.pitch * Math.PI / 180;
+          m.position.set(Math.sin(y) * Math.cos(pt) * sp.d, Math.sin(pt) * sp.d, -Math.cos(y) * Math.cos(pt) * sp.d);
+          m.up.set(0, 1, 0); m.lookAt(0, 0, 0);
+        }
+        m.renderOrder = sp.type === 'stand' ? 20 : 90;
+        scene.add(m);
+        figs[sp.id] = {mesh: m, target: sp.static ? 1 : 0, static: !!sp.static};
+        if(sp.lamp){
+          const g = document.createElement('canvas'); g.width = g.height = 128; const x = g.getContext('2d');
+          const gr = x.createRadialGradient(64,64,4,64,64,64); gr.addColorStop(0,'rgba(255,240,200,1)'); gr.addColorStop(.25,'rgba(255,150,40,.9)'); gr.addColorStop(1,'rgba(255,90,20,0)');
+          x.fillStyle = gr; x.fillRect(0,0,128,128);
+          const gm = new THREE.Mesh(new THREE.PlaneGeometry(0.6, 0.6), new THREE.MeshBasicMaterial({map: new THREE.CanvasTexture(g), transparent:true, opacity:0, depthWrite:false, blending: THREE.AdditiveBlending}));
+          gm.position.set((sp.lamp[0] - 0.5) * w, (0.5 - sp.lamp[1]) * h, 0.02); gm.renderOrder = m.renderOrder + 1;
+          m.add(gm); figs.alarmLight = {mesh: gm, target: 0, static: true};
+        }
+      }));
+    });
+    await Promise.all(jobs);
+    world = {renderer, scene, camera};
+    return world;
+  })();
+  return worldPromise;
+}
+function layout(){
+  if(!world) return;
+  const W = stage.clientWidth, H = stage.clientHeight;
+  world.renderer.setSize(W, H, false);
+  world.camera.aspect = W / H; world.camera.fov = W < H ? 82 : 66; world.camera.updateProjectionMatrix();
+}
+/* 人物が入ってくる方向（面の中での移動量）。紙芝居でも「動き」を感じられるように */
+/* 部屋の寸法（1 ≒ 34cm）。目の位置が原点、天井は -Z、床は +Z 側。頭側が +Y、左が -X */
+const FLOOR = 2.1, BED = {half:1.45, top:0.35, head:3.0, foot:-3.6};
+/* stand：床に立つ人・物（x,y＝床の位置、h＝高さ、lean＝患者さん側への傾き） / bill：目の前に差し出す物 */
+const SPRITES = [
+  {id:'vent',      type:'stand', x:-3.1, y:1.8,  h:3.7, static:true, lamp:[0.69, 0.061]},
+  {id:'wife',      type:'stand', x:0.4,  y:-4.5, h:4.5, static:true},
+  {id:'wifeSmile', type:'stand', x:0.4,  y:-4.49, h:4.5},
+  {id:'sideNurse', type:'stand', x:2.7,  y:-2.0, h:4.7},
+  {id:'overBad',   type:'stand', x:-2.5, y:-0.5, h:4.7, lean:4},
+  {id:'overGood',  type:'stand', x:-2.45, y:-0.2, h:4.7, lean:18},
+  {id:'board',     type:'bill',  yaw:4, pitch:14, d:1.35, w:0.72}
+];
+const ENTER = {sideNurse:[-0.9, 0, 1], overBad:[-0.6, 0, 1], overGood:[-0.5, 0, 1], board:[0, -0.5, 0.94]};
+let breathT0 = 0, lastT = 0;
+const ease = t => 1 - Math.pow(1 - t, 3);
+function frame(now){
+  const dt = lastT ? Math.min(0.05, (now - lastT) / 1000) : 0.016; lastT = now;
+  view.yaw += (view.ty - view.yaw) * 0.12;
+  view.pitch += (view.tp - view.pitch) * 0.12;
+  if(world){
+    /* 人工呼吸器の送気に合わせて、視界がわずかに持ち上がる */
+    let bob = 0;
+    if(breathT0){ const ph = ((now - breathT0) % 4000) / 4000; if(ph < 0.35) bob = Math.sin(ph / 0.35 * Math.PI); }
+    world.camera.rotation.y = -view.yaw * Math.PI / 180;
+    world.camera.rotation.x = (view.pitch + bob * 0.6) * Math.PI / 180;
+    for(const id in figs){
+      const f = figs[id];
+      f.mesh.material.opacity += (f.target - f.mesh.material.opacity) * 0.08;
+      const en = ENTER[id];
+      if(en){
+        if(!f.base){ f.base = f.mesh.position.clone(); f.p = 1; }
+        f.p = Math.min(1, (f.p || 0) + dt / 1.1);
+        const k = f.target ? 1 - ease(f.p) : 0;
+        f.mesh.position.copy(f.base); f.mesh.translateX(en[0] * k); f.mesh.translateY(en[1] * k);
+        const sc = 1 - (1 - en[2]) * k; f.mesh.scale.set(sc, sc, 1);
+      }
+      const sh = f.mesh.userData.shadow;
+      if(sh){
+        if(!sh.userData.base) sh.userData.base = sh.position.clone();
+        sh.material.opacity = f.mesh.material.opacity * 0.55;
+        if(f.base){ sh.position.copy(sh.userData.base); sh.position.x += f.mesh.position.x - f.base.x; sh.position.y += f.mesh.position.y - f.base.y; }
+      }
+    }
+    world.renderer.render(world.scene, world.camera);
+  }
+  raf = requestAnimationFrame(frame);
+}
+function showFig(id, on){ const f = figs[id]; if(!f) return; if(on && !f.target) f.p = 0; f.target = on ? 1 : 0; }
+function flatFallback(){
+  if(stage.querySelector('img.flat')) return;
+  svgToCanvas($('#faceSrc [data-face="front"] svg')).then(cv => {
+    const img = new Image(); img.className = 'flat'; img.alt = ''; img.src = cv.toDataURL(); stage.appendChild(img);
+  }).catch(() => {});
+  toast('この端末では360度表示ができないため、字幕と音で体験を続けます');
+}
+window.addEventListener('resize', () => { if(vr.classList.contains('on')) layout(); });
+
+/* ドラッグ */
+let drag = null;
+stage.addEventListener('pointerdown', e => { drag = {x: e.clientX, y: e.clientY, ty: view.ty, tp: view.tp}; stage.setPointerCapture(e.pointerId); });
+stage.addEventListener('pointermove', e => { if(!drag) return; setTarget(drag.ty - (e.clientX - drag.x) * 0.22, drag.tp + (e.clientY - drag.y) * 0.22); });
+stage.addEventListener('pointerup', () => drag = null);
+stage.addEventListener('pointercancel', () => drag = null);
+/* 視点ジャンプ */
+$$('.jump button').forEach(b => b.addEventListener('click', () => { const [y,p] = LOOKS[b.dataset.look]; setTarget(y, p); b.classList.remove('hint'); }));
+/* ジャイロ（使える端末だけ） */
+let gyroBase = null;
+function onOrient(e){
+  if(e.alpha == null || drag) return;
+  if(!gyroBase) gyroBase = {a: e.alpha, b: e.beta};
+  let da = e.alpha - gyroBase.a; if(da > 180) da -= 360; if(da < -180) da += 360;
+  setTarget(-da, e.beta - gyroBase.b);
+}
+async function enableGyro(){
+  try{
+    if(typeof DeviceOrientationEvent !== 'undefined' && typeof DeviceOrientationEvent.requestPermission === 'function'){
+      const r = await DeviceOrientationEvent.requestPermission(); if(r !== 'granted') return;
+    }
+    window.addEventListener('deviceorientation', onOrient);
+  }catch(e){}
+}
+
+/* ===== 音（Web Audio のシンセ。後から本番音声に差し替え可能） ===== */
+let actx = null, master = null, alarmTimer = 0, breathTimer = 0, muted = false;
+function initAudio(){
+  try{
+    if(!actx){ actx = new (window.AudioContext || window.webkitAudioContext)(); master = actx.createGain(); master.connect(actx.destination); }
+    if(actx.state === 'suspended') actx.resume();
+    master.gain.value = muted ? 0 : 0.6;
+  }catch(e){ actx = null; }
+}
+/* 音の聞こえる方向（-1 左 〜 1 右）。呼吸器は左、入口は右 */
+function bus(pan){
+  if(actx.createStereoPanner){ const p = actx.createStereoPanner(); p.pan.value = pan; p.connect(master); return p; }
+  return master;
+}
+function beep(freq, at, dur){
+  const o = actx.createOscillator(), g = actx.createGain();
+  o.type = 'square'; o.frequency.value = freq;
+  g.gain.setValueAtTime(0.0001, at); g.gain.exponentialRampToValueAtTime(0.16, at + 0.01); g.gain.exponentialRampToValueAtTime(0.0001, at + dur);
+  o.connect(g).connect(bus(-0.65)); o.start(at); o.stop(at + dur + 0.02);
+}
+function thump(at, pan, vol, f0){
+  const o = actx.createOscillator(), g = actx.createGain();
+  o.type = 'sine'; o.frequency.setValueAtTime(f0 || 110, at); o.frequency.exponentialRampToValueAtTime(50, at + 0.12);
+  g.gain.setValueAtTime(0.0001, at); g.gain.exponentialRampToValueAtTime(vol, at + 0.008); g.gain.exponentialRampToValueAtTime(0.0001, at + 0.18);
+  o.connect(g).connect(bus(pan)); o.start(at); o.stop(at + 0.2);
+}
+/* 足音：右（入口）から近づいてくる */
+function steps(fast){
+  if(!actx) return; const t = actx.currentTime, gap = fast ? 0.32 : 0.48;
+  for(let i = 0; i < 5; i++) thump(t + i * gap, 0.9 - i * 0.12, 0.12 + i * 0.05, 95);
+}
+/* 時計の秒針：頭側の壁から、かすかに */
+let tickTimer = 0;
+function ticking(){
+  if(!actx) return; clearInterval(tickTimer);
+  tickTimer = setInterval(() => { if(!vr.classList.contains('on')) return; const t = actx.currentTime, o = actx.createOscillator(), g = actx.createGain();
+    o.type = 'triangle'; o.frequency.value = 2400; g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(0.02, t + 0.002); g.gain.exponentialRampToValueAtTime(0.0001, t + 0.03);
+    o.connect(g).connect(bus(0)); o.start(t); o.stop(t + 0.04); }, 1000);
+}
+function alarmOn(){
+  vr.classList.add('alarm'); setLight(true);
+  if(!actx) return; clearInterval(alarmTimer);
+  const play = () => { const t = actx.currentTime; [0, .22, .44].forEach(d => beep(988, t + d, .16)); };
+  play(); alarmTimer = setInterval(play, 1500);
+}
+function alarmOff(){ vr.classList.remove('alarm'); setLight(false); clearInterval(alarmTimer); }
+let lightTimer = 0;
+function setLight(on){
+  clearInterval(lightTimer);
+  const f = figs.alarmLight; if(!f) return;
+  if(!on){ f.target = 0; f.mesh.material.opacity = 0; return; }
+  let s = false; lightTimer = setInterval(() => { s = !s; f.target = s ? 1 : 0; f.mesh.material.opacity = f.target; }, 400);
+}
+function breathing(){
+  if(!actx) return; clearInterval(breathTimer);
+  const len = actx.sampleRate * 1.4, buf = actx.createBuffer(1, len, actx.sampleRate), d = buf.getChannelData(0);
+  for(let i = 0; i < len; i++) d[i] = Math.random() * 2 - 1;
+  const play = () => {
+    const src = actx.createBufferSource(), f = actx.createBiquadFilter(), g = actx.createGain(), t = actx.currentTime;
+    src.buffer = buf; f.type = 'bandpass'; f.frequency.value = 520; f.Q.value = 0.8;
+    g.gain.setValueAtTime(0.0001, t); g.gain.linearRampToValueAtTime(0.10, t + 0.5); g.gain.linearRampToValueAtTime(0.0001, t + 1.3);
+    src.connect(f).connect(g).connect(bus(-0.35)); src.start(t);
+  };
+  play(); breathT0 = performance.now(); breathTimer = setInterval(play, 4000);
+}
+function doorSound(){
+  if(!actx) return;
+  const t = actx.currentTime, o = actx.createOscillator(), g = actx.createGain();
+  o.type = 'sine'; o.frequency.setValueAtTime(140, t); o.frequency.exponentialRampToValueAtTime(55, t + 0.25);
+  g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(0.5, t + 0.01); g.gain.exponentialRampToValueAtTime(0.0001, t + 0.45);
+  o.connect(g).connect(bus(0.85)); o.start(t); o.stop(t + 0.5);
+}
+function toggleMute(){
+  muted = !muted; if(master) master.gain.value = muted ? 0 : 0.6;
+  const b = $('#muteBtn'); b.textContent = muted ? '音：なし（タップで出す）' : '音：あり（タップで消す）'; b.setAttribute('aria-pressed', String(muted));
+}
+
+/* ===== 台詞の読み上げ（端末の機械音声。人の声より一歩引いた距離を保つ） ===== */
+let ttsOn = true, jaVoice = null;
+function pickVoice(){ try{ const vs = speechSynthesis.getVoices(); jaVoice = vs.find(v => /ja/i.test(v.lang)) || null; }catch(e){} }
+if('speechSynthesis' in window){ pickVoice(); try{ speechSynthesis.onvoiceschanged = pickVoice; }catch(e){} }
+function speak(who, text){
+  if(!ttsOn || muted || !('speechSynthesis' in window)) return;
+  try{
+    const u = new SpeechSynthesisUtterance(text); u.lang = 'ja-JP'; if(jaVoice) u.voice = jaVoice;
+    const busy = scene === 'bad';
+    if(who === '妻'){ u.rate = 0.9; u.pitch = 0.85; }
+    else { u.rate = busy ? 1.3 : 1.05; u.pitch = busy ? 1.0 : 1.1; }
+    u.volume = 0.9;
+    const done = () => { talking = false; clearTimeout(talkGuard); };
+    u.onend = done; u.onerror = done;
+    talking = true; clearTimeout(talkGuard);
+    talkGuard = setTimeout(done, 2500 + text.length * 260 / u.rate);   /* 終了通知が来ない端末への保険 */
+    speechSynthesis.speak(u);
+  }catch(e){}
+}
+function hush(){ talking = false; clearTimeout(talkGuard); try{ speechSynthesis.cancel(); }catch(e){} }
+function warmVoice(){ try{ if('speechSynthesis' in window){ const u = new SpeechSynthesisUtterance(' '); u.volume = 0; speechSynthesis.speak(u); } }catch(e){} }
+function toggleTts(){
+  ttsOn = !ttsOn; if(!ttsOn) hush();
+  const b = $('#ttsBtn'); b.textContent = ttsOn ? '読み上げ：あり（タップで消す）' : '読み上げ：なし（タップで出す）'; b.setAttribute('aria-pressed', String(!ttsOn));
+}
+
+/* ===== シナリオ再生 ===== */
+let timers = [], scene = '', innerTimer = 0, sceneStart = 0;
+const fmtSec = t => `${Math.floor(t/60)}:${String(Math.floor(t%60)).padStart(2,'0')}`;
+function renderBubbles(){
+  const list = (draft && draft.thoughts || []).filter(x => x.scene === scene).slice(-4);
+  $('#bubbles').innerHTML = list.map(x => `<div class="bub">${esc(x.text)}<small>${fmtSec(x.t)}</small></div>`).join('');
+}
+$('#thinkForm').addEventListener('submit', e => {
+  e.preventDefault();
+  const v = $('#thinkInput').value.trim(); if(!v || !draft) return;
+  draft.thoughts = draft.thoughts || [];
+  draft.thoughts.push({scene, t: sceneStart ? (performance.now() - sceneStart) / 1000 : 0, text: v});
+  $('#thinkInput').value = ''; renderBubbles();
+});
+$('#thinkInput').addEventListener('pointerdown', e => e.stopPropagation());
+function clearScene(){
+  timers.forEach(clearTimeout); timers = []; clearTimeout(innerTimer); hush();
+  alarmOff(); for(const id in figs){ if(id !== 'alarmLight' && !figs[id].static) showFig(id, false); }
+  showFig('wife', true);
+  $('#inner').classList.remove('on'); $('#speech').classList.remove('on');
+  $('#glare').classList.remove('on'); vr.classList.remove('calm'); $$('.jump button').forEach(b => b.classList.remove('hint'));
+}
+function applyCue(c){
+  if('glare' in c) $('#glare').classList.toggle('on', c.glare);
+  if(c.alarm === true) alarmOn();
+  if(c.alarm === false) alarmOff();
+  if(c.show) showFig(c.show, true);
+  if(c.hide) showFig(c.hide, false);
+  if(c.look){ const [y,p] = LOOKS[c.look]; setTarget(y, p); }
+  if(c.hint){ $$('.jump button').forEach(b => b.classList.toggle('hint', b.dataset.look === c.hint)); timers.push(setTimeout(() => $$('.jump button').forEach(b => b.classList.remove('hint')), 6000)); }
+  if(c.inner){ const el = $('#inner'); el.textContent = c.inner; el.classList.add('on'); clearTimeout(innerTimer); innerTimer = setTimeout(() => el.classList.remove('on'), 3600); }
+  if('speech' in c){
+    const el = $('#speech');
+    if(c.speech){ el.innerHTML = `<b>${c.speech[0]}</b>${esc(c.speech[1])}`; el.classList.add('on'); speak(c.speech[0], c.speech[1]); }
+    else el.classList.remove('on');
+  }
+  if(c.sfx === 'door') doorSound();
+  if(c.sfx === 'steps') steps(scene === 'bad');
+  if('calm' in c) vr.classList.toggle('calm', c.calm);
+  if(c.blink){ const b = $('#blink'); b.classList.remove('go'); void b.offsetWidth; b.classList.add('go'); }
+  if(c.end) endScene();
+}
+/* 台詞は前の読み上げが終わるまで待ってから出す（字幕と声をそろえる）。待った分だけ、以降の進行も後ろにずらす */
+let talking = false, talkGuard = 0;
+function runCues(cues, which){
+  let i = 0, delay = 0;
+  const step = () => {
+    if(scene !== which || i >= cues.length) return;
+    const c = cues[i], due = sceneStart + c.t * 1000 + delay, wait = due - performance.now();
+    if(wait > 0){ timers.push(setTimeout(step, wait)); return; }
+    if(talking && ('speech' in c || c.end)){ delay += 120; timers.push(setTimeout(step, 120)); return; }
+    i++; applyCue(c); step();
+  };
+  step();
+}
+async function startVR(which){
+  scene = which; const S = theme[which];
+  clearScene(); $('#vrEnd').classList.remove('on');
+  vr.classList.add('on'); document.body.style.overflow = 'hidden';
+  $('#vrPhase').textContent = S.label;
+  initAudio(); warmVoice(); enableGyro();
+  try{ await buildWorld(); }catch(e){ flatFallback(); }
+  applyViewRange(theme.view);
+  layout(); view.yaw = view.ty = 0; view.pitch = view.tp = 0; gyroBase = null;
+  cancelAnimationFrame(raf); raf = requestAnimationFrame(frame);
+  clearInterval(breathTimer); clearInterval(tickTimer); breathT0 = 0;   /* 漫画の間は無音。体験が始まってから音を出す */
+  const wantStory = theme.story && (startVR.withStory || (which === 'bad' && !startVR.skipStory));
+  startVR.skipStory = false; startVR.withStory = false;
+  if(wantStory){ await playStory(); }
+  if(scene !== which || !vr.classList.contains('on')) return;
+  const fade = $('#fade'); fade.classList.remove('off'); requestAnimationFrame(() => requestAnimationFrame(() => fade.classList.add('off')));
+  breathing(); ticking();
+  sceneStart = performance.now(); renderBubbles();
+  runCues(S.cues, which);
+}
+let storyResolve = null, storyTimer = 0, storyIdx = 0;
+function playStory(){
+  return new Promise(res => {
+    storyResolve = res; storyIdx = 0;
+    $('#storyDots').innerHTML = theme.story.map(() => '<span></span>').join('');
+    $('#story').classList.add('on'); showPanel();
+  });
+}
+function showPanel(){
+  clearTimeout(storyTimer);
+  const st = theme.story, p = st[storyIdx], panel = $('#story .panel');
+  panel.classList.remove('on');
+  setTimeout(() => {
+    $('#panelArt').innerHTML = `<img src="img/${p.img}" alt="">`; $('#panelText').textContent = p.text;
+    $$('#storyDots span').forEach((d,i) => d.classList.toggle('on', i <= storyIdx));
+    panel.classList.add('on');
+  }, 250);
+  const last = storyIdx === st.length - 1;
+  $('#storyPrev').hidden = storyIdx === 0;
+  $('#storyNext').textContent = last ? '体験へ進む' : '次へ';
+  $('#storySkip').hidden = last;
+  storyTimer = setTimeout(nextPanel, p.sec * 1000);
+}
+function nextPanel(){ if(storyIdx < theme.story.length - 1){ storyIdx++; showPanel(); } else finishStory(); }
+function finishStory(){ clearTimeout(storyTimer); $('#story').classList.remove('on'); if(storyResolve){ const r = storyResolve; storyResolve = null; r(); } }
+$('#storyNext').addEventListener('click', nextPanel);
+$('#storyPrev').addEventListener('click', () => { if(storyIdx > 0){ storyIdx--; showPanel(); } });
+$('#storySkip').addEventListener('click', finishStory);
+/* 物語だけを読み返す（体験中ではない画面から） */
+async function openStoryOnly(){
+  const back = currentView;
+  vr.classList.add('on'); document.body.style.overflow = 'hidden';
+  $('#vrEnd').classList.remove('on'); $('#fade').classList.remove('off');
+  $('#vrPhase').textContent = '佐藤さんの物語';
+  storyOnly = true;
+  await playStory();
+  if(!storyOnly) return;
+  storyOnly = false;
+  vr.classList.remove('on'); document.body.style.overflow = '';
+  go(back);
+}
+let storyOnly = false;
+document.addEventListener('click', e => { if(e.target.closest('[data-story-only]')) openStoryOnly(); });
+function menu(open){ $('#vrMenu').hidden = !open; $('#menuBtn').setAttribute('aria-expanded', String(open)); }
+$('#menuBtn').addEventListener('click', () => menu($('#vrMenu').hidden));
+$('#vrMenu').addEventListener('click', e => {
+  const b = e.target.closest('button'); if(!b) return;
+  const act = b.dataset.act;
+  if(act === 'mute'){ toggleMute(); if(muted) hush(); return; }
+  if(act === 'tts'){ toggleTts(); return; }
+  menu(false);
+  if(act === 'story'){ replayStory(); }
+  if(act === 'restart'){ if(storyOnly) return; finishStoryQuiet(); startVR.skipStory = true; startVR(scene || 'bad'); }
+  if(act === 'home'){ storyOnly = false; closeVR(); go('home'); }
+});
+function finishStoryQuiet(){ clearTimeout(storyTimer); $('#story').classList.remove('on'); storyResolve = null; }
+function replayStory(){
+  if(storyOnly){ storyIdx = 0; showPanel(); return; }
+  finishStoryQuiet(); startVR.withStory = true; startVR(scene || 'bad');
+}
+$('#vrStory').addEventListener('click', replayStory);
+$('#vrHome').addEventListener('click', () => { closeVR(); go('home'); });
+function endScene(){
+  const S = theme[scene];
+  $('#fade').classList.remove('off');
+  timers.push(setTimeout(() => {
+    $('#vrEndText').textContent = S.endText; $('#vrNext').textContent = S.endNext;
+    $('#vrEnd').classList.add('on'); $('#vrNext').focus();
+  }, 1200));
+}
+function closeVR(){
+  clearInterval(tickTimer); breathT0 = 0;
+  menu(false); storyOnly = false; $('#bubbles').innerHTML = ''; $('#thinkInput').blur();
+  clearTimeout(storyTimer); $('#story').classList.remove('on'); storyResolve = null;
+  clearScene(); clearInterval(breathTimer); cancelAnimationFrame(raf);
+  window.removeEventListener('deviceorientation', onOrient);
+  vr.classList.remove('on'); $('#vrEnd').classList.remove('on'); document.body.style.overflow = '';
+}
+$('#vrReplay').addEventListener('click', () => { startVR.skipStory = true; startVR(scene); });
+$('#vrNext').addEventListener('click', () => { const s = scene; closeVR(); if(s === 'bad') openReflect(); else openCard(); });
+$('#stopBtn').addEventListener('click', () => {
+  if($('#story').classList.contains('on')){ finishStory(); return; }
+  menu(false);
+  clearScene(); $('#fade').classList.remove('off');
+  $('#vrEndText').textContent = '体験を止めました。つらくなったときは、無理をしなくて大丈夫です。続けられそうなら、感じたことを残しておきましょう。';
+  $('#vrNext').textContent = scene === 'bad' ? '浮かんだ言葉を残す' : '安全行動カードへ';
+  $('#vrEnd').classList.add('on');
+});
+document.addEventListener('keydown', e => { if(e.key === 'Escape' && vr.classList.contains('on') && !$('#vrEnd').classList.contains('on')) $('#stopBtn').click(); });
+
+renderHome();
+</script>
+<script>
+if('serviceWorker' in navigator && location.protocol === 'https:'){
+  window.addEventListener('load', () => navigator.serviceWorker.register('sw.js').catch(() => {}));
+}
+</script>
+</body>
+</html>
