@@ -110,6 +110,9 @@ ol.safety b{display:block}
 .mem{display:flex;flex-direction:column;gap:6px;text-align:left;width:100%;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:14px;cursor:pointer}
 .mem .top{display:flex;justify-content:space-between;gap:8px;align-items:center}
 .mem small{color:var(--muted)}
+.pledge{display:flex;align-items:center;gap:6px;flex-wrap:wrap;font-weight:700}
+.pledge input{flex:1 1 100%;min-width:0}
+.pledgebox{border:2px solid var(--accent);border-radius:12px;padding:12px 14px;background:#fff;font-size:1.08rem;font-weight:700;line-height:1.6}
 .quote{border-left:3px solid var(--accent);padding:4px 12px;background:var(--accent-soft);border-radius:4px}
 #reportImg{width:100%;border-radius:10px;border:1px solid var(--line)}
 .toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:var(--ink);color:#fff;padding:10px 16px;border-radius:10px;font-size:.9rem;opacity:0;pointer-events:none;transition:opacity .25s;z-index:50;max-width:90vw}
@@ -317,7 +320,27 @@ ol.safety b{display:block}
       <p class="warnbox" id="safetyPrep"></p>
     </div>
     <p class="note">機種によらない一般的な目安です。必ず主治医の指示と事業所の手順を優先してください。</p>
-    <button class="btn" type="button" data-go="save">記録を残す</button>
+    <button class="btn" type="button" id="toCommit">実行宣言へ</button>
+  </div>
+</section>
+
+<!-- ===== 実行宣言 ===== -->
+<section class="view" id="v-commit" aria-labelledby="h-commit">
+  <div class="wrap">
+    <ul class="steps" aria-hidden="true"><li class="on"></li><li class="on"></li><li class="on"></li><li class="on"></li><li class="on"></li></ul>
+    <div class="stepname">5 / 5　実行宣言</div>
+    <h2 id="h-commit">今日の体験を、明日の行動に</h2>
+    <div class="card" id="commitLook"></div>
+    <label for="cmReflect"><b>① 体験して思ったこと</b></label>
+    <p class="note">2つの場面を体験して、心に残ったことを自分の言葉でまとめてください。</p>
+    <textarea id="cmReflect" placeholder="例：処置を急ぐほど、佐藤さんを置き去りにしていた。顔を見るだけで安心が変わると感じた。"></textarea>
+    <label for="cmTask"><b>② 行動レベルの課題</b></label>
+    <p class="note">「気をつける」ではなく、誰が見ても分かる行動で書きます。</p>
+    <textarea id="cmTask" placeholder="例：アラームが鳴ったら、呼吸器を触る前に、利用者さんの顔と胸の動きを見て名前を呼ぶ。"></textarea>
+    <label for="cmPledge"><b>③ 実行宣言</b></label>
+    <div class="pledge"><span>私は、</span><input type="text" id="cmPledge" placeholder="次の訪問で、まず目を見て名乗ってから処置"><span>します。</span></div>
+    <button class="btn" type="button" id="doCommit" disabled>宣言して記録する</button>
+    <button class="btn ghost back" type="button" data-go="card">← 安全行動カードに戻る</button>
   </div>
 </section>
 
@@ -325,7 +348,7 @@ ol.safety b{display:block}
 <section class="view" id="v-save" aria-labelledby="h-save">
   <div class="wrap">
     <ul class="steps" aria-hidden="true"><li class="on"></li><li class="on"></li><li class="on"></li><li class="on"></li><li class="on"></li></ul>
-    <div class="stepname">5 / 5　記録を残す</div>
+    <div class="stepname">まとめ　こんなことを学びました</div>
     <h2 id="h-save">今日の気づき</h2>
     <div class="card" id="saveSummary"></div>
     <div class="card">
@@ -805,36 +828,36 @@ const THEMES = [
     ],
     bad:{ label:'1 / 5　よくある場面', cues:[
       {t:0.5, glare:true},
-      {t:5, alarm:true},
-      {t:10, sfx:'steps'},
-      {t:12, show:'sideNurse', hint:'door', speech:['看護師','あ、鳴ってますね。']},
-      {t:14.5, hide:'sideNurse', show:'overBad', look:'ceiling', speech:['看護師','えーと、回路……ああ、ここ外れてたか。']},
-      {t:20, alarm:false, speech:['看護師','はい、つけました。大丈夫です。']},
-      {t:24, speech:['看護師','次の訪問があるので、また来週来ますね。奥さん、何かあったら連絡ください。']},
-      {t:28.5, hide:'overBad', sfx:'door', speech:null},
-      {t:30.5, hint:'family', speech:['妻','……あの、さっきのは……']},
-      {t:34, speech:null},
-      {t:44, end:true}
+      {t:6, alarm:true},
+      {t:12, sfx:'steps'},
+      {t:15, show:'sideNurse', hint:'door', speech:['看護師','あ、鳴ってますね。']},
+      {t:19.5, hide:'sideNurse', show:'overBad', look:'ceiling', speech:['看護師','えーと、回路……ああ、ここ外れてたか。']},
+      {t:26.5, alarm:false, speech:['看護師','はい、つけました。大丈夫です。']},
+      {t:32, speech:['看護師','次の訪問があるので、また来週来ますね。奥さん、何かあったら連絡ください。']},
+      {t:38.5, hide:'overBad', sfx:'door', speech:null},
+      {t:42, hint:'family', speech:['妻','……あの、さっきのは……']},
+      {t:46, speech:null},
+      {t:55, end:true}
     ],
       endText:'この看護師も、次の訪問に追われていました。忙しいとき、誰にでも起こりうる場面です。天井を見上げながら、あなたの頭の中にはどんな言葉が浮かびましたか？',
       endNext:'浮かんだ言葉を残す'
     },
     good:{ label:'4 / 5　もう一度、同じ場面', cues:[
       {t:0.5, glare:true},
-      {t:5, alarm:true},
-      {t:5.8, sfx:'steps'},
-      {t:7.5, show:'sideNurse', hint:'door', speech:['看護師','佐藤さん、訪問看護の田中です。今、行きますね。']},
-      {t:10.5, hide:'sideNurse', show:'overGood', glare:false, calm:true, look:'ceiling', speech:['看護師','呼吸器の音が鳴りましたね。先に、佐藤さんの顔と胸を見せてください。']},
-      {t:16, speech:['看護師','胸は動いていますね。管が外れていないか、一緒に確かめます。']},
-      {t:20.5, alarm:false, speech:['看護師','ここが少し外れていました。つなぎ直したので、もう空気が入っていますよ。']},
-      {t:26, show:'board', speech:['看護師','苦しかったですね。今は楽になりましたか？ 楽なら、まばたき1回で教えてください。']},
-      {t:32, blink:true, speech:null},
-      {t:34, speech:['看護師','ありがとうございます。安心しました。']},
-      {t:37.5, hide:'board', speech:['看護師','そういえば昨日の試合、勝ちましたね。ラジオ、つけたままにしておきますね。']},
-      {t:43, hint:'family', speech:['看護師','奥さんも驚かれましたよね。次に鳴ったときの確かめ方を、一緒に見ておきましょうか。']},
-      {t:48.5, hide:'wife', show:'wifeSmile', speech:['妻','はい……ありがとうございます。お願いします。']},
-      {t:52, speech:null},
-      {t:57, end:true}
+      {t:6, alarm:true},
+      {t:7, sfx:'steps'},
+      {t:9, show:'sideNurse', hint:'door', speech:['看護師','佐藤さん、訪問看護の田中です。今、行きますね。']},
+      {t:13.5, hide:'sideNurse', show:'overGood', glare:false, calm:true, look:'ceiling', speech:['看護師','呼吸器の音が鳴りましたね。先に、佐藤さんの顔と胸を見せてください。']},
+      {t:20.5, speech:['看護師','胸は動いていますね。管が外れていないか、一緒に確かめます。']},
+      {t:26.5, alarm:false, speech:['看護師','ここが少し外れていました。つなぎ直したので、もう空気が入っていますよ。']},
+      {t:33, show:'board', speech:['看護師','苦しかったですね。今は楽になりましたか？ 楽なら、まばたき1回で教えてください。']},
+      {t:40, blink:true, speech:null},
+      {t:43, speech:['看護師','ありがとうございます。安心しました。']},
+      {t:47.5, hide:'board', speech:['看護師','そういえば昨日の試合、勝ちましたね。ラジオ、つけたままにしておきますね。']},
+      {t:54, hint:'family', speech:['看護師','奥さんも驚かれましたよね。次に鳴ったときの確かめ方を、一緒に見ておきましょうか。']},
+      {t:61, hide:'wife', show:'wifeSmile', speech:['妻','はい……ありがとうございます。お願いします。']},
+      {t:65.5, speech:null},
+      {t:70, end:true}
     ],
       endText:'同じアラームでも、関わり方で患者さんの体験はここまで変わります。最後に、ひとりの訪問でも安全を守るための確認を見ておきましょう。',
       endNext:'安全行動カードへ'
@@ -1089,6 +1112,23 @@ function openCard(){
 }
 
 /* ===== 保存画面 ===== */
+function pledgeText(r){ return r.pledge ? `私は、${r.pledge}します。` : ''; }
+function canCommit(){ $('#doCommit').disabled = !($('#cmTask').value.trim() && $('#cmPledge').value.trim()); }
+$('#toCommit').addEventListener('click', () => {
+  $('#commitLook').innerHTML = `<h3>振り返り</h3>
+    ${feelSummary(draft.thoughts, 'bad').size ? `<p class="note">1回目に浮かんだ気持ち：${esc([...feelSummary(draft.thoughts, 'bad').keys()].join('、'))}</p>` : ''}
+    ${feelSummary(draft.thoughts, 'good').size ? `<p class="note">2回目に浮かんだ気持ち：${esc([...feelSummary(draft.thoughts, 'good').keys()].join('、'))}</p>` : ''}
+    <p class="note">体験の前に決めたこと：${esc(declText(draft))}</p>`;
+  $('#cmReflect').value = draft.reflection || ''; $('#cmTask').value = draft.task || ''; $('#cmPledge').value = draft.pledge || '';
+  canCommit(); go('commit');
+});
+['#cmTask','#cmPledge'].forEach(q => $(q).addEventListener('input', canCommit));
+$('#doCommit').addEventListener('click', () => {
+  draft.reflection = $('#cmReflect').value.trim();
+  draft.task = $('#cmTask').value.trim();
+  draft.pledge = $('#cmPledge').value.trim().replace(/します。?$/, '');
+  go('save');
+});
 function declText(r){ return [...r.actions, r.actOwn].filter(Boolean).join('／'); }
 function renderSave(){
   if(!draft) return;
@@ -1100,6 +1140,9 @@ function renderSave(){
     ${draft.emotions.length ? `<h3>感じたこと</h3><p>${esc(draft.emotions.join('、'))}</p>` : ''}
     ${draft.memo ? `<p class="quote voice">${esc(draft.memo)}</p>` : ''}
     <h3>次の訪問で最初にすること</h3><p class="quote">${esc(declText(draft))}</p>
+    ${draft.reflection ? `<h3>体験して思ったこと</h3><p class="quote voice">${esc(draft.reflection)}</p>` : ''}
+    ${draft.task ? `<h3>行動レベルの課題</h3><p class="quote">${esc(draft.task)}</p>` : ''}
+    ${draft.pledge ? `<h3>実行宣言</h3><p class="pledgebox">${esc(pledgeText(draft))}</p>` : ''}
     <p class="note">この端末に保存しました。</p>`;
   currentRecId = draft.id;
 }
@@ -1144,7 +1187,7 @@ function renderMemories(){
     b.innerHTML = `<div class="top"><b>${esc(t.title)}</b><span class="pill ${waiting?'todo':'done'}">${waiting?'振り返り待ち':'振り返り済み'}</span></div>
       <span>学習 ${rs.length}回・臨床での振り返り ${nRev}回</span>
       <small>最新の学習：${fmtDate(new Date(latest.date))}</small>
-      <span>最初にすること：${esc(declText(latest))}</span>`;
+      <span>${latest.pledge ? '実行宣言：' + esc(pledgeText(latest)) : '最初にすること：' + esc(declText(latest))}</span>`;
     b.addEventListener('click', () => openRevisit(t.id));
     box.appendChild(b);
   });
@@ -1159,6 +1202,8 @@ function openRevisit(themeId){
     <h3>体験中に浮かんだ気持ち</h3><div class="mythoughts">${thoughtsHTML(r.thoughts)}</div>
     ${r.emotions.length ? `<h3>感じたこと</h3><p>${esc(r.emotions.join('、'))}</p>` : ''}${r.memo?`<p class="quote voice">${esc(r.memo)}</p>`:''}
     <h3>決めたこと</h3><p class="quote">${esc(declText(r))}</p>
+    ${r.task ? `<h3>行動レベルの課題</h3><p class="quote">${esc(r.task)}</p>` : ''}
+    ${r.pledge ? `<h3>実行宣言</h3><p class="pledgebox">${esc(pledgeText(r))}</p>` : ''}
     ${history.length ? `<h3>これまでの振り返り</h3>${history.map(h => `<p class="note">${fmtDate(new Date(h.v.date))}：${esc(h.v.result)}${h.v.insight?'　「'+esc(h.v.insight)+'」':''}</p>`).join('')}` : ''}`;
   resSel = makeChips($('#resultChips'), RESULTS, {max: 1, onChange: s => $('#saveRevisit').disabled = !s.size});
   qSel = makeChips($('#qChips'), theme.questions);
@@ -1175,7 +1220,7 @@ $('#saveRevisit').addEventListener('click', () => {
 function renderRecommend(r){
   const v = r.revisit;
   const resultLine = {'決めたとおりにできた':'実際の場面で、そのとおりに関わることができました。','一部できた':'実際の場面で、一部を実践できました。','できなかった':'今回はできませんでした。できなかった理由も、大切な学びです。','まだその場面に出会っていない':'まだその場面には出会っていません。出会ったときに、思い出してみてください。'}[v.result] || '';
-  $('#recoSummary').innerHTML = `<p>「${esc(declText(r))}」と決めて、${resultLine}</p>
+  $('#recoSummary').innerHTML = `<p>「${esc(r.pledge ? pledgeText(r) : declText(r))}」と宣言して、${resultLine}</p>
     ${v.reaction?`<h3>利用者さん・ご家族の反応</h3><p class="quote">${esc(v.reaction)}</p>`:''}
     ${v.insight?`<h3>次の訪問で大切にしたいこと</h3><p class="quote voice">${esc(v.insight)}</p>`:'<p class="note">次の訪問で大切にしたいことを一言にしておくと、経験が自分の言葉として残ります。</p>'}`;
   const ids = v.questions.length ? v.questions : ['feeling'];
@@ -1208,10 +1253,10 @@ $('#makeReport').addEventListener('click', async () => {
   const office = consent ? $('#repOffice').value.trim() : '';
   if(($('#repName').value.trim() || $('#repOffice').value.trim()) && !consent) toast('同意がないため、氏名と事業所名は載せていません');
   try{ await document.fonts.ready; }catch(e){}
-  const c = document.createElement('canvas'); c.width = 1080; c.height = 1440;
+  const c = document.createElement('canvas'); c.width = 1080; c.height = 1760;
   const ctx = c.getContext('2d');
   const F = '"Zen Kaku Gothic New","Hiragino Kaku Gothic ProN",sans-serif';
-  ctx.fillStyle = '#FBFCFC'; ctx.fillRect(0,0,1080,1440);
+  ctx.fillStyle = '#FBFCFC'; ctx.fillRect(0,0,1080,1760);
   ctx.fillStyle = '#2C716E'; ctx.fillRect(0,0,1080,170);
   ctx.fillStyle = '#fff'; ctx.font = `700 30px ${F}`; ctx.fillText('KenMaP 患者目線の体験ライブラリ', 70, 70);
   ctx.font = `700 52px ${F}`; ctx.fillText('受講完了＆気づきレポート', 70, 135);
@@ -1228,13 +1273,15 @@ $('#makeReport').addEventListener('click', async () => {
   const tw = (r.thoughts || []).slice(0, 4).map(x => '「' + x.text + '」').join('\n');
   section('体験して感じたこと', [tw, r.emotions.join('、'), r.memo ? '「' + r.memo + '」' : ''].filter(Boolean).join('\n'));
   section('次の訪問で最初にすること', declText(r));
+  if(r.task) section('行動レベルの課題', r.task);
+  if(r.pledge) section('実行宣言', pledgeText(r));
   if(r.revisit){
     section('臨床後の振り返り', `${fmtDate(new Date(r.revisit.date))}：${r.revisit.result}` + (r.revisit.insight ? '\n大切にしたいこと：' + r.revisit.insight : ''));
   }
   ctx.fillStyle = '#56676B'; ctx.font = `400 24px ${F}`;
-  ctx.fillText('学習補助用の教材です。実際のケアは主治医の指示と事業所の手順を優先します。', 70, 1390);
+  ctx.fillText('学習補助用の教材です。実際のケアは主治医の指示と事業所の手順を優先します。', 70, 1710);
   reportText = [`【受講完了＆気づきレポート】`, `受講日：${fmtDate(new Date(r.date))}`, `テーマ：${r.themeTitle}`, name?`氏名：${name}`:'', office?`事業所：${office}`:'',
-    (r.thoughts||[]).length?`体験中に浮かんだ気持ち：${r.thoughts.map(x=>x.text).join('／')}`:'', r.emotions.length?`感じたこと：${r.emotions.join('、')}`:'', r.memo?`メモ：${r.memo}`:'', `次の訪問で最初にすること：${declText(r)}`,
+    (r.thoughts||[]).length?`体験中に浮かんだ気持ち：${r.thoughts.map(x=>x.text).join('／')}`:'', r.emotions.length?`感じたこと：${r.emotions.join('、')}`:'', r.memo?`メモ：${r.memo}`:'', `次の訪問で最初にすること：${declText(r)}`, r.reflection?`体験して思ったこと：${r.reflection}`:'', r.task?`行動レベルの課題：${r.task}`:'', r.pledge?`実行宣言：${pledgeText(r)}`:'',
     r.revisit?`臨床後の振り返り：${r.revisit.result}${r.revisit.insight?'／'+r.revisit.insight:''}`:''].filter(Boolean).join('\n');
   c.toBlob(b => { reportBlob = b; const img = $('#reportImg'); img.src = URL.createObjectURL(b); img.hidden = false; $('#repActions').hidden = false; }, 'image/png');
 });
@@ -1561,12 +1608,14 @@ if('speechSynthesis' in window){ pickVoice(); try{ speechSynthesis.onvoiceschang
 function speak(who, text){
   if(!ttsOn || muted || !('speechSynthesis' in window)) return;
   try{
-    const u = new SpeechSynthesisUtterance(text); u.lang = 'ja-JP'; if(jaVoice) u.voice = jaVoice;
+    const said = text.replace(/管/g, 'くだ');   /* 読み上げだけ読み方を直す（字幕はそのまま） */
+    const u = new SpeechSynthesisUtterance(said); u.lang = 'ja-JP'; if(jaVoice) u.voice = jaVoice;
     const busy = scene === 'bad';
     if(who === '妻'){ u.rate = 0.9; u.pitch = 0.85; }
     else { u.rate = busy ? 1.3 : 1.05; u.pitch = busy ? 1.0 : 1.1; }
     u.volume = 0.9;
-    const done = () => { talking = false; clearTimeout(talkGuard); };
+    const done = () => { if(!talking) return; talking = false; clearTimeout(talkGuard);
+      const shown = $('#speech').innerHTML; timers.push(setTimeout(() => { if(!talking && $('#speech').innerHTML === shown) $('#speech').classList.remove('on'); }, 1600)); };
     u.onend = done; u.onerror = done;
     talking = true; clearTimeout(talkGuard);
     talkGuard = setTimeout(done, 2500 + text.length * 260 / u.rate);   /* 終了通知が来ない端末への保険 */
