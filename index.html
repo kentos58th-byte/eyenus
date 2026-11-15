@@ -158,13 +158,25 @@ ol.safety b{display:block}
 @keyframes hint{50%{box-shadow:0 0 0 5px rgba(242,180,143,.25)}}
 
 .sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
-#thinkForm{position:absolute;left:10px;right:10px;bottom:84px;z-index:4;display:flex;gap:6px}
-#thinkInput{flex:1;min-width:0;border:1px solid rgba(232,238,238,.5);background:rgba(250,252,252,.92);border-radius:999px;padding:10px 14px;font-size:16px}
-#thinkForm button{appearance:none;border:0;border-radius:999px;padding:0 16px;background:var(--accent);color:#fff;font-weight:700;cursor:pointer;min-height:44px}
+#feelBar{position:absolute;left:0;right:0;bottom:78px;z-index:4;padding:0 10px}
+.feelq{display:inline-block;color:#F1F5F5;background:rgba(20,30,33,.7);border-radius:999px;padding:3px 10px;font-size:.76rem;margin:0 0 5px}
+.feelrow{display:flex;gap:6px;overflow-x:auto;padding-bottom:4px;scrollbar-width:none;-webkit-overflow-scrolling:touch}
+.feelrow::-webkit-scrollbar{display:none}
+.feelrow button{flex:0 0 auto;appearance:none;border:1px solid rgba(255,255,255,.55);background:rgba(250,252,252,.9);color:#1C2A2E;border-radius:999px;padding:8px 14px;font-size:.88rem;font-weight:600;min-height:40px;cursor:pointer}
+.feelrow button.pop{animation:pop .45s ease}
+@keyframes pop{40%{transform:scale(1.12);background:#F6D9C6}}
+#exploreGuide{display:none;position:absolute;left:50%;bottom:22px;transform:translateX(-50%);z-index:4;background:rgba(20,30,33,.78);color:#F1F5F5;border-radius:14px;padding:8px 14px;font-size:.82rem;text-align:center;flex-direction:column;gap:2px;transition:opacity 1.2s;white-space:nowrap}
+#vr.explore #exploreGuide{display:flex}
+#vr.explore #feelBar,#vr.explore .jump,#vr.explore #subs,#vr.explore #bubbles,#vr.explore #menuBtn{display:none}
+#vr.explore #exploreGuide.fade{opacity:.25}
 #bubbles{position:absolute;right:10px;top:112px;z-index:4;display:flex;flex-direction:column;align-items:flex-end;gap:6px;max-width:68%;pointer-events:none}
 .bub{background:#8DE055;color:#10220A;border-radius:14px 14px 4px 14px;padding:6px 10px;font-size:.85rem;line-height:1.45;box-shadow:0 2px 6px rgba(0,0,0,.25);animation:pop .25s ease}
 .bub small{display:block;font-size:.68rem;opacity:.7;text-align:right}
 @keyframes pop{from{transform:scale(.8);opacity:0}}
+.feelsum{display:flex;flex-wrap:wrap;gap:8px}
+.feelsum .tag{background:#F4E3D7;color:#5A3A2A;border-radius:999px;padding:6px 12px;font-weight:600;font-size:.92rem}
+.feelsum .tag small{color:#8A6A5A;font-weight:400;margin-left:4px}
+.subq{margin:8px 0 0;font-size:1.02rem}
 .mythoughts{display:flex;flex-direction:column;align-items:flex-start;gap:6px}
 .mythoughts .bub{border-radius:14px 14px 14px 4px;font-size:.92rem;animation:none}
 #story{position:absolute;inset:0;z-index:6;background:#121A1C;display:none;flex-direction:column;align-items:center;justify-content:center;gap:18px;padding:24px 16px}
@@ -247,10 +259,11 @@ ol.safety b{display:block}
     <ul class="steps" aria-hidden="true"><li class="on"></li><li class="on"></li><li></li><li></li><li></li></ul>
     <div class="stepname">2 / 5　浮かんだ言葉を残す</div>
     <h2 id="h-reflect">佐藤さんの目線で、どんな気持ちになりましたか？</h2>
-    <div class="card"><h3>体験中のあなたのつぶやき</h3><div class="mythoughts" id="reflectThoughts"></div></div>
+    <div class="card"><h3 id="reflectLead">体験の中で、こんな気持ちが浮かんでいましたね</h3><div class="feelsum" id="reflectThoughts"></div></div>
+    <h3 class="subq">その他に、感じたことや考えたことはありますか？</h3>
     <p class="note">当てはまるものをタップしてください（いくつでも）。うまく言葉にならなくても大丈夫です。</p>
     <div class="chips" id="emoChips"></div>
-    <label for="emoMemo" class="note">いま振り返って、つけ足したい言葉（任意）</label>
+    <label for="emoMemo" class="note">自分の言葉で（任意）</label>
     <textarea id="emoMemo" placeholder="例：なんで誰もこっちを見ないの"></textarea>
     <button class="btn ghost" type="button" data-story-only style="align-self:flex-start;min-height:40px;padding:8px 14px">佐藤さんの物語を読み返す</button>
     <div class="row">
@@ -318,6 +331,11 @@ ol.safety b{display:block}
     <div class="card">
       <h3>実際の場面に出会ったら、ここで振り返りましょう</h3>
       <p class="note">人工呼吸器の利用者さんを訪問したとき、今日のことを思い出してみてください。そのあとでホームの「わたしの振り返り記録」から振り返ると、この体験があなた自身の経験とつながります。何か月先になってもかまいません。</p>
+    </div>
+    <div class="card">
+      <h3>療養環境を、佐藤さんの目線で見てみる</h3>
+      <p class="note">言葉のない、音だけの部屋です。スマホを動かすと、寝たまま見える景色を見回せます（指でなぞっても動きます）。</p>
+      <button class="btn sub" type="button" id="startExplore">療養環境を見てみる</button>
     </div>
     <div class="row">
       <button class="btn sub" type="button" id="toReport">受講レポートを作る</button>
@@ -730,11 +748,11 @@ ol.safety b{display:block}
     <div id="speech"></div>
   </div>
   <div id="bubbles" aria-live="polite" aria-label="あなたのつぶやき"></div>
-  <form id="thinkForm" autocomplete="off">
-    <label for="thinkInput" class="sr">いま浮かんだ言葉</label>
-    <input type="text" id="thinkInput" placeholder="いま頭に浮かんだ言葉を、そのまま" enterkeyhint="send">
-    <button type="submit">送る</button>
-  </form>
+  <div id="feelBar" role="group" aria-label="いまの気持ちをタップ">
+    <span class="feelq">いま、どんな気持ち？　タップで残せます</span>
+    <div class="feelrow" id="feelRow"></div>
+  </div>
+  <div id="exploreGuide" aria-live="polite"><b>療養環境を見てみる</b><span id="exploreHow">指でなぞって見回せます</span></div>
   <div class="jump" role="group" aria-label="視線を移す">
     <button type="button" data-look="ceiling">正面（天井）</button>
     <button type="button" data-look="vent">目を左へ（呼吸器）</button>
@@ -828,6 +846,10 @@ const THEMES = [
       ['「大丈夫です」と言われたとき','何が起きてたの？ 本当に、もう大丈夫なの？'],
       ['扉が閉まったあと','行ってしまった。私は、ここにいるのに。']
     ],
+    feel:{
+      bad:['怖い','苦しい','何が起きてるの？','こっちを見て','気づいて','置いていかれた','早く止めて','妻が心配','申し訳ない','何も言えない'],
+      good:['ほっとした','見てもらえた','伝わった','落ち着いた','うれしい','まだ不安','ゆっくりでいい','妻も安心してる']
+    },
     emotions:['声が出せない怖さ','何が起きているか分からない不安','機械のほうが大事にされている寂しさ','息苦しさ','置いていかれた孤独','家族に申し訳ない気持ち','看護師の焦りも分かる','うまく言葉にならない'],
     actions:['目を合わせて名前を呼ぶ','自分が誰かを名乗る','何が起きているか伝えてから処置する','処置の前に、顔と胸の動きを見る','文字盤やまばたきで気持ちを聞く','家族にも声をかける','帰る前に「大丈夫」の理由を伝える'],
     safety:[
@@ -1020,13 +1042,21 @@ function makeChips(box, items, {max = 99, onChange} = {}){
 let emoSel, actSel;
 function thoughtsHTML(list, sceneName){
   const xs = (list || []).filter(x => !sceneName || x.scene === sceneName);
-  if(!xs.length) return '<p class="note">体験中の入力はありませんでした。下で選んだり、書いたりできます。</p>';
+  if(!xs.length) return '<p class="note">体験中に選んだ気持ちはありませんでした。</p>';
   return xs.map(x => `<div class="bub">${esc(x.text)}<small>${x.scene === 'good' ? '2回目' : '1回目'}　${fmtSec(x.t)}</small></div>`).join('');
 }
 function canGoDeclare(){ $('#toDeclare').disabled = !((emoSel && emoSel.size) || $('#emoMemo').value.trim() || (draft.thoughts || []).some(x => x.scene === 'bad')); }
+function feelSummary(list, sceneName){
+  const m = new Map();
+  (list || []).filter(x => x.scene === sceneName).forEach(x => m.set(x.text, (m.get(x.text) || 0) + 1));
+  return m;
+}
 function openReflect(){
   emoSel = makeChips($('#emoChips'), theme.emotions, {onChange: canGoDeclare});
-  $('#reflectThoughts').innerHTML = thoughtsHTML(draft.thoughts, 'bad');
+  const m = feelSummary(draft.thoughts, 'bad');
+  $('#reflectLead').textContent = m.size ? '体験の中で、こんな気持ちが浮かんでいましたね' : '体験中に選んだ気持ちはありませんでした';
+  $('#reflectThoughts').innerHTML = m.size ? [...m].map(([t, n]) => `<span class="tag">${esc(t)}${n > 1 ? `<small>×${n}</small>` : ''}</span>`).join('')
+    : '<p class="note">言葉にしにくい体験だったかもしれません。下から選んでも、書いてもかまいません。</p>';
   $('#emoMemo').value = ''; canGoDeclare();
   go('reflect');
 }
@@ -1066,7 +1096,7 @@ function renderSave(){
   recs.unshift(draft); saveRecords(recs);
   $('#saveSummary').innerHTML = `
     <small class="note">${fmtDate(new Date(draft.date))}　${draft.themeTitle}</small>
-    <h3>体験中のつぶやき</h3><div class="mythoughts">${thoughtsHTML(draft.thoughts)}</div>
+    <h3>体験中に浮かんだ気持ち</h3><div class="mythoughts">${thoughtsHTML(draft.thoughts)}</div>
     ${draft.emotions.length ? `<h3>感じたこと</h3><p>${esc(draft.emotions.join('、'))}</p>` : ''}
     ${draft.memo ? `<p class="quote voice">${esc(draft.memo)}</p>` : ''}
     <h3>次の訪問で最初にすること</h3><p class="quote">${esc(declText(draft))}</p>
@@ -1126,7 +1156,7 @@ function openRevisit(themeId){
   currentRecId = r.id; theme = THEMES.find(t => t.id === themeId) || THEMES[0];
   const history = rs.flatMap(x => revisitsOf(x).map(v => ({v, decl: declText(x)}))).sort((a,b) => b.v.date.localeCompare(a.v.date));
   $('#revPast').innerHTML = `<small class="note">学習 ${rs.length}回　最新：${fmtDate(new Date(r.date))}</small>
-    <h3>体験中のつぶやき</h3><div class="mythoughts">${thoughtsHTML(r.thoughts)}</div>
+    <h3>体験中に浮かんだ気持ち</h3><div class="mythoughts">${thoughtsHTML(r.thoughts)}</div>
     ${r.emotions.length ? `<h3>感じたこと</h3><p>${esc(r.emotions.join('、'))}</p>` : ''}${r.memo?`<p class="quote voice">${esc(r.memo)}</p>`:''}
     <h3>決めたこと</h3><p class="quote">${esc(declText(r))}</p>
     ${history.length ? `<h3>これまでの振り返り</h3>${history.map(h => `<p class="note">${fmtDate(new Date(h.v.date))}：${esc(h.v.result)}${h.v.insight?'　「'+esc(h.v.insight)+'」':''}</p>`).join('')}` : ''}`;
@@ -1204,7 +1234,7 @@ $('#makeReport').addEventListener('click', async () => {
   ctx.fillStyle = '#56676B'; ctx.font = `400 24px ${F}`;
   ctx.fillText('学習補助用の教材です。実際のケアは主治医の指示と事業所の手順を優先します。', 70, 1390);
   reportText = [`【受講完了＆気づきレポート】`, `受講日：${fmtDate(new Date(r.date))}`, `テーマ：${r.themeTitle}`, name?`氏名：${name}`:'', office?`事業所：${office}`:'',
-    (r.thoughts||[]).length?`体験中のつぶやき：${r.thoughts.map(x=>x.text).join('／')}`:'', r.emotions.length?`感じたこと：${r.emotions.join('、')}`:'', r.memo?`メモ：${r.memo}`:'', `次の訪問で最初にすること：${declText(r)}`,
+    (r.thoughts||[]).length?`体験中に浮かんだ気持ち：${r.thoughts.map(x=>x.text).join('／')}`:'', r.emotions.length?`感じたこと：${r.emotions.join('、')}`:'', r.memo?`メモ：${r.memo}`:'', `次の訪問で最初にすること：${declText(r)}`,
     r.revisit?`臨床後の振り返り：${r.revisit.result}${r.revisit.insight?'／'+r.revisit.insight:''}`:''].filter(Boolean).join('\n');
   c.toBlob(b => { reportBlob = b; const img = $('#reportImg'); img.src = URL.createObjectURL(b); img.hidden = false; $('#repActions').hidden = false; }, 'image/png');
 });
@@ -1329,7 +1359,7 @@ function buildWorld(){
           const nrm = toward.clone().multiplyScalar(Math.cos(L)).sub(sky.clone().multiplyScalar(Math.sin(L)));
           const xax = new THREE.Vector3().crossVectors(up, nrm);
           m.quaternion.setFromRotationMatrix(new THREE.Matrix4().makeBasis(xax, up, nrm));
-          m.position.set(sp.x, sp.y, FLOOR).addScaledVector(up, h / 2);
+          m.position.set(sp.x, sp.y, FLOOR + (sp.sink || 0)).addScaledVector(up, h / 2);   /* sink：しゃがんで目線を下げる */
           /* 足元の影 */
           const sh = new THREE.Mesh(new THREE.PlaneGeometry(w * 0.9, w * 0.5), new THREE.MeshBasicMaterial({map: shadowTex, transparent:true, opacity: sp.static ? .55 : 0, depthWrite:false}));
           sh.position.set(sp.x, sp.y, FLOOR - 0.01); sh.rotation.set(Math.PI, 0, Math.atan2(toward.y, toward.x) + Math.PI / 2);
@@ -1374,7 +1404,7 @@ const SPRITES = [
   {id:'wifeSmile', type:'stand', x:0.4,  y:-4.49, h:4.5},
   {id:'sideNurse', type:'stand', x:2.7,  y:-2.0, h:4.7},
   {id:'overBad',   type:'stand', x:-2.5, y:-0.5, h:4.7, lean:4},
-  {id:'overGood',  type:'stand', x:-2.45, y:-0.2, h:4.7, lean:18},
+  {id:'overGood',  type:'stand', x:-1.85, y:-0.2, h:4.7, lean:10, sink:0.8},
   {id:'board',     type:'bill',  yaw:4, pitch:14, d:1.35, w:0.72}
 ];
 const ENTER = {sideNurse:[-0.9, 0, 1], overBad:[-0.6, 0, 1], overGood:[-0.5, 0, 1], board:[0, -0.5, 0.94]};
@@ -1557,14 +1587,19 @@ function renderBubbles(){
   const list = (draft && draft.thoughts || []).filter(x => x.scene === scene).slice(-4);
   $('#bubbles').innerHTML = list.map(x => `<div class="bub">${esc(x.text)}<small>${fmtSec(x.t)}</small></div>`).join('');
 }
-$('#thinkForm').addEventListener('submit', e => {
-  e.preventDefault();
-  const v = $('#thinkInput').value.trim(); if(!v || !draft) return;
+/* 体験中は文字を打たず、気持ちをタップで残す（キーボードで画面が隠れないように） */
+function renderFeelRow(){
+  const list = (theme.feel && theme.feel[scene]) || [];
+  $('#feelRow').innerHTML = list.map(f => `<button type="button">${esc(f)}</button>`).join('');
+  $('#feelRow').scrollLeft = 0;
+}
+$('#feelRow').addEventListener('click', e => {
+  const b = e.target.closest('button'); if(!b || !draft) return;
   draft.thoughts = draft.thoughts || [];
-  draft.thoughts.push({scene, t: sceneStart ? (performance.now() - sceneStart) / 1000 : 0, text: v});
-  $('#thinkInput').value = ''; renderBubbles();
+  draft.thoughts.push({scene, t: sceneStart ? (performance.now() - sceneStart) / 1000 : 0, text: b.textContent});
+  b.classList.remove('pop'); void b.offsetWidth; b.classList.add('pop'); renderBubbles();
 });
-$('#thinkInput').addEventListener('pointerdown', e => e.stopPropagation());
+$('#feelBar').addEventListener('pointerdown', e => e.stopPropagation());
 function clearScene(){
   timers.forEach(clearTimeout); timers = []; clearTimeout(innerTimer); hush();
   alarmOff(); for(const id in figs){ if(id !== 'alarmLight' && !figs[id].static) showFig(id, false); }
@@ -1609,8 +1644,8 @@ async function startVR(which){
   scene = which; const S = theme[which];
   clearScene(); $('#vrEnd').classList.remove('on');
   vr.classList.add('on'); document.body.style.overflow = 'hidden';
-  $('#vrPhase').textContent = S.label;
-  initAudio(); warmVoice(); enableGyro();
+  $('#vrPhase').textContent = S.label; $('#stopBtn').textContent = '体験を止める'; vr.classList.remove('explore');
+  initAudio(); warmVoice();
   try{ await buildWorld(); }catch(e){ flatFallback(); }
   applyViewRange(theme.view);
   layout(); view.yaw = view.ty = 0; view.pitch = view.tp = 0; gyroBase = null;
@@ -1622,7 +1657,7 @@ async function startVR(which){
   if(scene !== which || !vr.classList.contains('on')) return;
   const fade = $('#fade'); fade.classList.remove('off'); requestAnimationFrame(() => requestAnimationFrame(() => fade.classList.add('off')));
   breathing(); ticking();
-  sceneStart = performance.now(); renderBubbles();
+  sceneStart = performance.now(); renderBubbles(); renderFeelRow();
   runCues(S.cues, which);
 }
 let storyResolve = null, storyTimer = 0, storyIdx = 0;
@@ -1697,15 +1732,33 @@ function endScene(){
 }
 function closeVR(){
   clearInterval(tickTimer); breathT0 = 0;
-  menu(false); storyOnly = false; $('#bubbles').innerHTML = ''; $('#thinkInput').blur();
+  menu(false); storyOnly = false; $('#bubbles').innerHTML = ''; vr.classList.remove('explore');
   clearTimeout(storyTimer); $('#story').classList.remove('on'); storyResolve = null;
   clearScene(); clearInterval(breathTimer); cancelAnimationFrame(raf);
   window.removeEventListener('deviceorientation', onOrient);
   vr.classList.remove('on'); $('#vrEnd').classList.remove('on'); document.body.style.overflow = '';
 }
+/* 療養環境を見てみる：台詞も字幕もなく、呼吸器と時計の音だけ。スマホの傾きで見回す */
+async function startExplore(){
+  enableGyro();                       /* iPhone の許可ダイアログは、タップの直後に出す必要がある */
+  scene = 'explore'; clearScene(); $('#vrEnd').classList.remove('on');
+  vr.classList.add('on', 'explore'); document.body.style.overflow = 'hidden';
+  $('#vrPhase').textContent = '療養環境'; $('#stopBtn').textContent = '戻る';
+  $('#exploreHow').textContent = matchMedia('(pointer:coarse)').matches ? 'スマホを動かすと見回せます（指でも動かせます）' : '指やマウスでなぞって見回せます';
+  $('#exploreGuide').classList.remove('fade'); timers.push(setTimeout(() => $('#exploreGuide').classList.add('fade'), 5000));
+  initAudio();
+  try{ await buildWorld(); }catch(e){ flatFallback(); }
+  applyViewRange(theme.view);
+  layout(); view.yaw = view.ty = 0; view.pitch = view.tp = 0; gyroBase = null;
+  cancelAnimationFrame(raf); raf = requestAnimationFrame(frame);
+  const fade = $('#fade'); fade.classList.remove('off'); requestAnimationFrame(() => requestAnimationFrame(() => fade.classList.add('off')));
+  clearInterval(breathTimer); clearInterval(tickTimer); breathing(); ticking();
+}
+$('#startExplore').addEventListener('click', startExplore);
 $('#vrReplay').addEventListener('click', () => { startVR.skipStory = true; startVR(scene); });
 $('#vrNext').addEventListener('click', () => { const s = scene; closeVR(); if(s === 'bad') openReflect(); else openCard(); });
 $('#stopBtn').addEventListener('click', () => {
+  if(scene === 'explore'){ closeVR(); $('#stopBtn').textContent = '体験を止める'; return; }
   if($('#story').classList.contains('on')){ finishStory(); return; }
   menu(false);
   clearScene(); $('#fade').classList.remove('off');
