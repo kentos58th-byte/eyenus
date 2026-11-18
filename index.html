@@ -169,7 +169,7 @@ ol.safety b{display:block}
 #vr.alarm .vrtag.alarm{display:inline-block}
 .vrbtn{appearance:none;border:1px solid rgba(232,238,238,.4);background:rgba(14,21,23,.72);color:#E8EEEE;border-radius:999px;padding:8px 14px;font-size:.85rem;cursor:pointer;min-height:40px}
 
-#subs{position:absolute;left:0;right:0;bottom:150px;display:flex;flex-direction:column;align-items:center;gap:10px;padding:0 16px;pointer-events:none;z-index:3}
+#subs{position:absolute;left:0;right:124px;bottom:150px;display:flex;flex-direction:column;align-items:center;gap:10px;padding:0 16px;pointer-events:none;z-index:3}
 #inner{font-family:var(--voice);font-weight:600;font-size:1.35rem;color:#fff;text-align:center;text-shadow:0 2px 10px rgba(0,0,0,.85),0 0 2px #000;max-width:540px;opacity:0;transition:opacity .5s;line-height:1.6}
 #inner.on{opacity:1}
 #speech{background:rgba(250,252,252,.94);color:var(--ink);border-radius:12px;padding:10px 14px;font-size:1rem;max-width:540px;opacity:0;transition:opacity .4s;line-height:1.6}
@@ -191,6 +191,11 @@ ol.safety b{display:block}
 #prologGuide p{margin:6px 0}
 #prologGuide small{color:#C9D6D6}
 .ptime{font-size:.9rem}
+.pstep{margin:0 0 4px!important;font-size:.72rem;color:#8FD1C2;font-weight:700;letter-spacing:.08em}
+.parrow{display:inline-block;color:#FFB48C;animation:nudge2 1s ease-in-out infinite}
+@keyframes nudge2{50%{transform:translateX(5px)}}
+.ptry{color:#FFD9BD;font-weight:700}
+#prolog.guide .pcard{margin-right:118px}
 .pbar{height:6px;border-radius:3px;background:rgba(255,255,255,.18);overflow:hidden;margin:4px 0 10px}
 .pbar i{display:block;height:100%;width:100%;background:#8FD1C2;transform-origin:left;transition:transform linear}
 .swipe{position:relative;height:34px;margin:2px auto 4px;width:150px}
@@ -201,18 +206,23 @@ ol.safety b{display:block}
 #alarmBanner{position:absolute;left:50%;top:38%;transform:translate(-50%,-50%) scale(.96);z-index:6;background:rgba(150,40,30,.88);color:#fff;font-weight:700;font-size:1.25rem;padding:12px 22px;border-radius:999px;opacity:0;pointer-events:none;transition:opacity .4s,transform .4s;white-space:nowrap}
 #alarmBanner.on{opacity:1;transform:translate(-50%,-50%) scale(1);animation:apulse 1.5s ease-in-out infinite}
 @keyframes apulse{50%{box-shadow:0 0 0 12px rgba(220,80,60,.25)}}
-#feelBar{position:absolute;left:0;right:0;bottom:78px;z-index:4;padding:0 10px}
-.feelq{display:inline-block;color:#F1F5F5;background:rgba(20,30,33,.7);border-radius:999px;padding:3px 10px;font-size:.76rem;margin:0 0 5px}
-.feelrow{display:flex;gap:6px;overflow-x:auto;padding-bottom:4px;scrollbar-width:none;-webkit-overflow-scrolling:touch}
+#feelBar{position:absolute;right:8px;top:92px;bottom:150px;width:112px;z-index:4;display:flex;flex-direction:column;gap:6px;padding:8px 6px;background:rgba(20,30,33,.62);border:2px solid rgba(255,196,150,.85);border-radius:16px;box-shadow:0 4px 16px rgba(0,0,0,.3);transition:box-shadow .3s}
+.feelq{display:block;text-align:center;color:#FFD9BD;font-weight:700;font-size:.8rem;line-height:1.35}
+.feelq::before{content:"♡ ";color:#FF9F80}
+#feelBar.ask{animation:ask 1s ease-in-out 4}
+#feelBar.ask .feelq{color:#fff}
+@keyframes ask{50%{box-shadow:0 0 0 6px rgba(255,170,120,.55),0 4px 16px rgba(0,0,0,.3);transform:scale(1.03)}}
+#feelBar.practice{box-shadow:0 0 0 4px rgba(255,170,120,.7);animation:ask 1s ease-in-out infinite}
+.feelrow{flex:1;display:flex;flex-direction:column;gap:6px;overflow-y:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch}
 .feelrow::-webkit-scrollbar{display:none}
-.feelrow button{flex:0 0 auto;appearance:none;border:1px solid rgba(255,255,255,.55);background:rgba(250,252,252,.9);color:#1C2A2E;border-radius:999px;padding:8px 14px;font-size:.88rem;font-weight:600;min-height:40px;cursor:pointer}
+.feelrow button{flex:0 0 auto;appearance:none;border:1px solid rgba(255,255,255,.55);background:rgba(250,252,252,.94);color:#1C2A2E;border-radius:12px;padding:7px 6px;font-size:.8rem;font-weight:600;min-height:40px;line-height:1.3;cursor:pointer}
 .feelrow button.pop{animation:pop .45s ease}
 @keyframes pop{40%{transform:scale(1.12);background:#F6D9C6}}
 #exploreGuide{display:none;position:absolute;left:50%;bottom:22px;transform:translateX(-50%);z-index:4;background:rgba(20,30,33,.78);color:#F1F5F5;border-radius:14px;padding:8px 14px;font-size:.82rem;text-align:center;flex-direction:column;gap:2px;transition:opacity 1.2s;white-space:nowrap}
 #vr.explore #exploreGuide{display:flex}
 #vr.explore #feelBar,#vr.explore .jump,#vr.explore #subs,#vr.explore #bubbles,#vr.explore #menuBtn{display:none}
 #vr.explore #exploreGuide.fade{opacity:.25}
-#bubbles{position:absolute;right:10px;top:112px;z-index:4;display:flex;flex-direction:column;align-items:flex-end;gap:6px;max-width:68%;pointer-events:none}
+#bubbles{position:absolute;left:10px;top:112px;z-index:4;display:flex;flex-direction:column;align-items:flex-start;gap:6px;max-width:52%;pointer-events:none}
 .bub{background:#8DE055;color:#10220A;border-radius:14px 14px 4px 14px;padding:6px 10px;font-size:.85rem;line-height:1.45;box-shadow:0 2px 6px rgba(0,0,0,.25);animation:pop .25s ease}
 .bub small{display:block;font-size:.68rem;opacity:.7;text-align:right}
 @keyframes pop{from{transform:scale(.8);opacity:0}}
@@ -235,6 +245,13 @@ ol.safety b{display:block}
 #vr.alarm:not(.calm) #vignette{background:radial-gradient(ellipse at 50% 45%,transparent 26%,rgba(5,10,12,.65) 66%,rgba(5,10,12,.92) 100%)}
 #vrEnd{position:absolute;inset:0;display:none;align-items:center;justify-content:center;padding:24px;background:rgba(14,21,23,.88);z-index:5}
 #vrEnd.on{display:flex}
+.nextbig{position:relative;display:flex;flex-direction:column;align-items:flex-start;gap:2px;width:100%;min-height:76px;padding:12px 52px 12px 18px;border-radius:16px;text-align:left;box-shadow:0 6px 18px rgba(44,113,110,.35)}
+.nextbig small{font-size:.78rem;opacity:.85;font-weight:600}
+.nextbig b{font-size:1.15rem}
+.nextbig .arr{position:absolute;right:18px;top:50%;transform:translateY(-50%);font-size:1.5rem;animation:nudge 1.4s ease-in-out infinite}
+@keyframes nudge{50%{transform:translate(5px,-50%)}}
+.subacts{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px}
+.subacts .btn{min-height:44px;padding:6px 4px;font-size:.78rem;line-height:1.3}
 #vrEnd .box{max-width:460px;background:var(--surface);border-radius:16px;padding:22px;display:flex;flex-direction:column;gap:14px}
 
 @media (prefers-reduced-motion:reduce){
@@ -848,18 +865,24 @@ ol.safety b{display:block}
     <div class="pcard" id="prologCard">
       <p id="prologText"></p>
       <div id="prologGuide" hidden>
+        <p class="pstep">操作 1 / 2</p>
         <div class="swipe" aria-hidden="true"><i></i></div>
         <p><b>画面を指でなぞると、目を動かして見回せます</b><br><small>パソコンはマウスでドラッグ。下のボタンでも見る方向を変えられます。</small></p>
-        <p><small>体験中に浮かんだ気持ちは、下に並ぶボタンをタップして残せます。</small></p>
         <p class="ptime">少し見回してみましょう　あと <b id="prologSec">15</b> 秒</p>
         <div class="pbar"><i id="prologBar"></i></div>
+      </div>
+      <div id="feelGuide" hidden>
+        <p class="pstep">操作 2 / 2</p>
+        <p><b>見回しながら、気持ちが動いたら<br>右の「いまの気持ち」をタップ <span class="parrow">→</span></b></p>
+        <p><small>体験中、何度押しても大丈夫です。押した気持ちは、あとの振り返りで使います。</small></p>
+        <p id="feelGuideMsg" class="ptry">試しに、どれか1つ押してみましょう</p>
       </div>
       <button type="button" class="pbtn" id="prologBtn">次へ</button>
     </div>
   </div>
   <div id="alarmBanner" aria-live="assertive">アラームが鳴っている</div>
   <div id="feelBar" role="group" aria-label="いまの気持ちをタップ">
-    <span class="feelq">いま、どんな気持ち？　タップで残せます</span>
+    <span class="feelq" id="feelQ">いまの気持ち</span>
     <div class="feelrow" id="feelRow"></div>
   </div>
   <div id="exploreGuide" aria-live="polite"><b>療養環境を見てみる</b><span id="exploreHow">指でなぞって見回せます</span></div>
@@ -880,8 +903,12 @@ ol.safety b{display:block}
   </div>
   <div id="vrEnd"><div class="box">
     <p id="vrEndText"></p>
-    <div class="row"><button class="btn ghost" type="button" id="vrReplay">この場面をもう一度</button><button class="btn" type="button" id="vrNext"></button></div>
-    <div class="row"><button class="btn ghost" type="button" id="vrStory">物語を読み返す</button><button class="btn ghost" type="button" id="vrHome">ホームに戻る</button></div>
+    <button class="btn nextbig" type="button" id="vrNext"><small>次のステップへ</small><b id="vrNextLabel"></b><span class="arr" aria-hidden="true">→</span></button>
+    <div class="subacts">
+      <button class="btn ghost" type="button" id="vrReplay">この場面をもう一度</button>
+      <button class="btn ghost" type="button" id="vrStory">物語を読み返す</button>
+      <button class="btn ghost" type="button" id="vrHome">ホームに戻る</button>
+    </div>
   </div></div>
 </div>
 
@@ -916,37 +943,41 @@ const THEMES = [
     bad:{ label:'1 / 5　よくある場面',
       intro:'今日は、訪問看護の日。\n佐藤さんは、ベッドの上で\n看護師が来るのを待っています。',
       cues:[
+      {t:3, ask:true},
       {t:4.5, sfx:'doorOpen'},
       {t:6, sfx:'steps'},
       {t:9, show:'sideNurse', hint:'door', speech:['看護師','あ、鳴ってますね。']},
       {t:13, hide:'sideNurse', show:'overBad', look:'vent'},
       {t:16.5, speech:['看護師','えーと、回路……ああ、ここ外れてたか。']},
       {t:20.5, alarm:false, speech:['看護師','はい、つけました。大丈夫です。']},
+      {t:23.5, ask:true},
       {t:26, speech:['看護師','次の訪問があるので、また来週来ますね。奥さん、何かあったら連絡ください。']},
       {t:32.5, hide:'overBad', sfx:'leave', speech:null},
+      {t:35.5, ask:true},
       {t:37, hint:'family', speech:['妻','……あの、さっきのは……']},
-      {t:41, speech:null},
+      {t:41, speech:null, ask:true},
       {t:45, end:true}
     ],
       endText:'この看護師も、次の訪問に追われていました。忙しいとき、誰にでも起こりうる場面です。天井を見上げながら、あなたの頭の中にはどんな言葉が浮かびましたか？',
       endNext:'浮かんだ言葉を残す'
     },
     good:{ label:'4 / 5　もう一度、同じ場面',
-      intro:'もう一度、同じ日の同じ場面です。\n今度は、関わり方の違う看護師が来ます。',
+      intro:'もう一度、同じ日の同じ場面です。\n今度は、関わり方の違う看護師が来ます。\n\n気持ちが動いたら、右のボタンで残してください。',
       cues:[
       {t:0.6, sfx:'doorOpen'},
       {t:1.2, sfx:'steps'},
       {t:3, show:'sideNurse', hint:'door', speech:['看護師','佐藤さん、訪問看護の田中です。今、行きますね。']},
       {t:7.5, hide:'sideNurse', show:'overGood', glare:false, calm:true, speech:['看護師','呼吸器の音が鳴りましたね。先に、佐藤さんの顔と胸を見せてください。']},
+      {t:12.5, ask:true},
       {t:14.5, speech:['看護師','胸は動いていますね。管が外れていないか、一緒に確かめます。']},
       {t:20.5, alarm:false, speech:['看護師','ここが少し外れていました。つなぎ直したので、もう空気が入っていますよ。']},
       {t:27, show:'board', speech:['看護師','苦しかったですね。今は楽になりましたか？ 楽なら、まばたき1回で教えてください。']},
-      {t:34, blink:true, speech:null},
+      {t:34, blink:true, speech:null, ask:true},
       {t:37, speech:['看護師','ありがとうございます。安心しました。']},
       {t:41.5, hide:'board', speech:['看護師','そういえば昨日の試合、勝ちましたね。ラジオ、つけたままにしておきますね。']},
       {t:48, hint:'family', speech:['看護師','奥さんも驚かれましたよね。次に鳴ったときの確かめ方を、一緒に見ておきましょうか。']},
       {t:55, hide:'wife', show:'wifeSmile', speech:['妻','はい……ありがとうございます。お願いします。']},
-      {t:59.5, speech:null},
+      {t:59.5, speech:null, ask:true},
       {t:64, end:true}
     ],
       endText:'同じアラームでも、関わり方で佐藤さんの体験はここまで変わります。最後に、ひとりの訪問でも安全を守るための確認を見ておきましょう。',
@@ -1734,8 +1765,10 @@ function speak(who, text){
     if(who === '妻'){ u.rate = 0.9; u.pitch = 0.85; }
     else { u.rate = busy ? 1.3 : 1.05; u.pitch = busy ? 1.0 : 1.1; }
     u.volume = 0.9;
+    const t0 = performance.now();
     const done = () => { if(!talking) return; talking = false; clearTimeout(talkGuard);
-      const shown = $('#speech').innerHTML; timers.push(setTimeout(() => { if(!talking && $('#speech').innerHTML === shown) $('#speech').classList.remove('on'); }, 1600)); };
+      const wait = Math.max(1600, text.length * 170 - (performance.now() - t0));   /* 読み終えられる時間は字幕を残す */
+      const shown = $('#speech').innerHTML; timers.push(setTimeout(() => { if(!talking && $('#speech').innerHTML === shown) $('#speech').classList.remove('on'); }, wait)); };
     u.onend = done; u.onerror = done;
     talking = true; clearTimeout(talkGuard);
     talkGuard = setTimeout(done, 2500 + text.length * 260 / u.rate);   /* 終了通知が来ない端末への保険 */
@@ -1764,11 +1797,19 @@ function renderFeelRow(){
 }
 $('#feelRow').addEventListener('click', e => {
   const b = e.target.closest('button'); if(!b || !draft) return;
+  if(prologPhase === 'feel'){ b.classList.remove('pop'); void b.offsetWidth; b.classList.add('pop'); practiceTapped(b.textContent); return; }
   draft.thoughts = draft.thoughts || [];
   draft.thoughts.push({scene, t: sceneStart ? (performance.now() - sceneStart) / 1000 : 0, text: b.textContent});
   b.classList.remove('pop'); void b.offsetWidth; b.classList.add('pop'); renderBubbles();
 });
 $('#feelBar').addEventListener('pointerdown', e => e.stopPropagation());
+/* 気持ちを残すよう、ときどき促す */
+let askTimer = 0;
+function askFeel(){
+  const fb = $('#feelBar'); fb.classList.remove('ask'); void fb.offsetWidth; fb.classList.add('ask');
+  $('#feelQ').textContent = 'いま、どんな気持ち？';
+  clearTimeout(askTimer); askTimer = setTimeout(() => { fb.classList.remove('ask'); $('#feelQ').textContent = 'いまの気持ち'; }, 4200);
+}
 function clearScene(){
   timers.forEach(clearTimeout); timers = []; clearTimeout(innerTimer); hush();
   alarmOff(); for(const id in figs){ if(id !== 'alarmLight' && !figs[id].static) showFig(id, false); }
@@ -1795,21 +1836,28 @@ function applyCue(c){
   if(c.sfx === 'leave'){ stepsAway(scene === 'bad'); timers.push(setTimeout(() => slideDoor(false), 1700)); }
   if(c.sfx === 'steps') steps(scene === 'bad');
   if('calm' in c) vr.classList.toggle('calm', c.calm);
+  if(c.ask) askFeel();
   if(c.blink){ const b = $('#blink'); b.classList.remove('go'); void b.offsetWidth; b.classList.add('go'); }
   if(c.end) endScene();
 }
 /* ===== 体験の入り口：今どこにいるか → 操作の練習 → アラーム ===== */
-let prologTok = 0, prologNext = null, practiced = false;
+let prologTok = 0, prologNext = null, practiced = false, prologPhase = '';
+function practiceTapped(txt){
+  $('#feelGuideMsg').innerHTML = `「${esc(txt)}」 その調子です！<br>体験中も、気持ちが動いたらいつでも押してください。`;
+  $('#bubbles').innerHTML = `<div class="bub">${esc(txt)}<small>練習</small></div>`;
+  $('#prologBtn').textContent = '始める';
+  timers.push(setTimeout(() => { if(prologPhase === 'feel' && prologNext){ const r = prologNext; prologNext = null; r(); } }, 3500));
+}
 function pwait(ms){ return new Promise(r => { prologNext = r; timers.push(setTimeout(r, ms)); }); }
 $('#prologBtn').addEventListener('click', () => { if(prologNext){ const r = prologNext; prologNext = null; r(); } });
 $('#prolog').addEventListener('pointerdown', e => { if(e.target.closest('.pcard')) e.stopPropagation(); });
-function hideProlog(){ $('#prolog').classList.remove('on', 'guide'); $('#alarmBanner').classList.remove('on'); prologNext = null; }
+function hideProlog(){ $('#prolog').classList.remove('on', 'guide'); $('#alarmBanner').classList.remove('on'); prologNext = null; prologPhase = ''; $('#feelBar').classList.remove('practice'); }
 async function prologue(which){
   const tok = ++prologTok, S = theme[which], P = $('#prolog');
   const alive = () => tok === prologTok && scene === which && vr.classList.contains('on');
   applyCue({glare:true});
   /* 1. ストーリーの続きとして、いまの状況を伝える */
-  $('#prologText').textContent = S.intro || ''; $('#prologGuide').hidden = true; $('#prologBtn').textContent = '次へ';
+  $('#prologText').textContent = S.intro || ''; $('#prologGuide').hidden = true; $('#feelGuide').hidden = true; $('#prologBtn').textContent = '次へ';
   P.classList.add('on'); P.classList.remove('guide');
   await pwait(6000); if(!alive()) return false;
   /* 2. 操作のガイドと練習（1回目だけ。15秒） */
@@ -1820,12 +1868,19 @@ async function prologue(which){
     let left = 15; $('#prologSec').textContent = left;
     const iv = setInterval(() => { left = Math.max(0, left - 1); $('#prologSec').textContent = left; }, 1000); timers.push(iv);
     await pwait(15000); clearInterval(iv); if(!alive()) return false;
+    /* 2-2. 気持ちのボタンの練習 */
+    $('#prologGuide').hidden = true; $('#feelGuide').hidden = false; $('#prologBtn').textContent = 'あとで押す';
+    $('#feelGuideMsg').textContent = '試しに、どれか1つ押してみましょう';
+    prologPhase = 'feel'; $('#feelBar').classList.add('practice');
+    await pwait(25000); if(!alive()) return false;
+    prologPhase = ''; $('#feelBar').classList.remove('practice'); $('#feelGuide').hidden = true; $('#bubbles').innerHTML = '';
     practiced = true;
   }
   P.classList.remove('on', 'guide');
   /* 3. アラーム。視点をいったん正面（天井）に戻す */
   setTarget(0, 0); alarmOn();
   const ab = $('#alarmBanner'); ab.classList.add('on');
+  timers.push(setTimeout(() => { if(alive() && autoLook && performance.now() - lastDrag >= 1000){ const [y, p] = LOOKS.vent; setTarget(y, p); } }, 1500));   /* 鳴っている方（呼吸器）へ目を向ける */
   timers.push(setTimeout(() => ab.classList.remove('on'), 3200));
   return alive();
 }
@@ -1946,7 +2001,7 @@ function endScene(){
   const S = theme[scene];
   $('#fade').classList.remove('off');
   timers.push(setTimeout(() => {
-    $('#vrEndText').textContent = S.endText; $('#vrNext').textContent = S.endNext;
+    $('#vrEndText').textContent = S.endText; $('#vrNextLabel').textContent = S.endNext;
     $('#vrEnd').classList.add('on'); $('#vrNext').focus();
   }, 1200));
 }
@@ -1983,7 +2038,7 @@ $('#stopBtn').addEventListener('click', () => {
   menu(false);
   clearScene(); $('#fade').classList.remove('off');
   $('#vrEndText').textContent = '体験を止めました。つらくなったときは、無理をしなくて大丈夫です。続けられそうなら、感じたことを残しておきましょう。';
-  $('#vrNext').textContent = scene === 'bad' ? '浮かんだ言葉を残す' : '安全行動カードへ';
+  $('#vrNextLabel').textContent = scene === 'bad' ? '浮かんだ言葉を残す' : '安全行動カードへ';
   $('#vrEnd').classList.add('on');
 });
 document.addEventListener('keydown', e => { if(e.key === 'Escape' && vr.classList.contains('on') && !$('#vrEnd').classList.contains('on')) $('#stopBtn').click(); });
