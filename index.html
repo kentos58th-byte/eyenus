@@ -919,13 +919,14 @@ const THEMES = [
       {t:4.5, sfx:'doorOpen'},
       {t:6, sfx:'steps'},
       {t:9, show:'sideNurse', hint:'door', speech:['看護師','あ、鳴ってますね。']},
-      {t:13.5, hide:'sideNurse', show:'overBad', speech:['看護師','えーと、回路……ああ、ここ外れてたか。']},
+      {t:13, hide:'sideNurse', show:'overBad', look:'vent'},
+      {t:16.5, speech:['看護師','えーと、回路……ああ、ここ外れてたか。']},
       {t:20.5, alarm:false, speech:['看護師','はい、つけました。大丈夫です。']},
       {t:26, speech:['看護師','次の訪問があるので、また来週来ますね。奥さん、何かあったら連絡ください。']},
       {t:32.5, hide:'overBad', sfx:'leave', speech:null},
       {t:37, hint:'family', speech:['妻','……あの、さっきのは……']},
       {t:41, speech:null},
-      {t:50, end:true}
+      {t:45, end:true}
     ],
       endText:'この看護師も、次の訪問に追われていました。忙しいとき、誰にでも起こりうる場面です。天井を見上げながら、あなたの頭の中にはどんな言葉が浮かびましたか？',
       endNext:'浮かんだ言葉を残す'
@@ -1781,7 +1782,7 @@ function applyCue(c){
   if(c.alarm === false) alarmOff();
   if(c.show) showFig(c.show, true);
   if(c.hide) showFig(c.hide, false);
-  if(c.look){ const [y,p] = LOOKS[c.look]; setTarget(y, p); }
+  if(c.look && autoLook && performance.now() - lastDrag >= 1000){ const [y,p] = LOOKS[c.look]; setTarget(y, p); }
   if(c.hint){ $$('.jump button').forEach(b => b.classList.toggle('hint', b.dataset.look === c.hint)); timers.push(setTimeout(() => $$('.jump button').forEach(b => b.classList.remove('hint')), 6000)); }
   if(c.inner){ const el = $('#inner'); el.textContent = c.inner; el.classList.add('on'); clearTimeout(innerTimer); innerTimer = setTimeout(() => el.classList.remove('on'), 3600); }
   if('speech' in c){
@@ -1837,7 +1838,7 @@ function faceDir(id){
   return [Math.atan2(p.x, -p.z) * 180 / Math.PI, Math.atan2(p.y, Math.hypot(p.x, p.z)) * 180 / Math.PI];
 }
 function lookAtSpeaker(who){
-  if(!autoLook || performance.now() - lastDrag < 1800) return;
+  if(!autoLook || performance.now() - lastDrag < 1000) return;
   const ids = who === '妻' ? ['wifeSmile', 'wife'] : ['overGood', 'overBad', 'sideNurse'];
   const id = ids.find(i => figs[i] && figs[i].target > 0.5); if(!id) return;
   const d = faceDir(id); if(d) setTarget(d[0], d[1] * 0.85);

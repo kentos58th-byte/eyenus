@@ -1,5 +1,5 @@
 /* オフラインでも体験できるように、アプリ本体を端末に保存する。更新したら VERSION を上げる */
-const VERSION = 'ainas-v9';
+const VERSION = 'ainas-v10';
 const CORE = ['./', 'index.html', 'manifest.webmanifest', 'js/three.min.js',
   'img/logo-white.png', 'img/mark.png', 'img/qr.png', 'img/story-1.jpg', 'img/story-2.jpg', 'img/story-3.jpg', 'img/story-4.jpg',
   'icons/icon-192.png', 'icons/icon-512.png', 'icons/apple-touch-icon.png'];
