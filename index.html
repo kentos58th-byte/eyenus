@@ -161,6 +161,25 @@ ol.safety b{display:block}
 @keyframes hint{50%{box-shadow:0 0 0 5px rgba(242,180,143,.25)}}
 
 .sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+#prolog{position:absolute;inset:0;z-index:6;display:none;align-items:center;justify-content:center;pointer-events:none;padding:0 18px}
+#prolog.on{display:flex}
+#prolog.guide{align-items:flex-start;padding-top:64px}
+.pcard{pointer-events:auto;max-width:360px;width:100%;background:rgba(20,30,33,.88);color:#F1F5F5;border-radius:18px;padding:18px 18px 14px;text-align:center;line-height:1.75;box-shadow:0 8px 30px rgba(0,0,0,.35)}
+#prologText{margin:0 0 10px;font-size:1.08rem;font-weight:600;white-space:pre-line}
+#prolog.guide #prologText{display:none}
+#prologGuide p{margin:6px 0}
+#prologGuide small{color:#C9D6D6}
+.ptime{font-size:.9rem}
+.pbar{height:6px;border-radius:3px;background:rgba(255,255,255,.18);overflow:hidden;margin:4px 0 10px}
+.pbar i{display:block;height:100%;width:100%;background:#8FD1C2;transform-origin:left;transition:transform linear}
+.swipe{position:relative;height:34px;margin:2px auto 4px;width:150px}
+.swipe::before{content:"";position:absolute;left:10px;right:10px;top:16px;height:2px;background:rgba(255,255,255,.3);border-radius:1px}
+.swipe i{position:absolute;top:5px;left:0;width:24px;height:24px;border-radius:50%;background:#fff;box-shadow:0 0 0 6px rgba(255,255,255,.25);animation:swipe 2.2s ease-in-out infinite}
+@keyframes swipe{0%,100%{transform:translateX(0)}50%{transform:translateX(126px)}}
+.pbtn{appearance:none;border:0;border-radius:999px;background:var(--accent);color:#fff;font-weight:700;min-height:44px;padding:0 22px;cursor:pointer;font-size:.95rem}
+#alarmBanner{position:absolute;left:50%;top:38%;transform:translate(-50%,-50%) scale(.96);z-index:6;background:rgba(150,40,30,.88);color:#fff;font-weight:700;font-size:1.25rem;padding:12px 22px;border-radius:999px;opacity:0;pointer-events:none;transition:opacity .4s,transform .4s;white-space:nowrap}
+#alarmBanner.on{opacity:1;transform:translate(-50%,-50%) scale(1);animation:apulse 1.5s ease-in-out infinite}
+@keyframes apulse{50%{box-shadow:0 0 0 12px rgba(220,80,60,.25)}}
 #feelBar{position:absolute;left:0;right:0;bottom:78px;z-index:4;padding:0 10px}
 .feelq{display:inline-block;color:#F1F5F5;background:rgba(20,30,33,.7);border-radius:999px;padding:3px 10px;font-size:.76rem;margin:0 0 5px}
 .feelrow{display:flex;gap:6px;overflow-x:auto;padding-bottom:4px;scrollbar-width:none;-webkit-overflow-scrolling:touch}
@@ -434,16 +453,23 @@ ol.safety b{display:block}
         <svg viewBox="0 0 1024 1024" aria-hidden="true">
           <defs>
             <radialGradient id="lamp" cx="50%" cy="50%" r="50%"><stop offset="0" stop-color="#FFFFFF"/><stop offset=".55" stop-color="#FFFEF6"/><stop offset="1" stop-color="#FFFEF6" stop-opacity="0"/></radialGradient>
+            <radialGradient id="washi" cx="50%" cy="45%" r="55%"><stop offset="0" stop-color="#FFFFFF" stop-opacity=".9"/><stop offset=".7" stop-color="#FFF6DE" stop-opacity=".2"/><stop offset="1" stop-color="#EBDCB8" stop-opacity=".6"/></radialGradient>
             <linearGradient id="tube" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FFFFFF"/><stop offset=".5" stop-color="#F7FBFF"/><stop offset="1" stop-color="#E4EAF0"/></linearGradient>
           </defs>
           <rect width="1024" height="1024" fill="#F5F4F0"/>
           <g stroke="#ECEAE4" stroke-width="2"><line x1="0" y1="341" x2="1024" y2="341"/><line x1="0" y1="682" x2="1024" y2="682"/></g>
           <rect x="0" y="0" width="1024" height="1024" fill="none" stroke="#B89A76" stroke-width="16"/>
-          <ellipse cx="512" cy="430" rx="420" ry="180" fill="url(#lamp)" opacity=".9"/>
-          <rect x="262" y="398" width="500" height="64" rx="8" fill="#F0F0EC" stroke="#C9CBC6" stroke-width="3"/>
-          <rect x="276" y="408" width="472" height="18" rx="9" fill="url(#tube)" stroke="#D5DADF" stroke-width="2"/>
-          <rect x="276" y="434" width="472" height="18" rx="9" fill="url(#tube)" stroke="#D5DADF" stroke-width="2"/>
-          <path d="M512 462 L512 520" stroke="#C9C6BE" stroke-width="2"/><circle cx="512" cy="524" r="5" fill="#C9C6BE"/>
+          <circle cx="512" cy="440" r="250" fill="url(#lamp)" opacity=".85"/>
+          <circle cx="512" cy="440" r="132" fill="#9C7650"/>
+          <circle cx="512" cy="440" r="122" fill="#FFF9EA"/>
+          <circle cx="512" cy="440" r="122" fill="url(#washi)"/>
+          <g stroke="#B88E62" stroke-width="5" fill="none" opacity=".85">
+            <circle cx="512" cy="440" r="78"/>
+            <line x1="390" y1="440" x2="634" y2="440"/><line x1="512" y1="318" x2="512" y2="562"/>
+            <line x1="426" y1="354" x2="598" y2="526"/><line x1="598" y1="354" x2="426" y2="526"/>
+          </g>
+          <circle cx="512" cy="440" r="26" fill="#FFFDF6" stroke="#9C7650" stroke-width="5"/>
+          <path d="M512 466 L512 600" stroke="#C9B89E" stroke-width="2"/><circle cx="512" cy="606" r="7" fill="#B88E62"/>
         </svg>
       </div>
       <!-- 右：入口側 -->
@@ -758,6 +784,7 @@ ol.safety b{display:block}
     <button type="button" data-act="restart">この場面を最初から</button>
     <button type="button" data-act="mute" id="muteBtn" aria-pressed="false">音：あり（タップで消す）</button>
     <button type="button" data-act="tts" id="ttsBtn" aria-pressed="false">読み上げ：あり（タップで消す）</button>
+    <button type="button" data-act="look" id="lookBtn" aria-pressed="true">話す人の方を自動で向く：あり</button>
     <button type="button" data-act="home">ホームに戻る</button>
     <button type="button" data-act="close">閉じる</button>
   </div>
@@ -766,6 +793,20 @@ ol.safety b{display:block}
     <div id="speech"></div>
   </div>
   <div id="bubbles" aria-live="polite" aria-label="あなたのつぶやき"></div>
+  <div id="prolog" aria-live="polite">
+    <div class="pcard" id="prologCard">
+      <p id="prologText"></p>
+      <div id="prologGuide" hidden>
+        <div class="swipe" aria-hidden="true"><i></i></div>
+        <p><b>画面を指でなぞると、目を動かして見回せます</b><br><small>パソコンはマウスでドラッグ。下のボタンでも見る方向を変えられます。</small></p>
+        <p><small>体験中に浮かんだ気持ちは、下に並ぶボタンをタップして残せます。</small></p>
+        <p class="ptime">少し見回してみましょう　あと <b id="prologSec">15</b> 秒</p>
+        <div class="pbar"><i id="prologBar"></i></div>
+      </div>
+      <button type="button" class="pbtn" id="prologBtn">次へ</button>
+    </div>
+  </div>
+  <div id="alarmBanner" aria-live="assertive">アラームが鳴っている</div>
   <div id="feelBar" role="group" aria-label="いまの気持ちをタップ">
     <span class="feelq">いま、どんな気持ち？　タップで残せます</span>
     <div class="feelrow" id="feelRow"></div>
@@ -821,38 +862,40 @@ const THEMES = [
       {sec:5, img:'story-3.jpg', text:'ある日、道具を握る手に力が入らなくなった。ALSだった。'},
       {sec:7, img:'story-4.jpg', text:'和子さんと何度も話し合い、気管切開をして生きることを選んだ。いまは自宅のベッドで、ラジオをつけて過ごしている。'}
     ],
-    bad:{ label:'1 / 5　よくある場面', cues:[
-      {t:0.5, glare:true},
-      {t:6, alarm:true},
-      {t:12, sfx:'steps'},
-      {t:15, show:'sideNurse', hint:'door', speech:['看護師','あ、鳴ってますね。']},
-      {t:19.5, hide:'sideNurse', show:'overBad', look:'ceiling', speech:['看護師','えーと、回路……ああ、ここ外れてたか。']},
-      {t:26.5, alarm:false, speech:['看護師','はい、つけました。大丈夫です。']},
-      {t:32, speech:['看護師','次の訪問があるので、また来週来ますね。奥さん、何かあったら連絡ください。']},
-      {t:38.5, hide:'overBad', sfx:'door', speech:null},
-      {t:42, hint:'family', speech:['妻','……あの、さっきのは……']},
-      {t:46, speech:null},
-      {t:55, end:true}
+    bad:{ label:'1 / 5　よくある場面',
+      intro:'今日は、訪問看護の日。\n佐藤さんは、ベッドの上で\n看護師が来るのを待っています。',
+      cues:[
+      {t:4.5, sfx:'doorOpen'},
+      {t:6, sfx:'steps'},
+      {t:9, show:'sideNurse', hint:'door', speech:['看護師','あ、鳴ってますね。']},
+      {t:13.5, hide:'sideNurse', show:'overBad', speech:['看護師','えーと、回路……ああ、ここ外れてたか。']},
+      {t:20.5, alarm:false, speech:['看護師','はい、つけました。大丈夫です。']},
+      {t:26, speech:['看護師','次の訪問があるので、また来週来ますね。奥さん、何かあったら連絡ください。']},
+      {t:32.5, hide:'overBad', sfx:'leave', speech:null},
+      {t:37, hint:'family', speech:['妻','……あの、さっきのは……']},
+      {t:41, speech:null},
+      {t:50, end:true}
     ],
       endText:'この看護師も、次の訪問に追われていました。忙しいとき、誰にでも起こりうる場面です。天井を見上げながら、あなたの頭の中にはどんな言葉が浮かびましたか？',
       endNext:'浮かんだ言葉を残す'
     },
-    good:{ label:'4 / 5　もう一度、同じ場面', cues:[
-      {t:0.5, glare:true},
-      {t:6, alarm:true},
-      {t:7, sfx:'steps'},
-      {t:9, show:'sideNurse', hint:'door', speech:['看護師','佐藤さん、訪問看護の田中です。今、行きますね。']},
-      {t:13.5, hide:'sideNurse', show:'overGood', glare:false, calm:true, look:'ceiling', speech:['看護師','呼吸器の音が鳴りましたね。先に、佐藤さんの顔と胸を見せてください。']},
-      {t:20.5, speech:['看護師','胸は動いていますね。管が外れていないか、一緒に確かめます。']},
-      {t:26.5, alarm:false, speech:['看護師','ここが少し外れていました。つなぎ直したので、もう空気が入っていますよ。']},
-      {t:33, show:'board', speech:['看護師','苦しかったですね。今は楽になりましたか？ 楽なら、まばたき1回で教えてください。']},
-      {t:40, blink:true, speech:null},
-      {t:43, speech:['看護師','ありがとうございます。安心しました。']},
-      {t:47.5, hide:'board', speech:['看護師','そういえば昨日の試合、勝ちましたね。ラジオ、つけたままにしておきますね。']},
-      {t:54, hint:'family', speech:['看護師','奥さんも驚かれましたよね。次に鳴ったときの確かめ方を、一緒に見ておきましょうか。']},
-      {t:61, hide:'wife', show:'wifeSmile', speech:['妻','はい……ありがとうございます。お願いします。']},
-      {t:65.5, speech:null},
-      {t:70, end:true}
+    good:{ label:'4 / 5　もう一度、同じ場面',
+      intro:'もう一度、同じ日の同じ場面です。\n今度は、関わり方の違う看護師が来ます。',
+      cues:[
+      {t:0.6, sfx:'doorOpen'},
+      {t:1.2, sfx:'steps'},
+      {t:3, show:'sideNurse', hint:'door', speech:['看護師','佐藤さん、訪問看護の田中です。今、行きますね。']},
+      {t:7.5, hide:'sideNurse', show:'overGood', glare:false, calm:true, speech:['看護師','呼吸器の音が鳴りましたね。先に、佐藤さんの顔と胸を見せてください。']},
+      {t:14.5, speech:['看護師','胸は動いていますね。管が外れていないか、一緒に確かめます。']},
+      {t:20.5, alarm:false, speech:['看護師','ここが少し外れていました。つなぎ直したので、もう空気が入っていますよ。']},
+      {t:27, show:'board', speech:['看護師','苦しかったですね。今は楽になりましたか？ 楽なら、まばたき1回で教えてください。']},
+      {t:34, blink:true, speech:null},
+      {t:37, speech:['看護師','ありがとうございます。安心しました。']},
+      {t:41.5, hide:'board', speech:['看護師','そういえば昨日の試合、勝ちましたね。ラジオ、つけたままにしておきますね。']},
+      {t:48, hint:'family', speech:['看護師','奥さんも驚かれましたよね。次に鳴ったときの確かめ方を、一緒に見ておきましょうか。']},
+      {t:55, hide:'wife', show:'wifeSmile', speech:['妻','はい……ありがとうございます。お願いします。']},
+      {t:59.5, speech:null},
+      {t:64, end:true}
     ],
       endText:'同じアラームでも、関わり方で患者さんの体験はここまで変わります。最後に、ひとりの訪問でも安全を守るための確認を見ておきましょう。',
       endNext:'安全行動カードへ'
@@ -1029,6 +1072,7 @@ function openIntro(t){
   $('#introTag').textContent = t.tag;
   $('#h-intro').textContent = t.title;
   $('#patientInfo').innerHTML = t.patient.map(([k,v]) => `<dt>${k}</dt><dd>${v}</dd>`).join('');
+  practiced = false;
   draft = {id: 'r' + Date.now(), theme: t.id, themeTitle: t.title, date: new Date().toISOString(), emotions: [], memo: '', actions: [], actOwn: '', thoughts: [], revisit: null};
   go('intro');
 }
@@ -1407,6 +1451,7 @@ function buildWorld(){
           const sh = new THREE.Mesh(new THREE.PlaneGeometry(w * 0.9, w * 0.5), new THREE.MeshBasicMaterial({map: shadowTex, transparent:true, opacity: sp.static ? .55 : 0, depthWrite:false}));
           sh.position.set(sp.x, sp.y, FLOOR - 0.01); sh.rotation.set(Math.PI, 0, Math.atan2(toward.y, toward.x) + Math.PI / 2);
           scene.add(sh); m.userData.shadow = sh;
+          m.userData.face = m.position.clone().addScaledVector(up, h * 0.35);   /* 顔のあたり：話す人の方を向くときに使う */
         } else {
           const y = sp.yaw * Math.PI / 180, pt = sp.pitch * Math.PI / 180;
           m.position.set(Math.sin(y) * Math.cos(pt) * sp.d, Math.sin(pt) * sp.d, -Math.cos(y) * Math.cos(pt) * sp.d);
@@ -1498,7 +1543,7 @@ window.addEventListener('resize', () => { if(vr.classList.contains('on')) layout
 /* ドラッグ */
 let drag = null;
 stage.addEventListener('pointerdown', e => { drag = {x: e.clientX, y: e.clientY, ty: view.ty, tp: view.tp}; stage.setPointerCapture(e.pointerId); });
-stage.addEventListener('pointermove', e => { if(!drag) return; setTarget(drag.ty - (e.clientX - drag.x) * 0.22, drag.tp + (e.clientY - drag.y) * 0.22); });
+stage.addEventListener('pointermove', e => { if(!drag) return; lastDrag = performance.now(); setTarget(drag.ty - (e.clientX - drag.x) * 0.22, drag.tp + (e.clientY - drag.y) * 0.22); });
 stage.addEventListener('pointerup', () => drag = null);
 stage.addEventListener('pointercancel', () => drag = null);
 /* 視点ジャンプ */
@@ -1585,6 +1630,33 @@ function breathing(){
   };
   play(); breathT0 = performance.now(); breathTimer = setInterval(play, 4000);
 }
+/* 引き戸：戸車が転がる音 → 止まる「トン」。右（入口）から */
+let noiseBuf = null;
+function getNoise(){
+  if(noiseBuf) return noiseBuf;
+  noiseBuf = actx.createBuffer(1, actx.sampleRate * 2, actx.sampleRate);
+  const d = noiseBuf.getChannelData(0); let last = 0;
+  for(let i = 0; i < d.length; i++){ last = last * 0.96 + (Math.random() * 2 - 1) * 0.04; d[i] = last * 6; }
+  return noiseBuf;
+}
+function slideDoor(open){
+  if(!actx) return;
+  const t = actx.currentTime, dur = 0.85, out = bus(0.85);
+  const src = actx.createBufferSource(); src.buffer = getNoise();
+  const lp = actx.createBiquadFilter(); lp.type = 'bandpass'; lp.Q.value = 0.8;
+  lp.frequency.setValueAtTime(open ? 260 : 420, t); lp.frequency.linearRampToValueAtTime(open ? 420 : 240, t + dur);
+  const g = actx.createGain(); g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(0.9, t + 0.08); g.gain.setValueAtTime(0.9, t + dur - 0.15); g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+  const rum = actx.createOscillator(), rg = actx.createGain(); rum.type = 'sine'; rum.frequency.value = 38;   // 戸車のゴロゴロ
+  rg.gain.setValueAtTime(0.0001, t); rg.gain.exponentialRampToValueAtTime(0.25, t + 0.1); rg.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+  src.connect(lp).connect(g).connect(out); rum.connect(rg).connect(out);
+  src.start(t); src.stop(t + dur + 0.05); rum.start(t); rum.stop(t + dur + 0.05);
+  if(!open){ thump(t + dur, 0.85, 0.7, 180); thump(t + dur + 0.07, 0.85, 0.25, 120); }   // 閉まりきる「トン」
+}
+/* 足音：中央から右（入口）へ遠ざかる */
+function stepsAway(fast){
+  if(!actx) return; const t = actx.currentTime, gap = fast ? 0.3 : 0.45;
+  for(let i = 0; i < 5; i++) thump(t + i * gap, 0.1 + i * 0.18, 0.6 - i * 0.1, 95);
+}
 function doorSound(){
   if(!actx) return;
   const t = actx.currentTime, o = actx.createOscillator(), g = actx.createGain();
@@ -1649,7 +1721,7 @@ function clearScene(){
   timers.forEach(clearTimeout); timers = []; clearTimeout(innerTimer); hush();
   alarmOff(); for(const id in figs){ if(id !== 'alarmLight' && !figs[id].static) showFig(id, false); }
   showFig('wife', true);
-  $('#inner').classList.remove('on'); $('#speech').classList.remove('on');
+  $('#inner').classList.remove('on'); $('#speech').classList.remove('on'); prologTok++; hideProlog();
   $('#glare').classList.remove('on'); vr.classList.remove('calm'); $$('.jump button').forEach(b => b.classList.remove('hint'));
 }
 function applyCue(c){
@@ -1663,15 +1735,63 @@ function applyCue(c){
   if(c.inner){ const el = $('#inner'); el.textContent = c.inner; el.classList.add('on'); clearTimeout(innerTimer); innerTimer = setTimeout(() => el.classList.remove('on'), 3600); }
   if('speech' in c){
     const el = $('#speech');
-    if(c.speech){ el.innerHTML = `<b>${c.speech[0]}</b>${esc(c.speech[1])}`; el.classList.add('on'); speak(c.speech[0], c.speech[1]); }
+    if(c.speech){ el.innerHTML = `<b>${c.speech[0]}</b>${esc(c.speech[1])}`; el.classList.add('on'); speak(c.speech[0], c.speech[1]); lookAtSpeaker(c.speech[0]); }
     else el.classList.remove('on');
   }
   if(c.sfx === 'door') doorSound();
+  if(c.sfx === 'doorOpen') slideDoor(true);
+  if(c.sfx === 'leave'){ stepsAway(scene === 'bad'); timers.push(setTimeout(() => slideDoor(false), 1700)); }
   if(c.sfx === 'steps') steps(scene === 'bad');
   if('calm' in c) vr.classList.toggle('calm', c.calm);
   if(c.blink){ const b = $('#blink'); b.classList.remove('go'); void b.offsetWidth; b.classList.add('go'); }
   if(c.end) endScene();
 }
+/* ===== 体験の入り口：今どこにいるか → 操作の練習 → アラーム ===== */
+let prologTok = 0, prologNext = null, practiced = false;
+function pwait(ms){ return new Promise(r => { prologNext = r; timers.push(setTimeout(r, ms)); }); }
+$('#prologBtn').addEventListener('click', () => { if(prologNext){ const r = prologNext; prologNext = null; r(); } });
+$('#prolog').addEventListener('pointerdown', e => { if(e.target.closest('.pcard')) e.stopPropagation(); });
+function hideProlog(){ $('#prolog').classList.remove('on', 'guide'); $('#alarmBanner').classList.remove('on'); prologNext = null; }
+async function prologue(which){
+  const tok = ++prologTok, S = theme[which], P = $('#prolog');
+  const alive = () => tok === prologTok && scene === which && vr.classList.contains('on');
+  applyCue({glare:true});
+  /* 1. ストーリーの続きとして、いまの状況を伝える */
+  $('#prologText').textContent = S.intro || ''; $('#prologGuide').hidden = true; $('#prologBtn').textContent = '次へ';
+  P.classList.add('on'); P.classList.remove('guide');
+  await pwait(6000); if(!alive()) return false;
+  /* 2. 操作のガイドと練習（1回目だけ。15秒） */
+  if(which === 'bad' && !practiced){
+    P.classList.add('guide'); $('#prologGuide').hidden = false; $('#prologBtn').textContent = '準備できた';
+    const bar = $('#prologBar'); bar.style.transitionDuration = '0s'; bar.style.transform = 'scaleX(1)';
+    requestAnimationFrame(() => requestAnimationFrame(() => { bar.style.transitionDuration = '15s'; bar.style.transform = 'scaleX(0)'; }));
+    let left = 15; $('#prologSec').textContent = left;
+    const iv = setInterval(() => { left = Math.max(0, left - 1); $('#prologSec').textContent = left; }, 1000); timers.push(iv);
+    await pwait(15000); clearInterval(iv); if(!alive()) return false;
+    practiced = true;
+  }
+  P.classList.remove('on', 'guide');
+  /* 3. アラーム。視点をいったん正面（天井）に戻す */
+  setTarget(0, 0); alarmOn();
+  const ab = $('#alarmBanner'); ab.classList.add('on');
+  timers.push(setTimeout(() => ab.classList.remove('on'), 3200));
+  return alive();
+}
+
+/* ===== 話している人の方を自動で向く ===== */
+let autoLook = true, lastDrag = 0;
+function faceDir(id){
+  const f = figs[id]; if(!f || !f.mesh.userData.face) return null;
+  const p = f.mesh.userData.face;
+  return [Math.atan2(p.x, -p.z) * 180 / Math.PI, Math.atan2(p.y, Math.hypot(p.x, p.z)) * 180 / Math.PI];
+}
+function lookAtSpeaker(who){
+  if(!autoLook || performance.now() - lastDrag < 1800) return;
+  const ids = who === '妻' ? ['wifeSmile', 'wife'] : ['overGood', 'overBad', 'sideNurse'];
+  const id = ids.find(i => figs[i] && figs[i].target > 0.5); if(!id) return;
+  const d = faceDir(id); if(d) setTarget(d[0], d[1] * 0.85);
+}
+
 /* 台詞は前の読み上げが終わるまで待ってから出す（字幕と声をそろえる）。待った分だけ、以降の進行も後ろにずらす */
 let talking = false, talkGuard = 0;
 function runCues(cues, which){
@@ -1701,8 +1821,10 @@ async function startVR(which){
   if(wantStory){ await playStory(); }
   if(scene !== which || !vr.classList.contains('on')) return;
   const fade = $('#fade'); fade.classList.remove('off'); requestAnimationFrame(() => requestAnimationFrame(() => fade.classList.add('off')));
-  breathing(); ticking();
-  sceneStart = performance.now(); renderBubbles(); renderFeelRow();
+  breathing(); ticking(); renderBubbles(); renderFeelRow();
+  sceneStart = performance.now();
+  if(!(await prologue(which))) return;
+  sceneStart = performance.now();
   runCues(S.cues, which);
 }
 let storyResolve = null, storyTimer = 0, storyIdx = 0;
@@ -1755,6 +1877,7 @@ $('#vrMenu').addEventListener('click', e => {
   const act = b.dataset.act;
   if(act === 'mute'){ toggleMute(); if(muted) hush(); return; }
   if(act === 'tts'){ toggleTts(); return; }
+  if(act === 'look'){ autoLook = !autoLook; b.textContent = '話す人の方を自動で向く：' + (autoLook ? 'あり' : 'なし'); b.setAttribute('aria-pressed', String(autoLook)); return; }
   menu(false);
   if(act === 'story'){ replayStory(); }
   if(act === 'restart'){ if(storyOnly) return; finishStoryQuiet(); startVR.skipStory = true; startVR(scene || 'bad'); }
