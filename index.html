@@ -3,15 +3,15 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>患者目線の体験ライブラリ</title>
+<title>アイナス｜created by KenMaP</title>
 <meta name="theme-color" content="#2C716E">
-<meta name="description" content="寝たきりの患者さんの目線で学ぶ、看護師のための体験型学習アプリ（KenMaP）">
+<meta name="description" content="ひとりの人の物語を読み、その人の目線でケアの場面を体験する学習アプリ。アイナス created by KenMaP">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" href="icons/icon-192.png">
 <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-title" content="患者目線">
+<meta name="apple-mobile-web-app-title" content="アイナス">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Klee+One:wght@400;600&family=Zen+Kaku+Gothic+New:wght@400;500;700&display=swap" rel="stylesheet">
@@ -113,6 +113,11 @@ ol.safety b{display:block}
 .pledge{display:flex;align-items:center;gap:6px;flex-wrap:wrap;font-weight:700}
 .pledge input{flex:1 1 100%;min-width:0}
 .pledgebox{border:2px solid var(--accent);border-radius:12px;padding:12px 14px;background:#fff;font-size:1.08rem;font-weight:700;line-height:1.6}
+.hero{display:flex;flex-direction:column;gap:4px;padding:6px 0 10px;border-bottom:1px solid var(--line, #D5DEDE);margin-bottom:4px}
+.appname{font-size:2.3rem;letter-spacing:.12em;margin:0;line-height:1.2}
+.byline{color:var(--muted);font-size:.8rem;letter-spacing:.06em;margin-top:-2px}
+.catch{font-family:var(--voice);font-size:1.35rem;font-weight:700;line-height:1.6;margin:14px 0 2px;color:var(--accent)}
+.heroNote{margin:0}
 .quote{border-left:3px solid var(--accent);padding:4px 12px;background:var(--accent-soft);border-radius:4px}
 #reportImg{width:100%;border-radius:10px;border:1px solid var(--line)}
 .toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:var(--ink);color:#fff;padding:10px 16px;border-radius:10px;font-size:.9rem;opacity:0;pointer-events:none;transition:opacity .25s;z-index:50;max-width:90vw}
@@ -226,9 +231,14 @@ ol.safety b{display:block}
 <!-- ===== ホーム（ライブラリ） ===== -->
 <section class="view on" id="v-home" aria-labelledby="h-home">
   <div class="wrap">
-    <div class="brand">KenMaP</div>
-    <h1 id="h-home">患者さんの目線で学ぶ<br>体験ライブラリ</h1>
-    <p class="lead">寝たきりで天井を見上げる患者さんの目線を、スマホで体験します。いま学びたいテーマを、自分で選んでください。</p>
+    <header class="hero">
+      <h1 id="h-home" class="appname">アイナス</h1>
+      <div class="byline">created by KenMaP</div>
+      <p class="catch">その人の人生の続きに、<br>あなたのケアがある。</p>
+      <p class="lead">ひとりの人の物語を読み、その人の目線でケアの場面を体験する学習アプリです。</p>
+      <p class="note heroNote">ケアに関わるすべての人へ<br>1テーマ約10分・スマホだけで</p>
+    </header>
+    <p class="note">様々な場面を、そこで暮らす人の視点から体験します。いま学びたいテーマを、自分で選んでください。</p>
     <div id="homeBanner"></div>
     <div id="themeList" class="wrap" style="gap:10px"></div>
     <button class="btn sub" id="toMemories" type="button">わたしの振り返り記録 <span id="memCount"></span></button>
@@ -241,7 +251,7 @@ ol.safety b{display:block}
       <ul class="note" style="margin:0;padding-left:1.2em">
         <li>学習を補助するための教材です。実際のケアは、主治医の指示と事業所の手順を優先してください。</li>
         <li>体験の途中でつらくなったら、いつでも止めてかまいません。</li>
-        <li>記録はこの端末のブラウザの中だけに保存されます。患者さんが特定できる情報は書かないでください。</li>
+        <li>記録はこの端末のブラウザの中だけに保存されます。利用者さんが特定できる情報は書かないでください。</li>
       </ul>
     </div>
   </div>
@@ -445,7 +455,7 @@ ol.safety b{display:block}
 </section>
 
 <!-- ===== 360度体験 ===== -->
-<div id="vr" role="dialog" aria-label="患者さんの目線での体験">
+<div id="vr" role="dialog" aria-label="その人の目線での体験">
   <div id="stage"></div>
   <div id="faceSrc" hidden>
       <!-- 正面：天井 -->
@@ -848,7 +858,7 @@ const THEMES = [
     tag:'在宅 × 人工呼吸器',
     view:{yaw:35, up:25, down:-38, note:'首は動かせず、目だけを動かせる範囲が見えます'},
     title:'在宅人工呼吸器ケア編',
-    lead:'アラームが鳴ったとき、患者さんには何が見えて、何が聞こえているのか。',
+    lead:'アラームが鳴ったとき、ベッドの上の佐藤さんには何が見えて、何が聞こえているのか。',
     patient:[
       ['名前','佐藤 一郎さん（仮名）・68歳・男性'],
       ['病気','ALS（筋萎縮性側索硬化症）'],
@@ -897,7 +907,7 @@ const THEMES = [
       {t:59.5, speech:null},
       {t:64, end:true}
     ],
-      endText:'同じアラームでも、関わり方で患者さんの体験はここまで変わります。最後に、ひとりの訪問でも安全を守るための確認を見ておきましょう。',
+      endText:'同じアラームでも、関わり方で佐藤さんの体験はここまで変わります。最後に、ひとりの訪問でも安全を守るための確認を見ておきましょう。',
       endNext:'安全行動カードへ'
     },
     thoughts:[
@@ -914,7 +924,7 @@ const THEMES = [
     emotions:['声が出せない怖さ','何が起きているか分からない不安','機械のほうが大事にされている寂しさ','息苦しさ','置いていかれた孤独','家族に申し訳ない気持ち','看護師の焦りも分かる','うまく言葉にならない'],
     actions:['目を合わせて名前を呼ぶ','自分が誰かを名乗る','何が起きているか伝えてから処置する','処置の前に、顔と胸の動きを見る','文字盤やまばたきで気持ちを聞く','家族にも声をかける','帰る前に「大丈夫」の理由を伝える'],
     safety:[
-      ['まず患者さんを見る','顔色、表情、胸の上がり、SpO2。アラームより先に人を見ます。'],
+      ['まず利用者さんを見る','顔色、表情、胸の上がり、SpO2。アラームより先に人を見ます。'],
       ['名乗って、声をかける','誰が来て、これから何をするのかを伝えます。'],
       ['アラームの表示を読む','低圧（外れ・漏れ）か、高圧（痰・詰まり・咳）かで、確かめる場所が変わります。'],
       ['つながりを手でたどる','呼吸器から回路、カニューレまで、手で触れて確かめます。'],
@@ -927,7 +937,7 @@ const THEMES = [
       {id:'family', label:'家族への説明や声かけ'},
       {id:'emergency', label:'急変時の連絡と動き方'},
       {id:'cannula', label:'気管カニューレのトラブル'},
-      {id:'feeling', label:'患者さんの気持ちをもっと知りたい'}
+      {id:'feeling', label:'利用者さんの気持ちをもっと知りたい'}
     ]
   },
   {id:'eol', ready:false, tag:'在宅 × 看取り', title:'看取り期の関わり編', lead:'最期の時間を過ごす人と家族の目線から。'},
@@ -937,7 +947,7 @@ const THEMES = [
 /* 疑問タグ → 次のテーマ（ルールで推薦。将来AIに置き換え可能） */
 const RECO = {
   alarm:{title:'呼吸器道場：アラーム編', why:'アラームの意味と確かめ方を、波形を動かしながら学べます。'},
-  comm:{title:'意思伝達の体験編', why:'文字盤や視線入力を、患者さんの側から体験します。'},
+  comm:{title:'意思伝達の体験編', why:'文字盤や視線入力を、使う人の側から体験します。'},
   family:{title:'家族の目線編', why:'アラームを見守る家族が、何に不安を感じているかを体験します。'},
   emergency:{title:'急変時の対応編', why:'ひとりの訪問中に状態が変わったときの動き方を学びます。'},
   cannula:{title:'気管カニューレのトラブル編', why:'事故抜去や閉塞のサインと、最初の対応を学びます。'},
@@ -1297,7 +1307,7 @@ $('#makeReport').addEventListener('click', async () => {
   const F = '"Zen Kaku Gothic New","Hiragino Kaku Gothic ProN",sans-serif';
   ctx.fillStyle = '#FBFCFC'; ctx.fillRect(0,0,1080,1760);
   ctx.fillStyle = '#2C716E'; ctx.fillRect(0,0,1080,170);
-  ctx.fillStyle = '#fff'; ctx.font = `700 30px ${F}`; ctx.fillText('KenMaP 患者目線の体験ライブラリ', 70, 70);
+  ctx.fillStyle = '#fff'; ctx.font = `700 30px ${F}`; ctx.fillText('アイナス　created by KenMaP', 70, 70);
   ctx.font = `700 52px ${F}`; ctx.fillText('受講完了＆気づきレポート', 70, 135);
   ctx.fillStyle = '#1C2A2E'; ctx.font = `500 32px ${F}`;
   let y = 240;
