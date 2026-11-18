@@ -118,6 +118,9 @@ ol.safety b{display:block}
 #splash.out{opacity:0;pointer-events:none}
 @keyframes splashIn{from{opacity:0;transform:scale(.94)}to{opacity:1;transform:scale(1)}}
 .mark{width:84px;height:auto;display:block;margin:0 0 6px -2px}
+.howto ol{margin:0;padding-left:1.3em;display:flex;flex-direction:column;gap:4px}
+.repbox img{width:100%;border-radius:10px;border:1px solid var(--line)}
+.repbox .btn.ghost{width:100%}
 .share{align-items:center;text-align:center}
 .share img{width:200px;height:200px;border-radius:12px;border:1px solid var(--line);background:#fff;padding:6px}
 .share .url{font-size:.8rem;color:var(--muted);word-break:break-all;margin:0}
@@ -276,7 +279,7 @@ ol.safety b{display:block}
     <p class="note">様々な場面を、そこで暮らす人の視点から体験します。いま学びたいテーマを、自分で選んでください。</p>
     <div id="homeBanner"></div>
     <div id="themeList" class="wrap" style="gap:10px"></div>
-    <button class="btn sub" id="toMemories" type="button">わたしの振り返り記録 <span id="memCount"></span></button>
+    <button class="btn sub" id="toMemories" type="button" data-go="memories">わたしの振り返り記録 <span id="memCount"></span></button>
     <div class="card">
       <h3>ベテランの方へ</h3>
       <p class="note">あなたが普段、意識せずにしている気配りを言葉にして、次の世代に手渡すための教材です。「自分ならこうする」を、ぜひ記録に残してください。</p>
@@ -442,8 +445,12 @@ ol.safety b{display:block}
       <p class="note">言葉のない、音だけの部屋です。スマホを動かすと、寝たまま見える景色を見回せます（指でなぞっても動きます）。</p>
       <button class="btn sub" type="button" id="startExplore">療養環境を見てみる</button>
     </div>
+    <div class="card repbox">
+      <h3>受講レポート</h3>
+      <p class="note">今日の学びから自動で作りました。臨床で振り返るたびに、このレポートに追記されていきます。</p>
+      <div id="saveRepBox"></div>
+    </div>
     <div class="row">
-      <button class="btn sub" type="button" id="toReport">受講レポートを作る</button>
       <button class="btn" type="button" data-go="home">ライブラリに戻る</button>
     </div>
   </div>
@@ -453,7 +460,15 @@ ol.safety b{display:block}
 <section class="view" id="v-memories" aria-labelledby="h-mem">
   <div class="wrap">
     <h1 id="h-mem">わたしの振り返り記録</h1>
-    <p class="lead">臨床で経験したあとに、記録を開いて振り返りを追記できます。</p>
+    <div class="card howto">
+      <h3>臨床のあとの振り返り方</h3>
+      <ol class="note">
+        <li>体験したテーマの場面に、実際の訪問で出会う</li>
+        <li>この一覧から、そのテーマの記録をタップして開く</li>
+        <li>決めたことができたかを選び、気づいたことを書いて保存する</li>
+        <li>次に学ぶとよさそうなテーマが出て、受講レポートにも自動で追記されます</li>
+      </ol>
+    </div>
     <div id="memList" class="wrap" style="gap:10px"></div>
     <button class="btn ghost back" type="button" data-go="home">← ライブラリへ</button>
   </div>
@@ -484,8 +499,12 @@ ol.safety b{display:block}
     <div class="card" id="recoSummary"></div>
     <h2>次に学ぶとよさそうなテーマ</h2>
     <div id="recoList" class="wrap" style="gap:10px"></div>
+    <div class="card repbox">
+      <h3>受講レポートに追記しました</h3>
+      <p class="note">はじめの学びから、臨床での振り返りまでの変化がまとまっています。</p>
+      <div id="recoReport"></div>
+    </div>
     <div class="row">
-      <button class="btn sub" type="button" id="toReport2">受講レポートを作る</button>
       <button class="btn" type="button" data-go="home">ライブラリに戻る</button>
     </div>
   </div>
@@ -495,13 +514,13 @@ ol.safety b{display:block}
 <section class="view" id="v-report" aria-labelledby="h-rep">
   <div class="wrap">
     <h1 id="h-rep">受講完了＆気づきレポート</h1>
-    <p class="lead">事業所の研修記録として提出できる画像を作ります。</p>
+    <p class="lead">氏名と事業所名を入れて、事業所の研修記録として提出できる形にします。</p>
     <label for="repName" class="note">氏名（任意）</label>
     <input type="text" id="repName" autocomplete="name">
     <label for="repOffice" class="note">事業所名（任意）</label>
     <input type="text" id="repOffice">
     <label class="chk"><input type="checkbox" id="repConsent"> 氏名と事業所名をレポートに載せることに同意します</label>
-    <button class="btn sub" type="button" id="makeReport">レポートを作る</button>
+    <button class="btn sub" type="button" id="makeReport">氏名を入れて作り直す</button>
     <img id="reportImg" alt="受講完了レポートのプレビュー" hidden>
     <div class="row" id="repActions" hidden>
       <button class="btn" type="button" id="saveReport">画像を保存する</button>
@@ -1267,6 +1286,7 @@ function renderSave(){
     ${draft.pledge ? `<h3>実行宣言</h3><p class="pledgebox">${esc(pledgeText(draft))}</p>` : ''}
     <p class="note">この端末に保存しました。</p>`;
   currentRecId = draft.id;
+  showReport("#saveRepBox", draft.theme);
 }
 function esc(s){ return String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
 
@@ -1300,7 +1320,7 @@ const revisitsOf = r => r.revisits || (r.revisit ? [r.revisit] : []);
 function themeRecs(id){ return loadRecords().filter(r => r.theme === id); }
 function renderMemories(){
   const recs = loadRecords(); const box = $('#memList'); box.innerHTML = '';
-  if(!recs.length){ box.innerHTML = '<div class="card"><p class="note">まだ記録はありません。ライブラリから体験を始めてください。</p></div>'; return; }
+  if(!recs.length){ box.innerHTML = '<div class="card"><p class="note">まだ記録はありません。ライブラリからテーマを選んで体験すると、ここに記録ができます。</p></div>'; return; }
   THEMES.filter(t => recs.some(r => r.theme === t.id)).forEach(t => {
     const rs = themeRecs(t.id), latest = rs[0];
     const nRev = rs.reduce((n, r) => n + revisitsOf(r).length, 0);
@@ -1349,13 +1369,11 @@ function renderRecommend(r){
   $('#recoList').innerHTML = ids.map(id => RECO[id]).filter(Boolean).map(x =>
     `<div class="card"><div class="row" style="justify-content:space-between;align-items:center"><h3>${x.title}</h3><span class="pill wait">準備中</span></div><p class="note">${x.why}</p></div>`).join('');
   go('recommend');
+  showReport('#recoReport', r.theme);
 }
 
-/* ===== 受講レポート ===== */
-$('#toReport').addEventListener('click', () => openReport(currentRecId));
-$('#toReport2').addEventListener('click', () => openReport(currentRecId));
-let reportBlob = null, reportText = '';
-function openReport(id){ currentRecId = id; $('#reportImg').hidden = true; $('#repActions').hidden = true; go('report'); }
+/* ===== 受講レポート（テーマごとに1枚。臨床での振り返りが自動で追記される） ===== */
+let reportBlob = null, reportText = '', repName = '', repOffice = '';
 function wrapText(ctx, text, x, y, maxW, lh){
   let line = '', yy = y;
   for(const ch of text){
@@ -1367,48 +1385,90 @@ function wrapText(ctx, text, x, y, maxW, lh){
   if(line){ ctx.fillText(line, x, yy); yy += lh; }
   return yy;
 }
-$('#makeReport').addEventListener('click', async () => {
-  const r = loadRecords().find(x => x.id === currentRecId);
-  if(!r){ toast('記録が見つかりませんでした'); return; }
-  const consent = $('#repConsent').checked;
-  const name = consent ? $('#repName').value.trim() : '';
-  const office = consent ? $('#repOffice').value.trim() : '';
-  if(($('#repName').value.trim() || $('#repOffice').value.trim()) && !consent) toast('同意がないため、氏名と事業所名は載せていません');
+function reportData(themeId){
+  const rs = themeRecs(themeId); if(!rs.length) return null;
+  const t = THEMES.find(x => x.id === themeId) || theme;
+  const latest = rs[0], first = rs[rs.length - 1];
+  const revs = rs.flatMap(r => revisitsOf(r).map(v => ({v, decl: r.pledge ? pledgeText(r) : declText(r)}))).sort((a, b) => a.v.date.localeCompare(b.v.date));
+  const qLabel = id => ((t.questions || []).find(q => q.id === id) || {}).label;
+  const qs = [...new Set(revs.flatMap(x => x.v.questions || []))].map(qLabel).filter(Boolean);
+  return {t, rs, latest, first, revs, qs};
+}
+async function buildReport(themeId){
+  const d = reportData(themeId); if(!d) return null;
+  const {t, rs, latest, first, revs, qs} = d;
   try{ await document.fonts.ready; }catch(e){}
-  const c = document.createElement('canvas'); c.width = 1080; c.height = 1760;
+  const c = document.createElement('canvas'); c.width = 1080; c.height = 4200;
   const ctx = c.getContext('2d');
   const F = '"Zen Kaku Gothic New","Hiragino Kaku Gothic ProN",sans-serif';
-  ctx.fillStyle = '#FBFCFC'; ctx.fillRect(0,0,1080,1760);
-  ctx.fillStyle = '#2C716E'; ctx.fillRect(0,0,1080,170);
+  ctx.fillStyle = '#FBFCFC'; ctx.fillRect(0, 0, 1080, 4200);
+  ctx.fillStyle = '#2C716E'; ctx.fillRect(0, 0, 1080, 170);
   ctx.fillStyle = '#fff'; ctx.font = `700 30px ${F}`; ctx.fillText('アイナス　created by KenMaP', 70, 70);
-  ctx.font = `700 52px ${F}`; ctx.fillText('受講完了＆気づきレポート', 70, 135);
-  ctx.fillStyle = '#1C2A2E'; ctx.font = `500 32px ${F}`;
+  ctx.font = `700 52px ${F}`; ctx.fillText('受講＆振り返りレポート', 70, 135);
+  ctx.font = `500 32px ${F}`;
   let y = 240;
-  const rows = [['受講日', fmtDate(new Date(r.date))], ['テーマ', r.themeTitle]];
-  if(name) rows.push(['氏名', name]);
-  if(office) rows.push(['事業所', office]);
-  rows.forEach(([k,v]) => { ctx.fillStyle = '#56676B'; ctx.fillText(k, 70, y); ctx.fillStyle = '#1C2A2E'; ctx.fillText(v, 260, y); y += 56; });
+  const rows = [['テーマ', t.title], ['はじめの学習', fmtDate(new Date(first.date))], ['学習の回数', `${rs.length}回（最新：${fmtDate(new Date(latest.date))}）`], ['臨床での振り返り', `${revs.length}回`]];
+  if(repName) rows.push(['氏名', repName]);
+  if(repOffice) rows.push(['事業所', repOffice]);
+  rows.forEach(([k, v]) => { ctx.fillStyle = '#56676B'; ctx.fillText(k, 70, y); ctx.fillStyle = '#1C2A2E'; ctx.fillText(v, 330, y); y += 56; });
   const section = (title, body) => {
-    y += 24; ctx.fillStyle = '#2C716E'; ctx.font = `700 34px ${F}`; ctx.fillText(title, 70, y); y += 54;
-    ctx.fillStyle = '#1C2A2E'; ctx.font = `400 32px ${F}`; y = wrapText(ctx, body, 70, y, 940, 50);
+    if(!body) return;
+    y += 26; ctx.fillStyle = '#2C716E'; ctx.font = `700 34px ${F}`; ctx.fillText(title, 70, y); y += 54;
+    ctx.fillStyle = '#1C2A2E'; ctx.font = `400 31px ${F}`; y = wrapText(ctx, body, 70, y, 940, 48);
   };
-  const tw = (r.thoughts || []).slice(0, 4).map(x => '「' + x.text + '」').join('\n');
-  section('体験して感じたこと', [tw, r.emotions.join('、'), r.memo ? '「' + r.memo + '」' : ''].filter(Boolean).join('\n'));
-  section('次の訪問で最初にすること', declText(r));
-  if(r.reflection) section('学びのメモ', r.reflection);
-  if(r.task) section('行動レベルの課題', r.task);
-  if(r.pledge) section('実行宣言', pledgeText(r));
-  if(r.revisit){
-    section('臨床後の振り返り', `${fmtDate(new Date(r.revisit.date))}：${r.revisit.result}` + (r.revisit.insight ? '\n大切にしたいこと：' + r.revisit.insight : ''));
+  const feelings = [...new Set((latest.thoughts || []).map(x => x.text))].join('、');
+  section('体験して感じたこと', [feelings, latest.emotions.join('、'), latest.memo ? '「' + latest.memo + '」' : ''].filter(Boolean).join('\n'));
+  section('次の訪問で最初にすること', declText(latest));
+  section('学びのメモ', latest.reflection || '');
+  if(revs.length){
+    section(`臨床での振り返り（${revs.length}回）`, revs.map(({v}) => `● ${fmtDate(new Date(v.date))}：${v.result}` + (v.reaction ? `\n　反応：${v.reaction}` : '') + (v.insight ? `\n　大切にしたいこと：${v.insight}` : '')).join('\n'));
+    const lastIns = [...revs].reverse().find(x => x.v.insight);
+    section('振り返りで見えた変化', [`はじめに決めたこと：${declText(first)}`, `いちばん新しい結果：${revs[revs.length - 1].v.result}`, lastIns ? `いま大切にしたいこと：${lastIns.v.insight}` : ''].filter(Boolean).join('\n'));
+    section('明確になった課題・次に学びたいこと', qs.join('\n'));
+  } else {
+    section('臨床での振り返り', 'まだありません。実際の場面に出会ったら、「わたしの振り返り記録」から振り返ると、ここに追記されます。');
   }
-  ctx.fillStyle = '#56676B'; ctx.font = `400 24px ${F}`;
-  ctx.fillText('学習補助用の教材です。実際のケアは主治医の指示と事業所の手順を優先します。', 70, 1710);
-  reportText = [`【受講完了＆気づきレポート】`, `受講日：${fmtDate(new Date(r.date))}`, `テーマ：${r.themeTitle}`, name?`氏名：${name}`:'', office?`事業所：${office}`:'',
-    (r.thoughts||[]).length?`体験中に浮かんだ気持ち：${r.thoughts.map(x=>x.text).join('／')}`:'', r.emotions.length?`感じたこと：${r.emotions.join('、')}`:'', r.memo?`メモ：${r.memo}`:'', `次の訪問で最初にすること：${declText(r)}`, r.reflection?`学びのメモ：${r.reflection}`:'', r.task?`行動レベルの課題：${r.task}`:'', r.pledge?`実行宣言：${pledgeText(r)}`:'',
-    r.revisit?`臨床後の振り返り：${r.revisit.result}${r.revisit.insight?'／'+r.revisit.insight:''}`:''].filter(Boolean).join('\n');
-  c.toBlob(b => { reportBlob = b; const img = $('#reportImg'); img.src = URL.createObjectURL(b); img.hidden = false; $('#repActions').hidden = false; }, 'image/png');
+  y += 40; ctx.fillStyle = '#56676B'; ctx.font = `400 24px ${F}`;
+  ctx.fillText('学習補助用の教材です。実際のケアは主治医の指示と事業所の手順を優先します。', 70, y); y += 40;
+  const out = document.createElement('canvas'); out.width = 1080; out.height = Math.min(4200, y + 20);
+  out.getContext('2d').drawImage(c, 0, 0);
+  const text = ['【受講＆振り返りレポート】', `テーマ：${t.title}`, `はじめの学習：${fmtDate(new Date(first.date))}　学習${rs.length}回・臨床での振り返り${revs.length}回`,
+    repName ? `氏名：${repName}` : '', repOffice ? `事業所：${repOffice}` : '',
+    feelings ? `体験中に浮かんだ気持ち：${feelings}` : '', `次の訪問で最初にすること：${declText(latest)}`, latest.reflection ? `学びのメモ：${latest.reflection}` : '',
+    ...revs.map(({v}) => `臨床での振り返り（${fmtDate(new Date(v.date))}）：${v.result}${v.insight ? '／' + v.insight : ''}`),
+    qs.length ? `明確になった課題：${qs.join('、')}` : ''].filter(Boolean).join('\n');
+  const blob = await new Promise(r => out.toBlob(r, 'image/png'));
+  return {blob, text};
+}
+async function showReport(box, themeId){
+  const el = typeof box === 'string' ? $(box) : box; if(!el) return;
+  el.innerHTML = '<p class="note">レポートを作っています…</p>';
+  const r = await buildReport(themeId); if(!r){ el.innerHTML = ''; return; }
+  reportBlob = r.blob; reportText = r.text;
+  el.innerHTML = `<img alt="受講＆振り返りレポートのプレビュー" src="${URL.createObjectURL(r.blob)}">
+    <div class="row"><button class="btn" type="button" data-rep="save">画像を保存する</button><button class="btn sub" type="button" data-rep="copy">テキストをコピー</button></div>
+    <button class="btn ghost" type="button" data-rep="name">氏名・事業所名を入れる</button>`;
+}
+document.addEventListener('click', async e => {
+  const b = e.target.closest('[data-rep]'); if(!b) return;
+  if(b.dataset.rep === 'save'){ if(reportBlob && await saveFile('ainas-report.png', reportBlob)) toast('レポート画像を保存しました'); }
+  if(b.dataset.rep === 'copy'){ try{ await navigator.clipboard.writeText(reportText); toast('テキストをコピーしました'); }catch(err){ toast('コピーできませんでした'); } }
+  if(b.dataset.rep === 'name') openReport(currentRecId);
 });
-$('#saveReport').addEventListener('click', async () => { if(reportBlob && await saveFile('kenmap-report.png', reportBlob)) toast('レポート画像を保存しました'); });
+let reportTheme = null;
+function openReport(id){
+  const r = loadRecords().find(x => x.id === id); reportTheme = r ? r.theme : theme.id;
+  $('#reportImg').hidden = true; $('#repActions').hidden = true; go('report');
+}
+$('#makeReport').addEventListener('click', async () => {
+  const consent = $('#repConsent').checked;
+  repName = consent ? $('#repName').value.trim() : ''; repOffice = consent ? $('#repOffice').value.trim() : '';
+  if(($('#repName').value.trim() || $('#repOffice').value.trim()) && !consent) toast('同意がないため、氏名と事業所名は載せていません');
+  const r = await buildReport(reportTheme); if(!r){ toast('記録が見つかりませんでした'); return; }
+  reportBlob = r.blob; reportText = r.text;
+  const img = $('#reportImg'); img.src = URL.createObjectURL(r.blob); img.hidden = false; $('#repActions').hidden = false;
+});
+$('#saveReport').addEventListener('click', async () => { if(reportBlob && await saveFile('ainas-report.png', reportBlob)) toast('レポート画像を保存しました'); });
 $('#copyReport').addEventListener('click', async () => {
   try{ await navigator.clipboard.writeText(reportText); toast('テキストをコピーしました'); }
   catch(e){ toast('コピーできませんでした'); }
