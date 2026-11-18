@@ -143,6 +143,8 @@ ol.safety b{display:block}
 .byline{color:var(--muted);font-size:.8rem;letter-spacing:.06em;margin-top:-2px}
 .catch{font-family:var(--voice);font-size:1.35rem;font-weight:700;line-height:1.6;margin:14px 0 2px;color:var(--accent)}
 .heroNote{margin:0}
+ol.safety li.sub{display:block;counter-increment:none;margin:8px 0 0;padding-top:10px;border-top:1px dashed #D9A39A;font-weight:700;color:#A23B2E;font-size:.95rem}
+ol.safety li.sub::before{content:none!important}
 .quote{border-left:3px solid var(--accent);padding:4px 12px;background:var(--accent-soft);border-radius:4px}
 #reportImg{width:100%;border-radius:10px;border:1px solid var(--line)}
 .toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:var(--ink);color:#fff;padding:10px 16px;border-radius:10px;font-size:.9rem;opacity:0;pointer-events:none;transition:opacity .25s;z-index:50;max-width:90vw}
@@ -204,7 +206,7 @@ ol.safety b{display:block}
 .parrow{display:inline-block;color:#FFB48C;animation:nudge2 1s ease-in-out infinite}
 @keyframes nudge2{50%{transform:translateX(5px)}}
 .ptry{color:#FFD9BD;font-weight:700}
-#prolog.guide .pcard{margin-right:118px}
+#prolog .pcard{margin-right:118px}
 .pbar{height:6px;border-radius:3px;background:rgba(255,255,255,.18);overflow:hidden;margin:4px 0 10px}
 .pbar i{display:block;height:100%;width:100%;background:#8FD1C2;transform-origin:left;transition:transform linear}
 .swipe{position:relative;height:34px;margin:2px auto 4px;width:150px}
@@ -336,8 +338,8 @@ ol.safety b{display:block}
     <div class="card">
       <h3>体験の流れ（約10分）</h3>
       <ol class="note" style="margin:0;padding-left:1.3em">
-        <li>佐藤さんの人生を知り、よくある場面を佐藤さんの目線で体験する</li>
-        <li>頭に浮かんだ言葉を残し、佐藤さんの心の声と比べる</li>
+        <li><span class="pname">佐藤さん</span>の人生を知り、よくある場面を<span class="pname">佐藤さん</span>の目線で体験する</li>
+        <li>浮かんだ気持ちを残し、<span class="pname">佐藤さん</span>の心の声と比べる</li>
         <li>自分なら最初に何をするか決める</li>
         <li>関わり方を変えた場面を体験する</li>
         <li>記録を残し、臨床のあとで振り返る</li>
@@ -365,14 +367,14 @@ ol.safety b{display:block}
   <div class="wrap">
     <ul class="steps" aria-hidden="true"><li class="on"></li><li class="on"></li><li></li><li></li><li></li></ul>
     <div class="stepname">2 / 5　浮かんだ言葉を残す</div>
-    <h2 id="h-reflect">佐藤さんの目線で、どんな気持ちになりましたか？</h2>
+    <h2 id="h-reflect"><span class="pname">佐藤さん</span>の目線で、どんな気持ちになりましたか？</h2>
     <div class="card"><h3 id="reflectLead">体験の中で、こんな気持ちが浮かんでいましたね</h3><div class="feelsum" id="reflectThoughts"></div></div>
     <h3 class="subq">その他に、感じたことや考えたことはありますか？</h3>
     <p class="note">当てはまるものをタップしてください（いくつでも）。うまく言葉にならなくても大丈夫です。</p>
     <div class="chips" id="emoChips"></div>
     <label for="emoMemo" class="note">自分の言葉で（任意）</label>
     <textarea id="emoMemo" placeholder="例：なんで誰もこっちを見ないの"></textarea>
-    <button class="btn ghost" type="button" data-story-only style="align-self:flex-start;min-height:40px;padding:8px 14px">佐藤さんの物語を読み返す</button>
+    <button class="btn ghost" type="button" data-story-only style="align-self:flex-start;min-height:40px;padding:8px 14px"><span class="pname">佐藤さん</span>の物語を読み返す</button>
     <div class="row">
       <button class="btn ghost" type="button" id="replayBad">もう一度体験する</button>
       <button class="btn" type="button" id="toDeclare" disabled>次へ</button>
@@ -384,16 +386,16 @@ ol.safety b{display:block}
 <section class="view" id="v-voices" aria-labelledby="h-voices">
   <div class="wrap">
     <ul class="steps" aria-hidden="true"><li class="on"></li><li class="on"></li><li></li><li></li><li></li></ul>
-    <div class="stepname">2 / 5　佐藤さんの心の声</div>
+    <div class="stepname">2 / 5　<span class="pname">佐藤さん</span>の心の声</div>
     <h2 id="h-voices">あなたが感じたことと、比べてみましょう</h2>
     <div class="card" id="myWords"></div>
     <div class="card">
-      <h3>そのとき、佐藤さんは</h3>
+      <h3>そのとき、<span class="pname">佐藤さん</span>は</h3>
       <ol class="thoughts" id="thoughtList"></ol>
       <p class="note">公表されている当事者の語りなどを参考に作った、架空の心の声です。</p>
     </div>
     <p class="note">重なったところも、違ったところも、どちらも大切な気づきです。</p>
-    <button class="btn ghost" type="button" data-story-only style="align-self:flex-start;min-height:40px;padding:8px 14px">佐藤さんの物語を読み返す</button>
+    <button class="btn ghost" type="button" data-story-only style="align-self:flex-start;min-height:40px;padding:8px 14px"><span class="pname">佐藤さん</span>の物語を読み返す</button>
     <button class="btn" type="button" id="toDeclare2">次へ</button>
   </div>
 </section>
@@ -408,7 +410,7 @@ ol.safety b{display:block}
     <div class="chips" id="actChips"></div>
     <label for="actOwn" class="note">自分の言葉で（任意）</label>
     <input type="text" id="actOwn" placeholder="例：アラームより先に、佐藤さんの顔を見る">
-    <button class="btn ghost" type="button" data-story-only style="align-self:flex-start;min-height:40px;padding:8px 14px">佐藤さんの物語を読み返す</button>
+    <button class="btn ghost" type="button" data-story-only style="align-self:flex-start;min-height:40px;padding:8px 14px"><span class="pname">佐藤さん</span>の物語を読み返す</button>
     <button class="btn" type="button" id="startGood" disabled>関わり方を変えた場面を体験する</button>
   </div>
 </section>
@@ -417,13 +419,13 @@ ol.safety b{display:block}
 <section class="view" id="v-card" aria-labelledby="h-card">
   <div class="wrap">
     <ul class="steps" aria-hidden="true"><li class="on"></li><li class="on"></li><li class="on"></li><li class="on"></li><li></li></ul>
-    <div class="stepname">4 / 5　最低限これだけは確認</div>
+    <div class="stepname" id="cardStep">4 / 5　最低限これだけは確認</div>
     <h2 id="h-card">30秒安全行動カード</h2>
     <div class="card">
       <ol class="safety" id="safetyList"></ol>
       <p class="warnbox" id="safetyPrep"></p>
     </div>
-    <p class="note">機種によらない一般的な目安です。必ず主治医の指示と事業所の手順を優先してください。</p>
+    <p class="note" id="cardNote">機種によらない一般的な目安です。必ず主治医の指示と事業所の手順を優先してください。</p>
     <button class="btn" type="button" id="toCommit">次へ</button>
   </div>
 </section>
@@ -455,7 +457,7 @@ ol.safety b{display:block}
       <p class="note">人工呼吸器の利用者さんを訪問したとき、今日のことを思い出してみてください。そのあとでホームの「わたしの振り返り記録」から振り返ると、この体験があなた自身の経験とつながります。何か月先になってもかまいません。</p>
     </div>
     <div class="card">
-      <h3>療養環境を、佐藤さんの目線で見てみる</h3>
+      <h3><span id="exploreName">療養環境</span>を、<span class="pname">佐藤さん</span>の目線で見てみる</h3>
       <p class="note">言葉のない、音だけの部屋です。スマホを動かすと、寝たまま見える景色を見回せます（指でなぞっても動きます）。</p>
       <button class="btn sub" type="button" id="startExplore">療養環境を見てみる</button>
     </div>
@@ -561,6 +563,7 @@ ol.safety b{display:block}
 <div id="vr" role="dialog" aria-label="その人の目線での体験">
   <div id="stage"></div>
   <div id="faceSrc" hidden>
+    <div class="faceSet" data-world="bed">
       <!-- 正面：天井 -->
       <div class="face" data-face="front">
         <svg viewBox="0 0 1024 1024" aria-hidden="true">
@@ -658,6 +661,127 @@ ol.safety b{display:block}
       <div class="face" data-face="back">
         <svg viewBox="0 0 1024 1024" aria-hidden="true"><rect width="1024" height="1024" fill="#E7DAC4"/></svg>
       </div>
+    </div>
+    <div class="faceSet" data-world="living">
+      <!-- 居間：正面の壁（窓・カレンダー・時計）。目の高さは y=512、床は y≈840 -->
+      <div class="face" data-face="front">
+        <svg viewBox="0 0 1024 1024" aria-hidden="true">
+          <defs>
+            <pattern id="lvWpF" width="24" height="24" patternUnits="userSpaceOnUse"><rect width="24" height="24" fill="#E9DDC8"/><circle cx="6" cy="6" r="1.4" fill="#DED0B8"/><circle cx="18" cy="18" r="1.4" fill="#DED0B8"/></pattern>
+            <linearGradient id="lvSky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#CFE5F2"/><stop offset="1" stop-color="#EEF5EC"/></linearGradient>
+          </defs>
+          <rect width="1024" height="1024" fill="url(#lvWpF)"/>
+          <rect x="0" y="0" width="1024" height="16" fill="#B89A76"/>
+          <rect x="0" y="826" width="1024" height="30" fill="#8E6E4E"/>
+          <rect x="262" y="250" width="500" height="360" fill="#F2EEE6" stroke="#B9AD98" stroke-width="4"/>
+          <rect x="280" y="268" width="464" height="324" fill="url(#lvSky)"/>
+          <path d="M280 470 Q380 420 470 455 T640 440 T744 450 L744 592 L280 592 Z" fill="#A9CF9C"/>
+          <path d="M280 520 Q400 490 520 515 T744 505 L744 592 L280 592 Z" fill="#8DBB82"/>
+          <g fill="#F2A7B5"><circle cx="340" cy="540" r="9"/><circle cx="362" cy="552" r="8"/><circle cx="600" cy="548" r="9"/><circle cx="624" cy="560" r="8"/></g>
+          <g fill="#F7E08A"><circle cx="352" cy="560" r="7"/><circle cx="612" cy="566" r="7"/></g>
+          <line x1="512" y1="268" x2="512" y2="592" stroke="#F2EEE6" stroke-width="10"/>
+          <rect x="246" y="230" width="532" height="14" rx="7" fill="#9C7650"/>
+          <path d="M226 238 L322 238 C312 360 322 500 302 626 L214 626 C230 500 220 360 226 238 Z" fill="#D9C39A" stroke="#BFA77C" stroke-width="3"/>
+          <path d="M798 238 L702 238 C712 360 702 500 722 626 L810 626 C794 500 804 360 798 238 Z" fill="#D9C39A" stroke="#BFA77C" stroke-width="3"/>
+          <g transform="translate(830,300)">
+            <rect x="0" y="0" width="130" height="170" fill="#FFFFFF" stroke="#B9AD98" stroke-width="3"/>
+            <rect x="0" y="0" width="130" height="38" fill="#D96B5B"/>
+            <text x="65" y="28" font-size="26" fill="#fff" text-anchor="middle" font-family="sans-serif" font-weight="bold">11</text>
+            <g fill="#C9C2B4"><rect x="12" y="52" width="14" height="12"/><rect x="34" y="52" width="14" height="12"/><rect x="56" y="52" width="14" height="12"/><rect x="78" y="52" width="14" height="12"/><rect x="100" y="52" width="14" height="12"/>
+              <rect x="12" y="76" width="14" height="12"/><rect x="34" y="76" width="14" height="12"/><rect x="56" y="76" width="14" height="12"/><rect x="100" y="76" width="14" height="12"/>
+              <rect x="12" y="100" width="14" height="12"/><rect x="34" y="100" width="14" height="12"/><rect x="56" y="100" width="14" height="12"/><rect x="78" y="100" width="14" height="12"/><rect x="100" y="100" width="14" height="12"/></g>
+            <circle cx="85" cy="82" r="13" fill="none" stroke="#D96B5B" stroke-width="3"/>
+            <text x="65" y="150" font-size="18" fill="#7A6A5A" text-anchor="middle" font-family="sans-serif">おふろ</text>
+          </g>
+          <g transform="translate(150,190)">
+            <circle r="62" fill="#FBF8F2" stroke="#7E5D3E" stroke-width="9"/>
+            <line x1="0" y1="0" x2="0" y2="-40" stroke="#2A2220" stroke-width="6" stroke-linecap="round"/>
+            <line x1="0" y1="0" x2="30" y2="12" stroke="#2A2220" stroke-width="4" stroke-linecap="round"/>
+          </g>
+        </svg>
+      </div>
+      <!-- 右の壁：x が大きいほど後ろ。後ろ寄りに入口の引き戸 -->
+      <div class="face" data-face="right">
+        <svg viewBox="0 0 1024 1024" aria-hidden="true">
+          <defs><pattern id="lvWpR" width="24" height="24" patternUnits="userSpaceOnUse"><rect width="24" height="24" fill="#E9DDC8"/><circle cx="6" cy="6" r="1.4" fill="#DED0B8"/><circle cx="18" cy="18" r="1.4" fill="#DED0B8"/></pattern></defs>
+          <rect width="1024" height="1024" fill="url(#lvWpR)"/>
+          <rect x="0" y="0" width="1024" height="16" fill="#B89A76"/>
+          <rect x="0" y="826" width="1024" height="30" fill="#8E6E4E"/>
+          <g transform="translate(546,240) scale(0.92,1.0)">
+            <rect x="-14" y="-14" width="288" height="604" fill="#9C7650"/>
+            <rect x="0" y="0" width="260" height="590" fill="#C89F72" stroke="#7E5D3E" stroke-width="5"/>
+            <rect x="22" y="22" width="216" height="300" fill="#F6F1E4" stroke="#7E5D3E" stroke-width="5"/>
+            <g stroke="#9C7650" stroke-width="5"><line x1="94" y1="22" x2="94" y2="322"/><line x1="166" y1="22" x2="166" y2="322"/>
+              <line x1="22" y1="97" x2="238" y2="97"/><line x1="22" y1="172" x2="238" y2="172"/><line x1="22" y1="247" x2="238" y2="247"/></g>
+            <rect x="22" y="344" width="216" height="224" fill="#BD9467" stroke="#7E5D3E" stroke-width="4"/>
+            <rect x="12" y="300" width="22" height="70" rx="10" fill="#5C4430" stroke="#3A2A1E" stroke-width="3"/>
+          </g>
+          <g transform="translate(200,400)">
+            <rect x="0" y="0" width="150" height="110" fill="#FFFFFF" stroke="#9C7650" stroke-width="8"/>
+            <rect x="12" y="12" width="126" height="86" fill="#E8DCC6"/>
+            <circle cx="55" cy="48" r="14" fill="#8E6E5A"/><path d="M36 98 Q55 66 74 98 Z" fill="#6E7F8E"/>
+            <circle cx="95" cy="50" r="13" fill="#5E4A3E"/><path d="M78 98 Q95 68 112 98 Z" fill="#C9A0A8"/>
+          </g>
+        </svg>
+      </div>
+      <!-- 左の壁：x が大きいほど前。和裁の写真と箪笥 -->
+      <div class="face" data-face="left">
+        <svg viewBox="0 0 1024 1024" aria-hidden="true">
+          <defs><pattern id="lvWpL" width="24" height="24" patternUnits="userSpaceOnUse"><rect width="24" height="24" fill="#E9DDC8"/><circle cx="6" cy="6" r="1.4" fill="#DED0B8"/><circle cx="18" cy="18" r="1.4" fill="#DED0B8"/></pattern></defs>
+          <rect width="1024" height="1024" fill="url(#lvWpL)"/>
+          <rect x="0" y="0" width="1024" height="16" fill="#B89A76"/>
+          <rect x="0" y="826" width="1024" height="30" fill="#8E6E4E"/>
+          <g transform="translate(590,330)">
+            <rect x="0" y="0" width="220" height="190" fill="#FFFFFF" stroke="#7E5D3E" stroke-width="10"/>
+            <rect x="16" y="16" width="188" height="158" fill="#F3EBDD"/>
+            <path d="M60 50 L160 50 L196 86 L174 104 L156 92 L156 168 L64 168 L64 92 L46 104 L24 86 Z" fill="#4E6A8E"/>
+            <path d="M110 50 L96 168 M110 50 L124 168" stroke="#E9DCC0" stroke-width="5"/>
+            <g fill="#F0C9D2"><circle cx="84" cy="120" r="7"/><circle cx="136" cy="136" r="7"/><circle cx="96" cy="150" r="6"/><circle cx="140" cy="100" r="6"/></g>
+          </g>
+          <g transform="translate(560,560)">
+            <rect x="0" y="0" width="300" height="270" fill="#A5774E" stroke="#6E4E32" stroke-width="5"/>
+            <g fill="#B98A5E" stroke="#6E4E32" stroke-width="3"><rect x="14" y="14" width="272" height="72"/><rect x="14" y="98" width="272" height="72"/><rect x="14" y="182" width="272" height="72"/></g>
+            <g fill="#3A2A1E"><rect x="80" y="44" width="40" height="10" rx="5"/><rect x="180" y="44" width="40" height="10" rx="5"/><rect x="80" y="128" width="40" height="10" rx="5"/><rect x="180" y="128" width="40" height="10" rx="5"/><rect x="80" y="212" width="40" height="10" rx="5"/><rect x="180" y="212" width="40" height="10" rx="5"/></g>
+            <rect x="110" y="-60" width="80" height="60" rx="10" fill="#C9D9C2" stroke="#7E8E76" stroke-width="3"/>
+            <path d="M150 -60 C140 -100 120 -110 110 -130 M150 -60 C160 -100 185 -112 196 -128" stroke="#6E9A5E" stroke-width="5" fill="none"/>
+            <circle cx="108" cy="-132" r="10" fill="#F2A7B5"/><circle cx="198" cy="-130" r="10" fill="#F7E08A"/>
+          </g>
+        </svg>
+      </div>
+      <!-- 天井：丸い和紙のシーリングライト -->
+      <div class="face" data-face="top">
+        <svg viewBox="0 0 1024 1024" aria-hidden="true">
+          <defs>
+            <radialGradient id="lvLamp" cx="50%" cy="50%" r="50%"><stop offset="0" stop-color="#FFFFFF"/><stop offset=".55" stop-color="#FFFEF6"/><stop offset="1" stop-color="#FFFEF6" stop-opacity="0"/></radialGradient>
+            <radialGradient id="lvWashi" cx="50%" cy="45%" r="55%"><stop offset="0" stop-color="#FFFFFF" stop-opacity=".9"/><stop offset=".7" stop-color="#FFF6DE" stop-opacity=".2"/><stop offset="1" stop-color="#EBDCB8" stop-opacity=".6"/></radialGradient>
+          </defs>
+          <rect width="1024" height="1024" fill="#F5F4F0"/>
+          <rect x="0" y="0" width="1024" height="1024" fill="none" stroke="#B89A76" stroke-width="16"/>
+          <circle cx="512" cy="512" r="250" fill="url(#lvLamp)" opacity=".85"/>
+          <circle cx="512" cy="512" r="132" fill="#9C7650"/>
+          <circle cx="512" cy="512" r="122" fill="#FFF9EA"/>
+          <circle cx="512" cy="512" r="122" fill="url(#lvWashi)"/>
+          <g stroke="#B88E62" stroke-width="5" fill="none" opacity=".85"><circle cx="512" cy="512" r="78"/>
+            <line x1="390" y1="512" x2="634" y2="512"/><line x1="512" y1="390" x2="512" y2="634"/></g>
+          <circle cx="512" cy="512" r="26" fill="#FFFDF6" stroke="#9C7650" stroke-width="5"/>
+        </svg>
+      </div>
+      <div class="face" data-face="bottom">
+        <svg viewBox="0 0 1024 1024" aria-hidden="true"><rect width="1024" height="1024" fill="#C9A782"/></svg>
+      </div>
+      <!-- 後ろの壁：ふすま -->
+      <div class="face" data-face="back">
+        <svg viewBox="0 0 1024 1024" aria-hidden="true">
+          <rect width="1024" height="1024" fill="#E9DDC8"/>
+          <rect x="0" y="0" width="1024" height="16" fill="#B89A76"/>
+          <rect x="0" y="826" width="1024" height="30" fill="#8E6E4E"/>
+          <rect x="250" y="235" width="524" height="592" fill="#6E4E32"/>
+          <rect x="262" y="247" width="246" height="574" fill="#EFE6D2"/><rect x="516" y="247" width="246" height="574" fill="#EFE6D2"/>
+          <path d="M262 700 Q330 650 400 690 T508 680 L508 821 L262 821 Z M516 690 Q600 640 680 680 T762 670 L762 821 L516 821 Z" fill="#C9D3B8" opacity=".7"/>
+          <circle cx="480" cy="540" r="10" fill="#6E4E32"/><circle cx="544" cy="540" r="10" fill="#6E4E32"/>
+        </svg>
+      </div>
+    </div>
   </div>
   <!-- 人物・機器：部屋の中に立てる板（billboard）。患者さんは仰向けなので、左側のものは頭が画面の右（天井側）を向くよう回転して描く -->
   <div id="spriteSrc" hidden>
@@ -847,6 +971,128 @@ ol.safety b{display:block}
       </g>
     </svg>
 
+    <svg viewBox="0 0 600 800" style="position:absolute;width:0;height:0">
+      <defs>
+        <g id="helperBody" stroke="#3a2e2a" stroke-width="3" stroke-linejoin="round">
+          <path d="M160 770 L440 770 L432 1440 L322 1440 L302 960 L298 960 L278 1440 L168 1440 Z" fill="#3E4A52"/>
+          <path d="M300 900 L300 960" stroke="#2C363C" stroke-width="3"/>
+          <path d="M160 1432 L282 1432 C290 1460 286 1484 270 1488 L150 1488 C140 1470 146 1446 160 1432 Z" fill="#F4F4F2"/>
+          <path d="M318 1432 L440 1432 C454 1446 460 1470 450 1488 L330 1488 C314 1484 310 1460 318 1432 Z" fill="#F4F4F2"/>
+          <path d="M276 288 L276 344 L324 344 L324 288 Z" fill="#E2B596"/>
+          <path d="M140 800 L150 450 C156 380 214 348 262 340 L338 340 C386 348 444 380 450 450 L460 800 Z" fill="#6F9E7C"/>
+          <path d="M150 470 C160 420 190 390 222 376 L230 800 L146 800 Z" fill="#5E8A6B" stroke="none"/>
+          <path d="M262 340 L300 392 L338 340 L356 356 L300 420 L244 356 Z" fill="#8DB89A"/>
+          <path d="M300 392 L300 470" stroke="#4E7A5B" stroke-width="4"/>
+          <circle cx="300" cy="430" r="5" fill="#F4F4F4"/><circle cx="300" cy="456" r="5" fill="#F4F4F4"/>
+          <path d="M196 520 L404 520 L430 800 L170 800 Z" fill="#EADBBE" stroke="#3a2e2a" stroke-width="3"/>
+          <path d="M196 520 L404 520" stroke="#C9B48E" stroke-width="10"/>
+          <rect x="350" y="430" width="62" height="30" rx="5" fill="#F7F7F2"/>
+          <path d="M358 440 L402 440 M358 450 L388 450" stroke="#7E8A96" stroke-width="3"/>
+          <path d="M412 360 C420 340 430 330 446 340" fill="none" stroke="#6C7A86" stroke-width="5"/>
+        </g>
+        <g id="helperHead" stroke="#3a2e2a" stroke-width="3" stroke-linejoin="round">
+          <path d="M226 232 C212 140 254 96 300 96 C354 96 392 140 376 232 C372 262 362 280 354 292 L246 292 C238 280 230 262 226 232 Z" fill="#5B3B2A"/>
+          <ellipse cx="384" cy="196" rx="34" ry="30" fill="#5B3B2A"/>
+          <ellipse cx="236" cy="232" rx="13" ry="20" fill="#F1CDB0"/><ellipse cx="364" cy="232" rx="13" ry="20" fill="#F1CDB0"/>
+          <path d="M238 214 C238 152 268 122 300 122 C332 122 362 152 362 214 C362 268 334 306 300 310 C266 306 238 268 238 214 Z" fill="#F1CDB0"/>
+          <path d="M334 142 C356 166 364 204 360 236 C356 274 336 300 312 308 C336 278 346 230 334 142 Z" fill="#E2B596" stroke="none"/>
+          <path d="M236 206 C238 146 276 112 318 116 C354 120 370 152 364 200 C350 176 324 158 296 160 C286 182 262 198 236 206 Z" fill="#5B3B2A"/>
+          <path d="M272 132 C300 120 334 124 352 146" fill="none" stroke="#7E5E48" stroke-width="3"/>
+        </g>
+      </defs>
+    </svg>
+    <!-- ===== 居間（BPSD編）の人物 ===== -->
+    <svg data-sprite="lv-sideNurse" viewBox="0 0 600 1500"><g><use href="#helperBody"/><use href="#helperHead"/><g stroke-linecap="round" fill="none">
+          <path d="M254 192 L290 202" stroke="#4A3226" stroke-width="5"/><path d="M310 202 L346 192" stroke="#4A3226" stroke-width="5"/>
+          <ellipse cx="272" cy="226" rx="8" ry="9" fill="#2B211D" stroke="none"/><ellipse cx="328" cy="226" rx="8" ry="9" fill="#2B211D" stroke="none"/>
+          <circle cx="274" cy="223" r="2.8" fill="#fff" stroke="none"/><circle cx="330" cy="223" r="2.8" fill="#fff" stroke="none"/>
+          <path d="M258 214 L286 216 M314 216 L342 214" stroke="#3a2e2a" stroke-width="4"/>
+          <path d="M300 238 Q295 256 305 262" stroke="#C4927A" stroke-width="3"/>
+          <path d="M284 286 Q300 280 316 286" stroke="#9C4F45" stroke-width="4"/>
+        </g>
+      <ellipse cx="150" cy="800" rx="24" ry="30" fill="#F1CDB0" stroke="#3a2e2a" stroke-width="3"/><ellipse cx="450" cy="800" rx="24" ry="30" fill="#F1CDB0" stroke="#3a2e2a" stroke-width="3"/></g></svg>
+    <svg data-sprite="lv-overBad" viewBox="0 0 600 1500"><g><use href="#helperBody"/>
+      <g transform="rotate(-8 300 330)"><use href="#helperHead"/><g stroke-linecap="round" fill="none">
+          <path d="M254 192 L290 202" stroke="#4A3226" stroke-width="5"/><path d="M310 202 L346 192" stroke="#4A3226" stroke-width="5"/>
+          <ellipse cx="272" cy="226" rx="8" ry="9" fill="#2B211D" stroke="none"/><ellipse cx="328" cy="226" rx="8" ry="9" fill="#2B211D" stroke="none"/>
+          <circle cx="274" cy="223" r="2.8" fill="#fff" stroke="none"/><circle cx="330" cy="223" r="2.8" fill="#fff" stroke="none"/>
+          <path d="M258 214 L286 216 M314 216 L342 214" stroke="#3a2e2a" stroke-width="4"/>
+          <path d="M300 238 Q295 256 305 262" stroke="#C4927A" stroke-width="3"/>
+          <path d="M284 286 Q300 280 316 286" stroke="#9C4F45" stroke-width="4"/>
+        </g></g>
+      <path d="M430 400 C500 450 540 520 540 600 L500 610 C490 540 460 490 410 460 Z" fill="#6F9E7C" stroke="#3a2e2a" stroke-width="3"/>
+      <ellipse cx="520" cy="630" rx="34" ry="40" fill="#F1CDB0" stroke="#3a2e2a" stroke-width="3"/>
+      <path d="M500 610 l-6 -36 M520 604 l-2 -40 M540 610 l4 -34" stroke="#3a2e2a" stroke-width="3" fill="none"/></g></svg>
+    <svg data-sprite="lv-doorHelper" viewBox="0 0 600 1500"><g><use href="#helperBody"/><use href="#helperHead"/><g stroke-linecap="round" fill="none">
+          <path d="M254 198 Q272 190 290 196" stroke="#4A3226" stroke-width="5"/><path d="M310 196 Q328 190 346 198" stroke="#4A3226" stroke-width="5"/>
+          <ellipse cx="272" cy="226" rx="8" ry="10" fill="#2B211D" stroke="none"/><ellipse cx="328" cy="226" rx="8" ry="10" fill="#2B211D" stroke="none"/>
+          <circle cx="274" cy="222" r="3" fill="#fff" stroke="none"/><circle cx="330" cy="222" r="3" fill="#fff" stroke="none"/>
+          <path d="M256 214 Q270 206 286 214 M314 214 Q330 206 344 214" stroke="#3a2e2a" stroke-width="4"/>
+          <path d="M300 238 Q295 256 305 262" stroke="#C4927A" stroke-width="3"/>
+          <path d="M284 280 Q300 290 316 280" stroke="#9C4F45" stroke-width="4"/>
+        </g>
+      <ellipse cx="150" cy="800" rx="24" ry="30" fill="#F1CDB0" stroke="#3a2e2a" stroke-width="3"/><ellipse cx="450" cy="800" rx="24" ry="30" fill="#F1CDB0" stroke="#3a2e2a" stroke-width="3"/></g></svg>
+    <svg data-sprite="lv-overGood" viewBox="0 0 600 1500"><g><use href="#helperBody"/><use href="#helperHead"/><g stroke-linecap="round" fill="none">
+          <path d="M254 196 Q272 186 290 192" stroke="#2A2220" stroke-width="5"/>
+          <path d="M310 192 Q328 186 346 196" stroke="#2A2220" stroke-width="5"/>
+          <path d="M256 218 Q272 208 288 218" stroke="#3a2e2a" stroke-width="4"/>
+          <path d="M312 218 Q328 208 344 218" stroke="#3a2e2a" stroke-width="4"/>
+          <ellipse cx="272" cy="226" rx="9" ry="11" fill="#2B211D" stroke="none"/>
+          <ellipse cx="328" cy="226" rx="9" ry="11" fill="#2B211D" stroke="none"/>
+          <circle cx="275" cy="222" r="3.4" fill="#fff" stroke="none"/><circle cx="331" cy="222" r="3.4" fill="#fff" stroke="none"/>
+          <path d="M300 238 Q295 256 305 262" stroke="#C4927A" stroke-width="3"/>
+          <path d="M282 280 Q300 294 318 280" stroke="#9C4F45" stroke-width="4"/>
+          <ellipse cx="258" cy="258" rx="14" ry="7" fill="#EF9F98" stroke="none" opacity=".35"/>
+          <ellipse cx="342" cy="258" rx="14" ry="7" fill="#EF9F98" stroke="none" opacity=".35"/>
+        </g>
+      <rect x="220" y="600" width="160" height="70" rx="12" fill="#FFFFFF" stroke="#BFC7C6" stroke-width="3"/>
+      <path d="M236 622 L364 622 M236 646 L364 646" stroke="#E2E8E8" stroke-width="4"/>
+      <ellipse cx="226" cy="640" rx="24" ry="28" fill="#F1CDB0" stroke="#3a2e2a" stroke-width="3"/><ellipse cx="374" cy="640" rx="24" ry="28" fill="#F1CDB0" stroke="#3a2e2a" stroke-width="3"/></g></svg>
+    <svg data-sprite="lv-lap" viewBox="0 0 800 500">
+      <g stroke="#3a2e2a" stroke-width="3" stroke-linejoin="round">
+        <path d="M120 500 C110 300 180 200 300 190 L500 190 C620 200 690 300 680 500 Z" fill="#6E7E90"/>
+        <path d="M400 200 L400 500" stroke="#5E6C7C" stroke-width="4"/>
+        <path d="M110 260 C150 200 230 230 300 300 L330 340 L270 380 L210 330 C170 300 130 300 110 260 Z" fill="#D99AA6"/>
+        <path d="M690 260 C650 200 570 230 500 300 L470 340 L530 380 L590 330 C630 300 670 300 690 260 Z" fill="#D99AA6"/>
+        <path d="M290 330 C320 300 380 300 400 320 C420 300 480 300 510 330 C520 370 470 400 400 398 C330 400 280 370 290 330 Z" fill="#EFC8AA"/>
+        <path d="M340 330 C350 350 360 362 372 370 M420 322 C430 340 444 356 460 364" stroke="#C9977B" stroke-width="3" fill="none"/>
+      </g>
+    </svg>
+    <svg data-sprite="lv-daughter" viewBox="0 0 600 1500">
+      <g stroke="#3a2e2a" stroke-width="3" stroke-linejoin="round">
+        <path d="M220 1260 L240 1450 L290 1450 L296 1260 Z M304 1260 L310 1450 L360 1450 L380 1260 Z" fill="#D8C8BC"/>
+        <path d="M226 1440 L292 1440 C298 1464 292 1484 278 1488 L214 1488 C206 1470 212 1452 226 1440 Z M308 1440 L374 1440 C388 1452 394 1470 386 1488 L322 1488 C308 1484 302 1464 308 1440 Z" fill="#5B4A43"/>
+        <path d="M150 860 L450 860 L470 1280 L130 1280 Z" fill="#4E5E6E"/>
+        <path d="M200 900 L180 1270 M300 900 L300 1270 M400 900 L420 1270" stroke="#3E4E5E" stroke-width="3" fill="none"/>
+        <!-- 体：ピンクのカーディガン -->
+        <path d="M120 940 L130 520 C134 440 200 400 262 392 L338 392 C400 400 466 440 470 520 L480 900 Z" fill="#C9A35A"/>
+        <path d="M262 392 L300 470 L338 392 Z" fill="#F4EEE6"/>
+        <path d="M300 470 L300 940" stroke="#A07C3A" stroke-width="4"/>
+        <path d="M150 600 C150 520 170 470 200 450 L210 640 Z M450 600 C450 520 430 470 400 450 L390 640 Z" fill="#B38E48" stroke="none" opacity=".6"/>
+        <!-- 胸の前で組んだ手 -->
+        <path d="M170 520 C190 600 240 640 300 640 C360 640 410 600 430 520 L400 510 C380 570 340 600 300 600 C260 600 220 570 200 510 Z" fill="#C9A35A"/>
+        <path d="M262 612 C262 586 280 572 300 572 C320 572 338 586 338 612 C338 636 320 650 300 650 C280 650 262 636 262 612 Z" fill="#EFC8AA"/>
+        <path d="M282 590 L282 640 M300 584 L300 646 M318 590 L318 640" stroke="#C9977B" stroke-width="2.5"/>
+        <!-- 首・頭 -->
+        <path d="M274 330 L274 398 L326 398 L326 330 Z" fill="#E4B898"/>
+        <path d="M222 236 C210 140 252 104 300 104 C352 104 394 140 380 236 C376 270 368 286 360 296 L240 296 C232 286 224 270 222 236 Z" fill="#4A3328"/>
+        <ellipse cx="236" cy="240" rx="13" ry="20" fill="#EFC8AA"/><ellipse cx="364" cy="240" rx="13" ry="20" fill="#EFC8AA"/>
+        <path d="M238 222 C238 160 268 132 300 132 C332 132 362 160 362 222 C362 278 334 318 300 322 C266 318 238 278 238 222 Z" fill="#EFC8AA"/>
+        <path d="M330 150 C356 170 362 210 360 240 C356 280 336 310 310 320 C336 290 346 240 330 150 Z" fill="#DDAE8E" stroke="none"/>
+        <path d="M236 214 C240 150 280 120 320 126 C352 132 368 160 364 206 C340 176 300 160 262 170 C252 184 242 198 236 214 Z" fill="#5A3D2E"/>
+        <path d="M262 168 C290 150 330 150 352 172" fill="none" stroke="#7A5A48" stroke-width="3"/>
+      </g>
+      <g stroke-linecap="round" fill="none">
+        <path d="M254 202 Q270 194 286 200" stroke="#5E5A57" stroke-width="5"/>
+        <path d="M314 200 Q330 194 346 202" stroke="#5E5A57" stroke-width="5"/>
+        <path d="M258 238 Q272 226 286 238 M314 238 Q328 226 342 238" stroke="#2B211D" stroke-width="5"/>
+        <path d="M254 250 Q262 256 270 252 M330 252 Q338 256 346 250" stroke="#D2A182" stroke-width="2.5"/>
+        <path d="M300 246 Q296 266 306 270" stroke="#C4927A" stroke-width="3"/>
+        <path d="M280 286 Q300 304 320 286" stroke="#8E4A42" stroke-width="4"/>
+        <ellipse cx="258" cy="268" rx="14" ry="7" fill="#EF9F98" stroke="none" opacity=".35"/>
+        <ellipse cx="342" cy="268" rx="14" ry="7" fill="#EF9F98" stroke="none" opacity=".35"/>
+      </g>
+    </svg>
     <!-- 共通パーツ：看護師（直立で描き、各スプライトで回転） -->
     <svg viewBox="0 0 600 800" style="position:absolute;width:0;height:0">
       <defs>
@@ -893,7 +1139,7 @@ ol.safety b{display:block}
     </div>
   </div>
   <div id="vrMenu" hidden>
-    <button type="button" data-act="story">佐藤さんの物語をもう一度読む</button>
+    <button type="button" data-act="story"><span class="pname">佐藤さん</span>の物語をもう一度読む</button>
     <button type="button" data-act="restart">この場面を最初から</button>
     <button type="button" data-act="mute" id="muteBtn" aria-pressed="false">音：あり（タップで消す）</button>
     <button type="button" data-act="tts" id="ttsBtn" aria-pressed="false">読み上げ：あり（タップで消す）</button>
@@ -1058,12 +1304,131 @@ const THEMES = [
       {id:'feeling', label:'利用者さんの気持ちをもっと知りたい'}
     ]
   },
+  {
+    id:'home-bpsd', ready:true, minutes:10, world:'living', person:'ハナさん',
+    tag:'在宅 × 認知症', trainingTag:'虐待防止・認知症ケア研修',
+    title:'認知症のBPSD編（入浴）',
+    lead:'「拒否」に見える行動の、その人の側の理由。',
+    limit:{yaw:115, up:50, down:-65},
+    looks:{ceiling:[0,0], vent:[-70,2], door:[106,-4], family:[0,-58]},
+    jumpLabels:{ceiling:'正面（庭）', vent:'左を見る（写真）', door:'右うしろ（入口）', family:'手元を見る'},
+    exploreName:'暮らしの環境',
+    actPlaceholder:'例：お風呂の前に、まずハナさんの好きな話から始める',
+    memoPlaceholder:'例：急かすほど、ハナさんは怖くなっていた。「拒否」には、ハナさんの側の理由があった。',
+    cardTitle:'30秒の関わりカード', cardStep:'4 / 5　ケアの前に、これだけは',
+    cardNote:'「拒否」に見える行動には、その人の側の理由があります。不適切なケアは、気づかないうちに始まります。',
+    patient:[
+      ['名前','田村 ハナさん（仮名）・84歳・女性'],
+      ['病気','アルツハイマー型認知症'],
+      ['暮らし','自宅で一人暮らし。近くに住む娘が、毎日のように顔を出す'],
+      ['サービス','訪問介護 週2回（入浴の手伝い・家事）'],
+      ['好きなこと','和裁。庭の花をながめること']
+    ],
+    story:[
+      {sec:5, img:'hana-1.svg', text:'田村ハナさん。若い頃は和裁の仕事で、夜おそくまで着物を縫って家族を支えてきた。'},
+      {sec:5, img:'hana-2.svg', text:'夫を見送ってからも、近くに住む娘と、お茶を飲みながら笑い合う毎日。'},
+      {sec:5, img:'hana-3.svg', text:'ある日、鍋を火にかけたことを忘れた。少しずつ、覚えていられないことが増えていった。'},
+      {sec:7, img:'hana-4.svg', text:'今日は、カレンダーに「おふろ」と書いてある日。でも、それが何の日だったのか、ハナさんにはよくわからない。'}
+    ],
+    sprites:[
+      {id:'lap', src:'lv-lap', type:'bill', yaw:0, pitch:-64, d:1.25, w:1.5, static:true},
+      {id:'sideNurse', src:'lv-sideNurse', type:'stand', x:2.2, z:0.2, h:4.7},
+      {id:'overBad', src:'lv-overBad', type:'stand', x:1.2, z:-1.6, h:4.7, lean:6},
+      {id:'doorHelper', src:'lv-doorHelper', type:'stand', x:4.0, z:1.5, h:4.7},
+      {id:'overGood', src:'lv-overGood', type:'stand', x:-0.2, z:-1.3, h:4.7, sink:0.9},
+      {id:'daughter', src:'lv-daughter', type:'stand', x:4.0, z:1.2, h:4.6}
+    ],
+    bad:{ label:'1 / 5　よくある場面',
+      intro:'今日は、ヘルパーさんが来る日。\nハナさんは、居間のいすに座って\n庭をながめています。',
+      trigger:{banner:'うしろで、戸の開く音がした', sfx:'doorOpen'},
+      cues:[
+      {t:1.5, sfx:'steps'},
+      {t:4.5, show:'sideNurse', speech:['ヘルパー','ハナさーん、お風呂の時間ですよー。']},
+      {t:8, ask:true},
+      {t:10, hide:'sideNurse', show:'overBad', speech:['ヘルパー','さ、脱ぎましょうね。はい、ボタン外しますよ。']},
+      {t:16, speech:['あなた','……結構です。']},
+      {t:20, speech:['ヘルパー','だめですよ。もう3日も入ってないんですから。ほら、腕あげて。']},
+      {t:26.5, speech:['あなた','やめて！ 触らないで！']},
+      {t:29.5, ask:true},
+      {t:31.5, speech:['ヘルパー','……はいはい、わかりました。今日はやめときますね。']},
+      {t:37, hide:'overBad', sfx:'leave', speech:null},
+      {t:41, speech:['ヘルパー（記録）','本日、入浴拒否あり。声かけするも、大声で拒否される。']},
+      {t:47, speech:null, ask:true},
+      {t:51, end:true}
+    ],
+      endText:'このヘルパーも、次の訪問に追われていました。忙しいとき、誰にでも起こりうる場面です。記録には「入浴拒否」と残りました。ハナさんの側には、どんな理由があったのでしょうか。',
+      endNext:'浮かんだ気持ちを残す'
+    },
+    good:{ label:'4 / 5　もう一度、同じ場面',
+      intro:'もう一度、同じ日の同じ場面です。\n今度は、関わり方の違うヘルパーが来ます。\n\n気持ちが動いたら、右のボタンで残してください。',
+      trigger:{banner:'戸をたたく音がした', sfx:'knock', look:'door'},
+      cues:[
+      {t:1.5, speech:['ヘルパー','ハナさん、こんにちは。ヘルパーの山本です。入ってもいいですか？']},
+      {t:8, speech:['あなた','……はい、どうぞ。']},
+      {t:11, sfx:'doorOpen'},
+      {t:12, show:'doorHelper', speech:['ヘルパー','失礼します。今日は少し寒いですね。']},
+      {t:17.5, hide:'doorHelper', sfx:'steps'},
+      {t:19, show:'overGood', speech:['ヘルパー','ハナさん、あの写真の着物、ハナさんが縫ったんですか？']},
+      {t:25, hint:'vent', speech:['あなた','そうよ。若い頃は、毎晩縫ってたの。']},
+      {t:30, ask:true},
+      {t:31.5, speech:['ヘルパー','すごいなあ。だから手がきれいなんですね。']},
+      {t:36, speech:['ヘルパー','今日は体を温めたいんですけど、足だけお湯につけるのと、背中を拭くのと、どっちがいいですか？']},
+      {t:45, speech:['あなた','……じゃあ、足だけ。']},
+      {t:49, speech:['ヘルパー','わかりました。ひざにタオルをかけたまま、ゆっくりやりましょうね。']},
+      {t:55, ask:true},
+      {t:57, hide:'overGood', sfx:'doorOpen'},
+      {t:58.5, show:'daughter', speech:['娘','お母さん、来たよ。あら、足湯？ 気持ちよさそう。']},
+      {t:65, speech:['ヘルパー','今日は足湯にしました。お風呂のこと、また一緒に相談させてください。']},
+      {t:72, speech:null, ask:true},
+      {t:76, end:true}
+    ],
+      endText:'同じ「お風呂」でも、関わり方でハナさんの体験はここまで変わります。最後に、ケアの前に確かめたいことを見ておきましょう。',
+      endNext:'30秒の関わりカードへ'
+    },
+    thoughts:[
+      ['うしろから声をかけられたとき','誰？ どうして、うちの中にいるの。'],
+      ['「脱ぎましょうね」と言われたとき','知らない人の前で、裸になんてなれるわけがない。'],
+      ['ボタンに手をかけられたとき','やめて。私の服よ。自分でできるのに。'],
+      ['「3日も入ってない」と言われたとき','私が汚いって言うの？ 恥ずかしい。'],
+      ['戸が閉まったあと','あの人、怒ってた。私、何か悪いことをしたのかしら。']
+    ],
+    feel:{
+      bad:['誰？','怖い','恥ずかしい','やめて','急かさないで','自分でできる','寒い','放っておいて','悲しい','わからない'],
+      good:['ほっとした','わかってくれた','うれしい','自分で決められた','恥ずかしくない','懐かしい','娘が来て安心']
+    },
+    emotions:['知らない人が家にいる怖さ','裸になることの恥ずかしさ','子ども扱いされた悔しさ','自分でできるのにという気持ち','何をされるかわからない不安','怒らせてしまった悲しさ','断ったことへの申し訳なさ','うまく言葉にならない'],
+    actions:['正面から、目の高さで名乗る','触れる前に、何をするか伝える','選べる形で聞く','その人の好きなことから話す','嫌がったら、いったん引く','タオルで体を覆う','「拒否」ではなく、その人の理由を記録する'],
+    safety:[
+      ['正面から、目の高さで、名乗る','うしろや横からの声かけは、驚かせ、怖がらせます。'],
+      ['体に触れる前に、何をするか伝える','急に触れられることは、それだけで恐怖になります。'],
+      ['選べる形で聞く','「今日か明日か」「足だけか全身か」。決めるのは、その人です。'],
+      ['嫌がったら、いったん引いて時間をおく','無理に進めず、時間や人、やり方を変えてみます。'],
+      ['体の不調を確かめる','痛み、便秘、発熱、眠れていないなど。行動の裏に、体のサインが隠れていることがあります。'],
+      ['#不適切なケアにしないために',''],
+      ['「拒否」「問題行動」と記録していないか','その人の側の理由と、どう関わったかを書きます。'],
+      ['急かす・無理に脱がせる・子ども扱いの言葉になっていないか','「つい」の関わりが、不適切なケアや虐待の入り口になります。'],
+      ['ひとりで抱えず、共有したか','事業所の上司やケアマネ、ご家族と、関わり方を一緒に考えます。']
+    ],
+    safetyPrep:'訪問のはじめに、その日の体調（痛み・便秘・眠り・熱）を、ご本人やご家族と確かめてから声をかけましょう。',
+    questions:[
+      {id:'dfeel', label:'認知症の人の見え方・感じ方を知りたい'},
+      {id:'family', label:'家族への説明や支え方'},
+      {id:'body', label:'行動の裏にある体の不調の見つけ方'},
+      {id:'talk', label:'声のかけ方・関わり方の技法'},
+      {id:'abuse', label:'不適切なケア・虐待の防止'},
+      {id:'team', label:'チームや事業所での共有のしかた'}
+    ]
+  },
   {id:'eol', ready:false, tag:'在宅 × 看取り', title:'看取り期の関わり編', lead:'最期の時間を過ごす人と家族の目線から。'},
-  {id:'bpsd', ready:false, tag:'在宅 × 認知症', title:'認知症のBPSD編', lead:'「拒否」に見える行動の、その人の側の理由。'},
   {id:'sudden', ready:false, tag:'在宅 × 急変', title:'急変時の対応編', lead:'ひとりの訪問中に、状態が変わったとき。'}
 ];
 /* 疑問タグ → 次のテーマ（ルールで推薦。将来AIに置き換え可能） */
 const RECO = {
+  dfeel:{title:'認知症の人の見え方編', why:'見え方や聞こえ方の変化を、その人の側から体験します。'},
+  body:{title:'体の不調とBPSD編', why:'痛みや便秘が、行動となって表れる場面を体験します。'},
+  talk:{title:'声かけの技法編', why:'正面から・目の高さで・触れ方などを、体験しながら学びます。'},
+  abuse:{title:'不適切なケアの芽に気づく編', why:'「つい」の関わりが、その人にどう届くかを体験します。'},
+  team:{title:'チームで支える編', why:'事業所やケアマネ、家族との共有のしかたを学びます。'},
   alarm:{title:'呼吸器道場：アラーム編', why:'アラームの意味と確かめ方を、波形を動かしながら学べます。'},
   comm:{title:'意思伝達の体験編', why:'文字盤や視線入力を、使う人の側から体験します。'},
   family:{title:'家族の目線編', why:'アラームを見守る家族が、何に不安を感じているかを体験します。'},
@@ -1203,12 +1568,23 @@ function openIntro(t){
   $('#patientInfo').innerHTML = t.patient.map(([k,v]) => `<dt>${k}</dt><dd>${v}</dd>`).join('');
   practiced = false;
   draft = {id: 'r' + Date.now(), theme: t.id, themeTitle: t.title, date: new Date().toISOString(), emotions: [], memo: '', actions: [], actOwn: '', thoughts: [], revisit: null};
+  applyThemeText(t);
   const st = themeStatus(t.id);
   $('#introMine').hidden = !st.count;
   if(st.count) $('#introMineNote').textContent = `学習 ${st.count}回・臨床での振り返り ${st.revisits}回。実際の場面に出会ったら、振り返りを書いて学びを積み重ねていきましょう。`;
   go('intro');
 }
 
+/* テーマごとの呼び名・文言を画面に反映 */
+function applyThemeText(t){
+  $$('.pname').forEach(e => e.textContent = t.person || '佐藤さん');
+  $('#actOwn').placeholder = t.actPlaceholder || '例：アラームより先に、佐藤さんの顔を見る';
+  $('#cmReflect').placeholder = t.memoPlaceholder || '例：処置を急ぐほど、佐藤さんを置き去りにしていた。顔を見るだけで安心が変わる。';
+  $('#h-card').textContent = t.cardTitle || '30秒安全行動カード';
+  $('#cardStep').textContent = t.cardStep || '4 / 5　最低限これだけは確認';
+  $('#cardNote').textContent = t.cardNote || '機種によらない一般的な目安です。必ず主治医の指示と事業所の手順を優先してください。';
+  $('#exploreName').textContent = t.exploreName || '療養環境';
+}
 $('#introReport').addEventListener('click', () => openMemReport(theme.id));
 $('#introRevisit').addEventListener('click', () => openRevisit(theme.id));
 
@@ -1280,7 +1656,7 @@ $('#startGood').addEventListener('click', () => {
 
 /* ===== 安全カード ===== */
 function openCard(){
-  $('#safetyList').innerHTML = theme.safety.map(([b,s]) => `<li><span><b>${b}</b>${s}</span></li>`).join('');
+  $('#safetyList').innerHTML = theme.safety.map(([b,s]) => b.startsWith('#') ? `<li class="sub">${b.slice(1)}</li>` : `<li><span><b>${b}</b>${s}</span></li>`).join('');
   $('#safetyPrep').textContent = theme.safetyPrep;
   go('card');
 }
@@ -1454,7 +1830,7 @@ async function buildReport(themeId){
   ctx.font = `700 52px ${F}`; ctx.fillText('受講＆振り返りレポート', 70, 135);
   ctx.font = `500 32px ${F}`;
   let y = 240;
-  const rows = [['テーマ', t.title], ['はじめの学習', fmtDate(new Date(first.date))], ['学習の回数', `${rs.length}回（最新：${fmtDate(new Date(latest.date))}）`], ['臨床での振り返り', `${revs.length}回`]];
+  const rows = [['テーマ', t.title], ...(t.trainingTag ? [['研修の区分', t.trainingTag]] : []), ['はじめの学習', fmtDate(new Date(first.date))], ['学習の回数', `${rs.length}回（最新：${fmtDate(new Date(latest.date))}）`], ['臨床での振り返り', `${revs.length}回`]];
   if(repName) rows.push(['氏名', repName]);
   if(repOffice) rows.push(['事業所', repOffice]);
   rows.forEach(([k, v]) => { ctx.fillStyle = '#56676B'; ctx.fillText(k, 70, y); ctx.fillStyle = '#1C2A2E'; ctx.fillText(v, 330, y); y += 56; });
@@ -1481,7 +1857,7 @@ async function buildReport(themeId){
   ctx.fillText('学習補助用の教材です。実際のケアは主治医の指示と事業所の手順を優先します。', 70, y); y += 40;
   const out = document.createElement('canvas'); out.width = 1080; out.height = Math.min(4200, y + 20);
   out.getContext('2d').drawImage(c, 0, 0);
-  const text = ['【受講＆振り返りレポート】', `テーマ：${t.title}`, `はじめの学習：${fmtDate(new Date(first.date))}　学習${rs.length}回・臨床での振り返り${revs.length}回`,
+  const text = ['【受講＆振り返りレポート】', `テーマ：${t.title}`, t.trainingTag ? `研修の区分：${t.trainingTag}` : '', `はじめの学習：${fmtDate(new Date(first.date))}　学習${rs.length}回・臨床での振り返り${revs.length}回`,
     repName ? `氏名：${repName}` : '', repOffice ? `事業所：${repOffice}` : '',
     feelings ? `体験中に浮かんだ気持ち：${feelings}` : '', `次の訪問で最初にすること：${declText(latest)}`, latest.reflection ? `学びのメモ：${latest.reflection}` : '',
     ...revs.map(({v}) => `臨床での振り返り（${fmtDate(new Date(v.date))}）：${v.result}${v.learning ? '／学び：' + v.learning : ''}${v.insight ? '／' + v.insight : ''}`),
@@ -1557,11 +1933,12 @@ $('#copyReport').addEventListener('click', async () => {
 const vr = $('#vr'), stage = $('#stage');
 let LIMIT = {yaw:35, pitchUp:25, pitchDown:-38};   // テーマごとに、利用者さんが見られる範囲（目だけ・首も動く など）
 let LOOKS = {ceiling:[0,0], vent:[-35,0], door:[35,0], family:[0,-38]};
-function applyViewRange(v){
-  v = v || {yaw:70, up:55, down:-62};
-  v = {yaw:105, up:45, down:-65};  /* 試作中：首の可動域の制限を一時的に外して、床まで見回せるようにしている */
+function applyViewRange(){
+  const v = theme.limit || {yaw:105, up:45, down:-65};   /* 試作中：首の可動域の制限は外している */
   LIMIT = {yaw:v.yaw, pitchUp:v.up, pitchDown:v.down};
-  LOOKS = {ceiling:[0,0], vent:[-72,26], door:[62,-8], family:[0,-48]};
+  LOOKS = theme.looks || {ceiling:[0,0], vent:[-72,26], door:[62,-8], family:[0,-48]};
+  const lab = theme.jumpLabels || {ceiling:'正面（天井）', vent:'目を左へ（呼吸器）', door:'目を右へ（入口）', family:'目を下へ（家族）'};
+  $$('.jump button').forEach(b => { if(lab[b.dataset.look]) b.textContent = lab[b.dataset.look]; });
 }
 const view = {yaw:0, pitch:0, ty:0, tp:0};
 const clamp = (v,a,b) => Math.max(a, Math.min(b, v));
@@ -1586,8 +1963,13 @@ function svgToCanvas(svg){
     img.src = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(new XMLSerializer().serializeToString(c));
   });
 }
+let worldTheme = null;
 function buildWorld(){
-  if(worldPromise) return worldPromise;
+  if(worldPromise && worldTheme === theme.id) return worldPromise;
+  if(world){ try{ world.renderer.domElement.remove(); world.renderer.dispose(); }catch(e){} world = null; }
+  for(const k in figs) delete figs[k];
+  worldTheme = theme.id;
+  const W = theme.world || 'bed', SP = theme.sprites || SPRITES, LIVING = W === 'living';
   worldPromise = (async () => {
     if(typeof THREE === 'undefined') throw new Error('no three');
     const renderer = new THREE.WebGLRenderer({antialias:true});
@@ -1603,7 +1985,7 @@ function buildWorld(){
       scene.add(mesh);
     };
     const jobs = [];
-    $$('#faceSrc .face').forEach(face => {
+    $$(`#faceSrc .faceSet[data-world="${W}"] .face`).forEach(face => {
       const name = face.dataset.face, svg = face.querySelector('svg'), pose = FACE_POSE[name];
       const base = svg.cloneNode(true); base.querySelectorAll('.fig').forEach(g => g.remove());
       jobs.push(svgToCanvas(base).then(cv => place(new THREE.Mesh(geo, new THREE.MeshBasicMaterial({map: new THREE.CanvasTexture(cv)})), pose, 1)));
@@ -1616,12 +1998,28 @@ function buildWorld(){
       x.fillStyle = '#C9A782'; x.fillRect(0,0,W,H);
       for(let i = 0; i < 8; i++){ x.fillStyle = i % 2 ? '#C29F79' : '#CDAD89'; x.fillRect(0, i * 64, W, 62); x.fillStyle = '#A88661'; x.fillRect(0, i * 64 + 62, W, 2); x.fillRect((i * 173) % W, i * 64, 2, 64); }
     });
-    const floor = new THREE.Mesh(new THREE.PlaneGeometry(10, 10), new THREE.MeshBasicMaterial({map: floorTex}));
-    floor.position.set(0, 0, FLOOR); floor.rotation.set(Math.PI, 0, 0); scene.add(floor);
     const box = (sx, sy, sz, px, py, pz, cols) => {
       const mats = cols.map(c => new THREE.MeshBasicMaterial({color: c}));
       const b = new THREE.Mesh(new THREE.BoxGeometry(sx, sy, sz), mats); b.position.set(px, py, pz); scene.add(b); return b;
     };
+    const floor = new THREE.Mesh(new THREE.PlaneGeometry(10, 10), new THREE.MeshBasicMaterial({map: floorTex}));
+    if(LIVING){
+      /* 居間：いすに座った目線（床は目から約1.1m下）。テーブル・湯のみ・いすのひじ掛け・ラグ */
+      floor.position.set(0, FLOOR_Y, 0); floor.rotation.set(-Math.PI / 2, 0, 0); scene.add(floor);
+      const rugTex = cvs(256, 256, (x) => { x.fillStyle = '#B88C7A'; x.beginPath(); x.arc(128,128,124,0,7); x.fill(); x.strokeStyle = '#E8D3B6'; x.lineWidth = 6; x.beginPath(); x.arc(128,128,104,0,7); x.stroke(); });
+      const rug = new THREE.Mesh(new THREE.PlaneGeometry(5.5, 5.5), new THREE.MeshBasicMaterial({map: rugTex, transparent:true}));
+      rug.position.set(0, FLOOR_Y + 0.01, -1.2); rug.rotation.set(-Math.PI / 2, 0, 0); scene.add(rug);
+      const wood = ['#9C7650','#9C7650','#B88A5E','#7E5E40','#A5774E','#A5774E'];
+      const tTop = FLOOR_Y + 2.15;
+      box(2.6, 0.12, 1.5, 0, tTop, -2.7, wood);
+      [[-1.15,-2.05],[1.15,-2.05],[-1.15,-3.35],[1.15,-3.35]].forEach(([x, z]) => box(0.12, 2.1, 0.12, x, FLOOR_Y + 1.05, z, Array(6).fill('#7E5E40')));
+      const cup = new THREE.Mesh(new THREE.CylinderGeometry(0.13, 0.11, 0.24, 20), new THREE.MeshBasicMaterial({color:'#5E7E6E'}));
+      cup.position.set(0.45, tTop + 0.18, -2.3); scene.add(cup);
+      const tea = new THREE.Mesh(new THREE.CircleGeometry(0.12, 20), new THREE.MeshBasicMaterial({color:'#B9C27A'}));
+      tea.position.set(0.45, tTop + 0.29, -2.3); tea.rotation.set(-Math.PI / 2, 0, 0); scene.add(tea);
+      [-1, 1].forEach(sx => box(0.24, 0.16, 1.4, sx * 1.0, -1.45, 0.15, ['#8E6E4E','#8E6E4E','#A5774E','#6E4E32','#8E6E4E','#8E6E4E']));
+    } else {
+    floor.position.set(0, 0, FLOOR); floor.rotation.set(Math.PI, 0, 0); scene.add(floor);
     /* BoxGeometry の面順：+X, -X, +Y, -Y, +Z(床側), -Z(天井側) */
     const bl = BED.head - BED.foot, by = (BED.head + BED.foot) / 2;
     box(BED.half * 2, bl, 0.8, 0, by, BED.top + 0.4, ['#E9EEF0','#E9EEF0','#DDE3E6','#DDE3E6','#CFD6D9','#F3F6F7']);          // マットレス
@@ -1645,12 +2043,13 @@ function buildWorld(){
       r.quaternion.setFromRotationMatrix(new THREE.Matrix4().makeBasis(new THREE.Vector3(0, 1, 0), new THREE.Vector3(0, 0, -1), new THREE.Vector3(-sx, 0, 0).multiplyScalar(-1).cross(new THREE.Vector3(0,0,0)).length() ? new THREE.Vector3(sx,0,0) : new THREE.Vector3(sx,0,0)));
       scene.add(r);
     });
+    }
     /* 人物・機器は、部屋の中に立てた板（billboard）。yaw：左がマイナス、pitch：頭側がプラス・足元がマイナス */
     const inlineUse = svg => { svg.querySelectorAll('use').forEach(u => {
       const ref = document.getElementById((u.getAttribute('href') || '').slice(1)); if(!ref) return u.remove();
       const c = ref.cloneNode(true); c.removeAttribute('id'); u.replaceWith(c); }); return svg; };
-    SPRITES.forEach(sp => {
-      const src = inlineUse($(`#spriteSrc [data-sprite="${sp.id}"]`).cloneNode(true));
+    SP.forEach(sp => {
+      const src = inlineUse($(`#spriteSrc [data-sprite="${sp.src || sp.id}"]`).cloneNode(true));
       const vb = src.getAttribute('viewBox').split(/\s+/).map(Number);
       const h = sp.type === 'stand' ? sp.h : sp.w * vb[3] / vb[2], w = sp.type === 'stand' ? sp.h * vb[2] / vb[3] : sp.w;
       sp.w = w;
@@ -1661,15 +2060,18 @@ function buildWorld(){
         if(sp.type === 'stand'){
           /* 床から重力の逆向き（天井側）に立て、正面を患者さんに向ける */
           const L = (sp.lean || 0) * Math.PI / 180;
-          const toward = new THREE.Vector3(-sp.x, -sp.y, 0).normalize(), sky = new THREE.Vector3(0, 0, -1);
+          const toward = LIVING ? new THREE.Vector3(-sp.x, 0, -sp.z).normalize() : new THREE.Vector3(-sp.x, -sp.y, 0).normalize();
+          const sky = LIVING ? new THREE.Vector3(0, 1, 0) : new THREE.Vector3(0, 0, -1);
           const up = sky.clone().multiplyScalar(Math.cos(L)).add(toward.clone().multiplyScalar(Math.sin(L)));
           const nrm = toward.clone().multiplyScalar(Math.cos(L)).sub(sky.clone().multiplyScalar(Math.sin(L)));
           const xax = new THREE.Vector3().crossVectors(up, nrm);
           m.quaternion.setFromRotationMatrix(new THREE.Matrix4().makeBasis(xax, up, nrm));
-          m.position.set(sp.x, sp.y, FLOOR + (sp.sink || 0)).addScaledVector(up, h / 2);   /* sink：しゃがんで目線を下げる */
+          if(LIVING) m.position.set(sp.x, FLOOR_Y - (sp.sink || 0), sp.z).addScaledVector(up, h / 2);
+          else m.position.set(sp.x, sp.y, FLOOR + (sp.sink || 0)).addScaledVector(up, h / 2);   /* sink：しゃがんで目線を下げる */
           /* 足元の影 */
           const sh = new THREE.Mesh(new THREE.PlaneGeometry(w * 0.9, w * 0.5), new THREE.MeshBasicMaterial({map: shadowTex, transparent:true, opacity: sp.static ? .55 : 0, depthWrite:false}));
-          sh.position.set(sp.x, sp.y, FLOOR - 0.01); sh.rotation.set(Math.PI, 0, Math.atan2(toward.y, toward.x) + Math.PI / 2);
+          if(LIVING){ sh.position.set(sp.x, FLOOR_Y + 0.02, sp.z); sh.rotation.set(-Math.PI / 2, 0, Math.atan2(toward.x, toward.z)); }
+          else { sh.position.set(sp.x, sp.y, FLOOR - 0.01); sh.rotation.set(Math.PI, 0, Math.atan2(toward.y, toward.x) + Math.PI / 2); }
           scene.add(sh); m.userData.shadow = sh;
           m.userData.face = m.position.clone().addScaledVector(up, h * 0.35);   /* 顔のあたり：話す人の方を向くときに使う */
         } else {
@@ -1705,6 +2107,7 @@ function layout(){
 /* 人物が入ってくる方向（面の中での移動量）。紙芝居でも「動き」を感じられるように */
 /* 部屋の寸法（1 ≒ 34cm）。目の位置が原点、天井は -Z、床は +Z 側。頭側が +Y、左が -X */
 const FLOOR = 2.1, BED = {half:1.45, top:0.35, head:3.0, foot:-3.6};
+const FLOOR_Y = -3.2;   /* 居間：いすに座った目の高さ（約1.1m）から床まで */
 /* stand：床に立つ人・物（x,y＝床の位置、h＝高さ、lean＝患者さん側への傾き） / bill：目の前に差し出す物 */
 const SPRITES = [
   {id:'vent',      type:'stand', x:-3.1, y:1.8,  h:3.7, static:true, lamp:[0.69, 0.061]},
@@ -1715,7 +2118,7 @@ const SPRITES = [
   {id:'overGood',  type:'stand', x:-1.85, y:-0.2, h:4.7, lean:10, sink:0.8},
   {id:'board',     type:'bill',  yaw:4, pitch:14, d:1.35, w:0.72}
 ];
-const ENTER = {sideNurse:[-0.9, 0, 1], overBad:[-0.6, 0, 1], overGood:[-0.5, 0, 1], board:[0, -0.5, 0.94]};
+const ENTER = {sideNurse:[-0.9, 0, 1], overBad:[-0.6, 0, 1], overGood:[-0.5, 0, 1], board:[0, -0.5, 0.94], doorHelper:[0.5, 0, 1], daughter:[0.5, 0, 1]};
 let breathT0 = 0, lastT = 0;
 const ease = t => 1 - Math.pow(1 - t, 3);
 function frame(now){
@@ -1753,7 +2156,7 @@ function frame(now){
 function showFig(id, on){ const f = figs[id]; if(!f) return; if(on && !f.target) f.p = 0; f.target = on ? 1 : 0; }
 function flatFallback(){
   if(stage.querySelector('img.flat')) return;
-  svgToCanvas($('#faceSrc [data-face="front"] svg')).then(cv => {
+  svgToCanvas($(`#faceSrc .faceSet[data-world="${theme.world || 'bed'}"] [data-face="front"] svg`)).then(cv => {
     const img = new Image(); img.className = 'flat'; img.alt = ''; img.src = cv.toDataURL(); stage.appendChild(img);
   }).catch(() => {});
   toast('この端末では360度表示ができないため、字幕と音で体験を続けます');
@@ -1872,6 +2275,8 @@ function slideDoor(open){
   src.start(t); src.stop(t + dur + 0.05); rum.start(t); rum.stop(t + dur + 0.05);
   if(!open){ thump(t + dur, 0.85, 0.7, 180); thump(t + dur + 0.07, 0.85, 0.25, 120); }   // 閉まりきる「トン」
 }
+/* ノック：右うしろ（入口）から */
+function knock(){ if(!actx) return; const t = actx.currentTime; [0, .28, .56].forEach(d => thump(t + d, 0.9, 0.6, 210)); }
 /* 足音：中央から右（入口）へ遠ざかる */
 function stepsAway(fast){
   if(!actx) return; const t = actx.currentTime, gap = fast ? 0.3 : 0.45;
@@ -1900,6 +2305,9 @@ function speak(who, text){
     const u = new SpeechSynthesisUtterance(said); u.lang = 'ja-JP'; if(jaVoice) u.voice = jaVoice;
     const busy = scene === 'bad';
     if(who === '妻'){ u.rate = 0.9; u.pitch = 0.85; }
+    else if(who === '娘'){ u.rate = 1.0; u.pitch = 1.0; }
+    else if(who === 'あなた'){ u.rate = 0.82; u.pitch = 0.75; }
+    else if(who === 'ヘルパー（記録）'){ u.rate = 1.25; u.pitch = 1.0; }
     else { u.rate = busy ? 1.3 : 1.05; u.pitch = busy ? 1.0 : 1.1; }
     u.volume = 0.9;
     const t0 = performance.now();
@@ -1950,7 +2358,7 @@ function askFeel(){
 function clearScene(){
   timers.forEach(clearTimeout); timers = []; clearTimeout(innerTimer); hush();
   alarmOff(); for(const id in figs){ if(id !== 'alarmLight' && !figs[id].static) showFig(id, false); }
-  showFig('wife', true);
+  (theme.sprites || SPRITES).filter(x => x.static).forEach(x => showFig(x.id, true));
   $('#inner').classList.remove('on'); $('#speech').classList.remove('on'); prologTok++; hideProlog();
   $('#glare').classList.remove('on'); vr.classList.remove('calm'); $$('.jump button').forEach(b => b.classList.remove('hint'));
 }
@@ -1970,6 +2378,7 @@ function applyCue(c){
   }
   if(c.sfx === 'door') doorSound();
   if(c.sfx === 'doorOpen') slideDoor(true);
+  if(c.sfx === 'knock') knock();
   if(c.sfx === 'leave'){ stepsAway(scene === 'bad'); timers.push(setTimeout(() => slideDoor(false), 1700)); }
   if(c.sfx === 'steps') steps(scene === 'bad');
   if('calm' in c) vr.classList.toggle('calm', c.calm);
@@ -1992,7 +2401,7 @@ function hideProlog(){ $('#prolog').classList.remove('on', 'guide'); $('#alarmBa
 async function prologue(which){
   const tok = ++prologTok, S = theme[which], P = $('#prolog');
   const alive = () => tok === prologTok && scene === which && vr.classList.contains('on');
-  applyCue({glare:true});
+  if(theme.world !== 'living') applyCue({glare:true});
   /* 1. ストーリーの続きとして、いまの状況を伝える */
   $('#prologText').textContent = S.intro || ''; $('#prologGuide').hidden = true; $('#feelGuide').hidden = true; $('#prologBtn').textContent = '次へ';
   P.classList.add('on'); P.classList.remove('guide');
@@ -2014,10 +2423,13 @@ async function prologue(which){
     practiced = true;
   }
   P.classList.remove('on', 'guide');
-  /* 3. アラーム。視点をいったん正面（天井）に戻す */
-  setTarget(0, 0); forcedUntil = performance.now() + 1200; drag = null; alarmOn();
-  const ab = $('#alarmBanner'); ab.classList.add('on');
-  timers.push(setTimeout(() => { if(alive()){ const [y, p] = LOOKS.vent; forceLook(y, p); } }, 1200));   /* 鳴っている方（呼吸器）へ目を向ける */
+  /* 3. きっかけ（アラーム・戸の音など）。視点をいったん正面に戻す */
+  const T = S.trigger || {banner:'アラームが鳴っている', alarm:true, look:'vent'};
+  setTarget(0, 0); forcedUntil = performance.now() + 1200; drag = null;
+  if(T.alarm) alarmOn();
+  if(T.sfx) applyCue({sfx: T.sfx});
+  const ab = $('#alarmBanner'); ab.textContent = T.banner; ab.classList.add('on');
+  if(T.look) timers.push(setTimeout(() => { if(alive()){ const [y, p] = LOOKS[T.look]; forceLook(y, p); } }, 1200));   /* 鳴っている方（呼吸器）へ目を向ける */
   timers.push(setTimeout(() => ab.classList.remove('on'), 3200));
   return alive();
 }
@@ -2033,7 +2445,7 @@ function faceDir(id){
 }
 function lookAtSpeaker(who){
   if(!autoLook) return;
-  const ids = who === '妻' ? ['wifeSmile', 'wife'] : ['overGood', 'overBad', 'sideNurse'];
+  const ids = who === '妻' ? ['wifeSmile', 'wife'] : who === '娘' ? ['daughter'] : /^(看護師|ヘルパー)$/.test(who) ? ['overGood', 'overBad', 'sideNurse', 'doorHelper'] : [];
   const id = ids.find(i => figs[i] && figs[i].target > 0.5); if(!id) return;
   const d = faceDir(id); if(d) forceLook(d[0], d[1] * 0.85);
 }
@@ -2058,7 +2470,7 @@ async function startVR(which){
   $('#vrPhase').textContent = S.label; $('#stopBtn').textContent = '体験を止める'; vr.classList.remove('explore');
   initAudio(); warmVoice();
   try{ await buildWorld(); }catch(e){ flatFallback(); }
-  applyViewRange(theme.view);
+  applyViewRange();
   layout(); view.yaw = view.ty = 0; view.pitch = view.tp = 0; gyroBase = null;
   cancelAnimationFrame(raf); raf = requestAnimationFrame(frame);
   clearInterval(breathTimer); clearInterval(tickTimer); breathT0 = 0;   /* 漫画の間は無音。体験が始まってから音を出す */
@@ -2067,7 +2479,7 @@ async function startVR(which){
   if(wantStory){ await playStory(); }
   if(scene !== which || !vr.classList.contains('on')) return;
   const fade = $('#fade'); fade.classList.remove('off'); requestAnimationFrame(() => requestAnimationFrame(() => fade.classList.add('off')));
-  breathing(); ticking(); renderBubbles(); renderFeelRow();
+  if(theme.world !== 'living') breathing(); ticking(); renderBubbles(); renderFeelRow();
   sceneStart = performance.now();
   if(!(await prologue(which))) return;
   sceneStart = performance.now();
@@ -2106,7 +2518,7 @@ async function openStoryOnly(){
   const back = currentView;
   vr.classList.add('on'); document.body.style.overflow = 'hidden';
   $('#vrEnd').classList.remove('on'); $('#fade').classList.remove('off');
-  $('#vrPhase').textContent = '佐藤さんの物語';
+  $('#vrPhase').textContent = (theme.person || '佐藤さん') + 'の物語';
   storyOnly = true;
   await playStory();
   if(!storyOnly) return;
@@ -2162,11 +2574,11 @@ async function startExplore(){
   $('#exploreGuide').classList.remove('fade'); timers.push(setTimeout(() => $('#exploreGuide').classList.add('fade'), 5000));
   initAudio();
   try{ await buildWorld(); }catch(e){ flatFallback(); }
-  applyViewRange(theme.view);
+  applyViewRange();
   layout(); view.yaw = view.ty = 0; view.pitch = view.tp = 0; gyroBase = null;
   cancelAnimationFrame(raf); raf = requestAnimationFrame(frame);
   const fade = $('#fade'); fade.classList.remove('off'); requestAnimationFrame(() => requestAnimationFrame(() => fade.classList.add('off')));
-  clearInterval(breathTimer); clearInterval(tickTimer); breathing(); ticking();
+  clearInterval(breathTimer); clearInterval(tickTimer); if(theme.world !== 'living') breathing(); ticking();
 }
 $('#startExplore').addEventListener('click', startExplore);
 $('#vrReplay').addEventListener('click', () => { startVR.skipStory = true; startVR(scene); });
