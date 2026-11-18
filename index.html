@@ -84,16 +84,20 @@ a{color:var(--accent)}
 .steps li{flex:1;height:6px;border-radius:3px;background:var(--line)}
 .steps li.on{background:var(--accent)}
 .stepname{font-size:.85rem;color:var(--accent);font-weight:700}
-/* 学びのサイクル：今どの段階にいるか */
-.lcycle{display:flex;align-items:center;gap:4px;margin:0 0 14px;font-size:.72rem;font-weight:700;color:var(--muted)}
-.lcycle span{flex:1 1 auto;text-align:center;padding:5px 6px;border-radius:999px;background:var(--surface);border:1px solid var(--line);white-space:nowrap;transition:background .4s,color .4s}
-.lcycle span.done{background:var(--accent-soft);border-color:transparent;color:var(--accent)}
-.lcycle span.now{background:var(--accent);border-color:var(--accent);color:#fff}
-.lcycle i{font-style:normal;color:var(--muted);font-size:.75rem;flex:none;background:none;padding:0}
-.lcycle b{font-weight:700;color:var(--accent);font-size:.9rem;margin-left:2px}
-#v-film .lcycle span{background:transparent;border-color:#3B5458;color:#8FA3A5}
-#v-film .lcycle span.done{background:#23393C;color:#8FD1C2}
-#v-film .lcycle span.now{background:#8FD1C2;border-color:#8FD1C2;color:#121A1C}
+/* 学びのサイクル（コルブの経験学習）：今どの段階にいるか */
+.lcycle{display:block;width:100%;max-width:360px;height:auto;margin:0 auto 12px;font-family:var(--display)}
+.lcycle .track{fill:none;stroke:var(--line);stroke-width:2}
+.lcycle .arr{fill:var(--line)}
+.lcycle rect{fill:var(--surface);stroke:var(--line);stroke-width:1.5;transition:fill .4s}
+.lcycle text{font-size:13px;font-weight:700;fill:var(--muted);text-anchor:middle;dominant-baseline:central}
+.lcycle .done rect{fill:var(--accent-soft);stroke:transparent}
+.lcycle .done text{fill:var(--accent)}
+.lcycle .now rect{fill:var(--accent);stroke:var(--accent)}
+.lcycle .now text{fill:#fff}
+#v-film .lcycle .track{stroke:#3B5458} #v-film .lcycle .arr{fill:#3B5458}
+#v-film .lcycle rect{fill:#121A1C;stroke:#3B5458} #v-film .lcycle text{fill:#8FA3A5}
+#v-film .lcycle .done rect{fill:#23393C} #v-film .lcycle .done text{fill:#8FD1C2}
+#v-film .lcycle .now rect{fill:#8FD1C2;stroke:#8FD1C2} #v-film .lcycle .now text{fill:#121A1C}
 .lcycle ~ .steps{display:none}   /* 段階表示があるときは、5つの進み具合バーは出さない */
 
 /* チップ */
@@ -1682,19 +1686,34 @@ document.addEventListener('click', e => {
   const g = e.target.closest('[data-go]');
   if(g) go(g.dataset.go);
 });
-/* 学びのサイクル（体験→振り返り→気づき→現場で試す）。画面ごとに今いる段階を光らせる */
-const CYCLE = ['体験', '振り返り', '気づき', '現場で試す'];
-const CYCLE_AT = {intro:0, film:0, reflect:1, voices:1, declare:2, learn:2, card:2, commit:2, save:3, report:3, recommend:3, revisit:3};
+/* 学びのサイクル（コルブの経験学習：体験→振り返る→つかむ→次はどうする→体験…）。画面ごとに今いる段階を光らせる */
+const CYCLE = ['体験', '振り返る', 'つかむ', '次はどうする'];
+const CYCLE_AT = {intro:0, film:0, reflect:1, voices:2, learn:2, declare:3, card:3, commit:3, save:3, report:3, recommend:3, revisit:3};
+function cycleSvg(st){
+  const cx = 170, cy = 56, rx = 118, ry = 36, deg = d => d * Math.PI / 180;
+  const pos = [180, 270, 0, 90].map(d => [cx + rx * Math.cos(deg(d)), cy + ry * Math.sin(deg(d))]);
+  const arrows = [225, 315, 45, 135].map(d => {
+    const x = cx + rx * Math.cos(deg(d)), y = cy + ry * Math.sin(deg(d));
+    const a = Math.atan2(ry * Math.cos(deg(d)), -rx * Math.sin(deg(d))) * 180 / Math.PI;
+    return `<path class="arr" d="M5 0 L-4 -4.5 L-4 4.5 Z" transform="translate(${x.toFixed(1)} ${y.toFixed(1)}) rotate(${a.toFixed(1)})"/>`;
+  }).join('');
+  const nodes = CYCLE.map((c, i) => {
+    const w = c.length * 14 + 22, [x, y] = pos[i], cls = i < st ? 'done' : i === st ? 'now' : '';
+    return `<g class="${cls}"><rect x="${(x - w / 2).toFixed(1)}" y="${(y - 14).toFixed(1)}" width="${w}" height="28" rx="14"/><text x="${x.toFixed(1)}" y="${y.toFixed(1)}">${c}</text></g>`;
+  }).join('');
+  return `<ellipse class="track" cx="${cx}" cy="${cy}" rx="${rx}" ry="${ry}"/>${arrows}${nodes}`;
+}
 function showCycle(name){
   const st = CYCLE_AT[name], view = $('#v-' + name);
   let el = $('#cycle');
   if(st === undefined || !view){ if(el) el.remove(); return; }
-  if(!el){ el = document.createElement('div'); el.id = 'cycle'; el.className = 'lcycle'; el.setAttribute('aria-label', '学びのサイクル'); }
-  el.innerHTML = CYCLE.map((c, i) => `<span class="${i < st ? 'done' : i === st ? 'now' : ''}"${i === st ? ' aria-current="step"' : ''}>${c}</span>`).join('<i>›</i>') + '<b aria-hidden="true">↻</b>';
+  if(!el){ el = document.createElementNS('http://www.w3.org/2000/svg', 'svg'); el.id = 'cycle'; el.setAttribute('class', 'lcycle'); el.setAttribute('viewBox', '0 0 340 112'); el.setAttribute('role', 'img'); }
+  el.setAttribute('aria-label', `学びのサイクル：いまは「${CYCLE[st]}」`);
+  el.innerHTML = cycleSvg(st);
   const host = view.querySelector('.wrap') || view;
   host.insertBefore(el, host.firstChild);
   /* 段階が見えるので「2 / 5」のような番号は消して、見出しだけにする */
-  requestAnimationFrame(() => view.querySelectorAll('.stepname').forEach(n => { n.innerHTML = n.innerHTML.replace(/^\s*\d+\s*\/\s*\d+[\s\u3000]*/, ''); }));
+  requestAnimationFrame(() => view.querySelectorAll('.stepname').forEach(n => { n.innerHTML = n.innerHTML.replace(/^\s*\d+\s*\/\s*\d+[\s　]*/, ''); }));
 }
 function toast(msg){ const t = $('#toast'); t.textContent = msg; t.classList.add('on'); clearTimeout(toast._t); toast._t = setTimeout(()=>t.classList.remove('on'), 2600); }
 const fmtDate = d => `${d.getFullYear()}年${d.getMonth()+1}月${d.getDate()}日`;
