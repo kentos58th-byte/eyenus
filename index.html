@@ -120,7 +120,10 @@ ol.safety b{display:block}
 .mark{width:84px;height:auto;display:block;margin:0 0 6px -2px}
 .howto ol{margin:0;padding-left:1.3em;display:flex;flex-direction:column;gap:4px}
 .repbox img{width:100%;border-radius:10px;border:1px solid var(--line)}
-.repbox .btn.ghost{width:100%}
+.repbox label.note{display:flex;flex-direction:column;gap:4px}
+.repbox [data-rep="done"].done{background:#E3F1EE;color:var(--accent);box-shadow:none}
+.repbox > .btn{width:100%}
+.homebig{min-height:60px;font-size:1.08rem;background:#1C2A2E}
 .share{align-items:center;text-align:center}
 .share img{width:200px;height:200px;border-radius:12px;border:1px solid var(--line);background:#fff;padding:6px}
 .share .url{font-size:.8rem;color:var(--muted);word-break:break-all;margin:0}
@@ -450,9 +453,6 @@ ol.safety b{display:block}
       <p class="note">今日の学びから自動で作りました。臨床で振り返るたびに、このレポートに追記されていきます。</p>
       <div id="saveRepBox"></div>
     </div>
-    <div class="row">
-      <button class="btn" type="button" data-go="home">ライブラリに戻る</button>
-    </div>
   </div>
 </section>
 
@@ -503,9 +503,6 @@ ol.safety b{display:block}
       <h3>受講レポートに追記しました</h3>
       <p class="note">はじめの学びから、臨床での振り返りまでの変化がまとまっています。</p>
       <div id="recoReport"></div>
-    </div>
-    <div class="row">
-      <button class="btn" type="button" data-go="home">ライブラリに戻る</button>
     </div>
   </div>
 </section>
@@ -1440,20 +1437,48 @@ async function buildReport(themeId){
   const blob = await new Promise(r => out.toBlob(r, 'image/png'));
   return {blob, text};
 }
+/* レポート欄：氏名・事業所名・同意 → 内容のプレビュー → 完了 → ホームへ → 保存・コピー */
+const RKEY = 'kenmap-reporter';
+function loadReporter(){ try{ return JSON.parse(localStorage.getItem(RKEY)) || {}; }catch(e){ return {}; } }
+let repPanelTheme = null, repTimer = 0;
+async function refreshReport(box){
+  const f = n => box.querySelector(`[data-rf="${n}"]`);
+  const consent = f('consent').checked;
+  repName = consent ? f('name').value.trim() : ''; repOffice = consent ? f('office').value.trim() : '';
+  const r = await buildReport(repPanelTheme); if(!r) return;
+  reportBlob = r.blob; reportText = r.text;
+  box.querySelector('img').src = URL.createObjectURL(r.blob);
+}
 async function showReport(box, themeId){
   const el = typeof box === 'string' ? $(box) : box; if(!el) return;
-  el.innerHTML = '<p class="note">レポートを作っています…</p>';
-  const r = await buildReport(themeId); if(!r){ el.innerHTML = ''; return; }
-  reportBlob = r.blob; reportText = r.text;
-  el.innerHTML = `<img alt="受講＆振り返りレポートのプレビュー" src="${URL.createObjectURL(r.blob)}">
-    <div class="row"><button class="btn" type="button" data-rep="save">画像を保存する</button><button class="btn sub" type="button" data-rep="copy">テキストをコピー</button></div>
-    <button class="btn ghost" type="button" data-rep="name">氏名・事業所名を入れる</button>`;
+  repPanelTheme = themeId; const me = loadReporter();
+  el.innerHTML = `
+    <label class="note">氏名（任意）<input type="text" data-rf="name" autocomplete="name" value="${esc(me.name || '')}"></label>
+    <label class="note">事業所名（任意）<input type="text" data-rf="office" value="${esc(me.office || '')}"></label>
+    <label class="chk"><input type="checkbox" data-rf="consent" ${me.consent ? 'checked' : ''}> 氏名と事業所名をレポートに載せることに同意します</label>
+    <img alt="受講＆振り返りレポートのプレビュー">
+    <button class="btn" type="button" data-rep="done">レポート作成を完了する</button>
+    <button class="btn homebig" type="button" data-go="home">ホームに戻る</button>
+    <div class="row"><button class="btn sub" type="button" data-rep="save">レポートを画像で保存する</button><button class="btn sub" type="button" data-rep="copy">レポートのテキストをコピーする</button></div>`;
+  if(!el.dataset.bound){
+    el.dataset.bound = '1';
+    el.addEventListener('input', () => { clearTimeout(repTimer); repTimer = setTimeout(() => refreshReport(el), 450); });
+    el.addEventListener('change', () => refreshReport(el));
+  }
+  await refreshReport(el);
 }
 document.addEventListener('click', async e => {
   const b = e.target.closest('[data-rep]'); if(!b) return;
+  if(b.dataset.rep === 'done'){
+    const box = b.closest('.repbox'), f = n => box.querySelector(`[data-rf="${n}"]`);
+    if((f('name').value.trim() || f('office').value.trim()) && !f('consent').checked) toast('同意がないため、氏名と事業所名は載せていません');
+    try{ localStorage.setItem(RKEY, JSON.stringify({name: f('name').value.trim(), office: f('office').value.trim(), consent: f('consent').checked})); }catch(err){}
+    await refreshReport(box);
+    b.textContent = 'レポートを作成しました ✓'; b.classList.add('done');
+    box.querySelector('.homebig').scrollIntoView({behavior: 'smooth', block: 'center'});
+  }
   if(b.dataset.rep === 'save'){ if(reportBlob && await saveFile('ainas-report.png', reportBlob)) toast('レポート画像を保存しました'); }
   if(b.dataset.rep === 'copy'){ try{ await navigator.clipboard.writeText(reportText); toast('テキストをコピーしました'); }catch(err){ toast('コピーできませんでした'); } }
-  if(b.dataset.rep === 'name') openReport(currentRecId);
 });
 let reportTheme = null;
 function openReport(id){
