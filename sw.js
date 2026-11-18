@@ -1,7 +1,7 @@
 /* オフラインでも体験できるように、アプリ本体を端末に保存する。更新したら VERSION を上げる */
-const VERSION = 'ainas-v19';
+const VERSION = 'ainas-v20';
 const CORE = ['./', 'index.html', 'manifest.webmanifest', 'js/three.min.js',
-  'img/logo-white.png', 'img/mark.png', 'img/qr.png', 'img/story-1.jpg', 'img/story-2.jpg', 'img/story-3.jpg', 'img/story-4.jpg', 'img/hana-1.svg', 'img/hana-2.svg', 'img/hana-3.svg', 'img/hana-4.svg',
+  'img/logo-white.png', 'img/mark.png', 'img/qr.png', 'img/story-1.jpg', 'img/story-2.jpg', 'img/story-3.jpg', 'img/story-4.jpg', 'img/tanaka-1.svg', 'img/tanaka-2.svg', 'img/tanaka-3.svg', 'img/tanaka-4.svg', 'img/sato-1.svg', 'img/sato-2.svg', 'img/sato-3.svg', 'img/sato-4.svg', 'img/end-1.svg', 'img/end-2.svg', 'img/end-3.svg', 'img/end-4.svg',
   'icons/icon-192.png', 'icons/icon-512.png', 'icons/apple-touch-icon.png'];
 self.addEventListener('install', e => { e.waitUntil(caches.open(VERSION).then(c => c.addAll(CORE)).then(() => self.skipWaiting())); });
 self.addEventListener('activate', e => {

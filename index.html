@@ -145,6 +145,29 @@ ol.safety b{display:block}
 .heroNote{margin:0}
 ol.safety li.sub{display:block;counter-increment:none;margin:8px 0 0;padding-top:10px;border-top:1px dashed #D9A39A;font-weight:700;color:#A23B2E;font-size:.95rem}
 ol.safety li.sub::before{content:none!important}
+.learnslide h3{margin:0 0 6px}
+.learnslide p{margin:0;line-height:1.85}
+.learnslide ul{margin:6px 0 0;padding-left:1.2em;line-height:1.8}
+.ldots{display:flex;gap:6px;justify-content:center}
+.ldots i{width:8px;height:8px;border-radius:50%;background:var(--line)}
+.ldots i.on{background:var(--accent)}
+.qtag{margin:0;font-size:.76rem;font-weight:700;color:var(--accent);letter-spacing:.08em}
+.quizopts{display:flex;flex-direction:column;gap:8px}
+.quizopts button{appearance:none;text-align:left;border:1.5px solid var(--line);background:#fff;border-radius:12px;padding:12px;font-size:.95rem;line-height:1.55;cursor:pointer;color:var(--ink)}
+.quizopts button.ok{border-color:#7EC2A8;background:#E3F4EC}
+.quizopts button.ng{border-color:#D9A39A;background:#F8E6E2}
+#v-film{background:#1C2326;min-height:100vh}
+.filmwrap{max-width:560px;margin:0 auto;padding:16px 14px 28px;display:flex;flex-direction:column;gap:12px}
+#v-film .stepname{color:#8FD1C2}
+.filmframe{position:relative;border:3px solid #2B2321;border-radius:6px;overflow:hidden;background:#fff}
+.filmframe img{display:block;width:100%;height:auto;aspect-ratio:4/3;transition:opacity .4s}
+#filmHud{position:absolute;left:8px;top:8px;background:rgba(20,30,33,.82);color:#FFE2B8;font-weight:700;font-size:.85rem;padding:4px 10px;border-radius:999px}
+#filmHud:empty{display:none}
+#filmSub{background:#F7F4EE;border-radius:12px;padding:12px 14px;min-height:84px;line-height:1.7;font-size:1rem}
+#filmWho{display:block;font-size:.8rem;color:var(--accent)}
+#filmWho:empty{display:none}
+.filmctl .btn{flex:1 1 0;min-height:46px}
+#v-film .btn.ghost{color:#E8EEEE;border-color:rgba(232,238,238,.4);background:transparent}
 .quote{border-left:3px solid var(--accent);padding:4px 12px;background:var(--accent-soft);border-radius:4px}
 #reportImg{width:100%;border-radius:10px;border:1px solid var(--line)}
 .toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:var(--ink);color:#fff;padding:10px 16px;border-radius:10px;font-size:.9rem;opacity:0;pointer-events:none;transition:opacity .25s;z-index:50;max-width:90vw}
@@ -217,6 +240,15 @@ ol.safety li.sub::before{content:none!important}
 #alarmBanner{position:absolute;left:50%;top:38%;transform:translate(-50%,-50%) scale(.96);z-index:6;background:rgba(150,40,30,.88);color:#fff;font-weight:700;font-size:1.25rem;padding:12px 22px;border-radius:999px;opacity:0;pointer-events:none;transition:opacity .4s,transform .4s;white-space:nowrap}
 #alarmBanner.on{opacity:1;transform:translate(-50%,-50%) scale(1);animation:apulse 1.5s ease-in-out infinite}
 @keyframes apulse{50%{box-shadow:0 0 0 12px rgba(220,80,60,.25)}}
+#choiceBox{position:absolute;left:10px;right:126px;bottom:84px;z-index:7;background:rgba(20,30,33,.94);color:#F1F5F5;border-radius:16px;padding:12px 12px 10px;box-shadow:0 8px 24px rgba(0,0,0,.4);border:2px solid #8FD1C2}
+#choiceBox .ctag{margin:0;font-size:.74rem;color:#8FD1C2;font-weight:700;letter-spacing:.06em}
+#choiceQ{margin:4px 0 8px;font-weight:700;line-height:1.55;font-size:.95rem}
+#choiceOpts{display:flex;flex-direction:column;gap:6px}
+#choiceOpts button{appearance:none;text-align:left;border:1px solid rgba(255,255,255,.4);background:#F7FAFA;color:#1C2A2E;border-radius:10px;padding:9px 10px;font-size:.86rem;line-height:1.45;cursor:pointer}
+#choiceOpts button.ng{background:#F3DAD5;color:#7A2E24;border-color:#D9A39A}
+#choiceOpts button.ok{background:#D6EFE6;color:#1E5E48;border-color:#7EC2A8}
+#choiceFb{margin:8px 0 0;font-size:.84rem;line-height:1.55;color:#FFD2C6;min-height:0}
+#choiceFb:empty{display:none}
 #feelBar{position:absolute;right:8px;top:92px;bottom:150px;width:112px;z-index:4;display:flex;flex-direction:column;gap:6px;padding:8px 6px;background:rgba(20,30,33,.62);border:2px solid rgba(255,196,150,.85);border-radius:16px;box-shadow:0 4px 16px rgba(0,0,0,.3);transition:box-shadow .3s}
 .feelq{display:block;text-align:center;color:#FFD9BD;font-weight:700;font-size:.8rem;line-height:1.35}
 .feelq::before{content:"♡ ";color:#FF9F80}
@@ -488,6 +520,50 @@ ol.safety li.sub::before{content:none!important}
   </div>
 </section>
 
+<!-- ===== 知る（スライドとクイズ） ===== -->
+<section class="view" id="v-learn" aria-labelledby="learnTitle">
+  <div class="wrap">
+    <div class="stepname" id="learnStep"></div>
+    <h2 id="learnTitle"></h2>
+    <div class="card learnslide" id="learnSlide"></div>
+    <div class="ldots" id="learnDots"></div>
+    <div class="card" id="learnQuiz" hidden>
+      <p class="qtag">クイズ</p>
+      <h3 id="quizQ"></h3>
+      <div id="quizOpts" class="quizopts"></div>
+      <p id="quizFb" class="note"></p>
+    </div>
+    <button class="btn" type="button" id="learnNext">次へ</button>
+  </div>
+</section>
+
+<!-- ===== 一人称の場面（佐藤さんの一日・その後） ===== -->
+<section class="view" id="v-film" aria-label="場面">
+  <div class="filmwrap">
+    <div class="stepname" id="filmStep"></div>
+    <div class="filmframe"><img id="filmImg" alt=""><div id="filmHud"></div></div>
+    <div id="filmSub"><b id="filmWho"></b><span id="filmText"></span></div>
+    <div class="row filmctl">
+      <button class="btn ghost" type="button" id="filmPrev">戻る</button>
+      <button class="btn ghost" type="button" id="filmNextBtn">次へ</button>
+      <button class="btn" type="button" id="filmSkip">次のステップへ</button>
+    </div>
+  </div>
+</section>
+
+<!-- ===== 佐藤さんを追い詰めていたもの ===== -->
+<section class="view" id="v-helperReflect" aria-labelledby="h-hr">
+  <div class="wrap">
+    <div class="stepname">3 / 5　佐藤さんの一日</div>
+    <h2 id="h-hr">佐藤さんを追い詰めていたものは、何だったでしょう？</h2>
+    <p class="note">当てはまるものをタップしてください（いくつでも）。</p>
+    <div class="chips" id="factorChips"></div>
+    <label for="helperNote" class="note">もし佐藤さんの同僚だったら、どんな声をかけますか？（任意）</label>
+    <textarea id="helperNote" placeholder="例：ひとりで抱えないで。一緒にサ責に相談しよう"></textarea>
+    <button class="btn" type="button" id="toLearn2">次へ</button>
+  </div>
+</section>
+
 <!-- ===== 記録のレポート表示 ===== -->
 <section class="view" id="v-memreport" aria-labelledby="h-memrep">
   <div class="wrap">
@@ -732,11 +808,13 @@ ol.safety li.sub::before{content:none!important}
           <rect x="0" y="0" width="1024" height="16" fill="#B89A76"/>
           <rect x="0" y="826" width="1024" height="30" fill="#8E6E4E"/>
           <g transform="translate(590,330)">
-            <rect x="0" y="0" width="220" height="190" fill="#FFFFFF" stroke="#7E5D3E" stroke-width="10"/>
-            <rect x="16" y="16" width="188" height="158" fill="#F3EBDD"/>
-            <path d="M60 50 L160 50 L196 86 L174 104 L156 92 L156 168 L64 168 L64 92 L46 104 L24 86 Z" fill="#4E6A8E"/>
-            <path d="M110 50 L96 168 M110 50 L124 168" stroke="#E9DCC0" stroke-width="5"/>
-            <g fill="#F0C9D2"><circle cx="84" cy="120" r="7"/><circle cx="136" cy="136" r="7"/><circle cx="96" cy="150" r="6"/><circle cx="140" cy="100" r="6"/></g>
+            <rect x="0" y="0" width="220" height="170" fill="#FFFFFF" stroke="#7E5D3E" stroke-width="10"/>
+            <rect x="16" y="16" width="188" height="138" fill="#E9E4D6"/>
+            <rect x="30" y="28" width="160" height="40" fill="#3E5E4E"/>
+            <g fill="#4A3A30"><circle cx="50" cy="96" r="10"/><circle cx="80" cy="96" r="10"/><circle cx="140" cy="96" r="10"/><circle cx="170" cy="96" r="10"/><circle cx="110" cy="86" r="12"/></g>
+            <g fill="#8EA6C2"><rect x="40" y="106" width="20" height="40"/><rect x="70" y="106" width="20" height="40"/><rect x="130" y="106" width="20" height="40"/><rect x="160" y="106" width="20" height="40"/></g>
+            <rect x="98" y="98" width="24" height="50" fill="#5E6E7E"/>
+          </g>
           </g>
           <g transform="translate(560,560)">
             <rect x="0" y="0" width="300" height="270" fill="#A5774E" stroke="#6E4E32" stroke-width="5"/>
@@ -1050,47 +1128,48 @@ ol.safety li.sub::before{content:none!important}
       <ellipse cx="226" cy="640" rx="24" ry="28" fill="#F1CDB0" stroke="#3a2e2a" stroke-width="3"/><ellipse cx="374" cy="640" rx="24" ry="28" fill="#F1CDB0" stroke="#3a2e2a" stroke-width="3"/></g></svg>
     <svg data-sprite="lv-lap" viewBox="0 0 800 500">
       <g stroke="#3a2e2a" stroke-width="3" stroke-linejoin="round">
-        <path d="M120 500 C110 300 180 200 300 190 L500 190 C620 200 690 300 680 500 Z" fill="#6E7E90"/>
-        <path d="M400 200 L400 500" stroke="#5E6C7C" stroke-width="4"/>
-        <path d="M110 260 C150 200 230 230 300 300 L330 340 L270 380 L210 330 C170 300 130 300 110 260 Z" fill="#D99AA6"/>
-        <path d="M690 260 C650 200 570 230 500 300 L470 340 L530 380 L590 330 C630 300 670 300 690 260 Z" fill="#D99AA6"/>
+        <path d="M120 500 C110 300 180 200 300 190 L500 190 C620 200 690 300 680 500 Z" fill="#6A6E74"/>
+        <path d="M400 200 L400 500" stroke="#4E5258" stroke-width="5"/>
+        <path d="M110 260 C150 200 230 230 300 300 L330 340 L270 380 L210 330 C170 300 130 300 110 260 Z" fill="#8E6E52"/>
+        <path d="M690 260 C650 200 570 230 500 300 L470 340 L530 380 L590 330 C630 300 670 300 690 260 Z" fill="#8E6E52"/>
         <path d="M290 330 C320 300 380 300 400 320 C420 300 480 300 510 330 C520 370 470 400 400 398 C330 400 280 370 290 330 Z" fill="#EFC8AA"/>
         <path d="M340 330 C350 350 360 362 372 370 M420 322 C430 340 444 356 460 364" stroke="#C9977B" stroke-width="3" fill="none"/>
       </g>
     </svg>
-    <svg data-sprite="lv-daughter" viewBox="0 0 600 1500">
+    <svg data-sprite="lv-yome" viewBox="0 0 600 1500">
       <g stroke="#3a2e2a" stroke-width="3" stroke-linejoin="round">
         <path d="M220 1260 L240 1450 L290 1450 L296 1260 Z M304 1260 L310 1450 L360 1450 L380 1260 Z" fill="#D8C8BC"/>
         <path d="M226 1440 L292 1440 C298 1464 292 1484 278 1488 L214 1488 C206 1470 212 1452 226 1440 Z M308 1440 L374 1440 C388 1452 394 1470 386 1488 L322 1488 C308 1484 302 1464 308 1440 Z" fill="#5B4A43"/>
         <path d="M150 860 L450 860 L470 1280 L130 1280 Z" fill="#4E5E6E"/>
         <path d="M200 900 L180 1270 M300 900 L300 1270 M400 900 L420 1270" stroke="#3E4E5E" stroke-width="3" fill="none"/>
         <!-- 体：ピンクのカーディガン -->
-        <path d="M120 940 L130 520 C134 440 200 400 262 392 L338 392 C400 400 466 440 470 520 L480 900 Z" fill="#C9A35A"/>
+        <path d="M120 940 L130 520 C134 440 200 400 262 392 L338 392 C400 400 466 440 470 520 L480 900 Z" fill="#9E8EB8"/>
         <path d="M262 392 L300 470 L338 392 Z" fill="#F4EEE6"/>
-        <path d="M300 470 L300 940" stroke="#A07C3A" stroke-width="4"/>
-        <path d="M150 600 C150 520 170 470 200 450 L210 640 Z M450 600 C450 520 430 470 400 450 L390 640 Z" fill="#B38E48" stroke="none" opacity=".6"/>
+        <path d="M300 470 L300 940" stroke="#7A6A96" stroke-width="4"/>
+        <path d="M150 600 C150 520 170 470 200 450 L210 640 Z M450 600 C450 520 430 470 400 450 L390 640 Z" fill="#8A7AA6" stroke="none" opacity=".6"/>
         <!-- 胸の前で組んだ手 -->
-        <path d="M170 520 C190 600 240 640 300 640 C360 640 410 600 430 520 L400 510 C380 570 340 600 300 600 C260 600 220 570 200 510 Z" fill="#C9A35A"/>
+        <path d="M170 520 C190 600 240 640 300 640 C360 640 410 600 430 520 L400 510 C380 570 340 600 300 600 C260 600 220 570 200 510 Z" fill="#9E8EB8"/>
         <path d="M262 612 C262 586 280 572 300 572 C320 572 338 586 338 612 C338 636 320 650 300 650 C280 650 262 636 262 612 Z" fill="#EFC8AA"/>
         <path d="M282 590 L282 640 M300 584 L300 646 M318 590 L318 640" stroke="#C9977B" stroke-width="2.5"/>
         <!-- 首・頭 -->
         <path d="M274 330 L274 398 L326 398 L326 330 Z" fill="#E4B898"/>
-        <path d="M222 236 C210 140 252 104 300 104 C352 104 394 140 380 236 C376 270 368 286 360 296 L240 296 C232 286 224 270 222 236 Z" fill="#4A3328"/>
+        <path d="M222 236 C210 140 252 104 300 104 C352 104 394 140 380 236 C376 270 368 286 360 296 L240 296 C232 286 224 270 222 236 Z" fill="#3E2A22"/>
         <ellipse cx="236" cy="240" rx="13" ry="20" fill="#EFC8AA"/><ellipse cx="364" cy="240" rx="13" ry="20" fill="#EFC8AA"/>
         <path d="M238 222 C238 160 268 132 300 132 C332 132 362 160 362 222 C362 278 334 318 300 322 C266 318 238 278 238 222 Z" fill="#EFC8AA"/>
         <path d="M330 150 C356 170 362 210 360 240 C356 280 336 310 310 320 C336 290 346 240 330 150 Z" fill="#DDAE8E" stroke="none"/>
-        <path d="M236 214 C240 150 280 120 320 126 C352 132 368 160 364 206 C340 176 300 160 262 170 C252 184 242 198 236 214 Z" fill="#5A3D2E"/>
-        <path d="M262 168 C290 150 330 150 352 172" fill="none" stroke="#7A5A48" stroke-width="3"/>
+        <path d="M236 214 C240 150 280 120 320 126 C352 132 368 160 364 206 C340 176 300 160 262 170 C252 184 242 198 236 214 Z" fill="#4A3328"/>
+        <path d="M262 168 C290 150 330 150 352 172" fill="none" stroke="#6A4A3A" stroke-width="3"/>
       </g>
       <g stroke-linecap="round" fill="none">
-        <path d="M254 202 Q270 194 286 200" stroke="#5E5A57" stroke-width="5"/>
-        <path d="M314 200 Q330 194 346 202" stroke="#5E5A57" stroke-width="5"/>
-        <path d="M258 238 Q272 226 286 238 M314 238 Q328 226 342 238" stroke="#2B211D" stroke-width="5"/>
-        <path d="M254 250 Q262 256 270 252 M330 252 Q338 256 346 250" stroke="#D2A182" stroke-width="2.5"/>
+        <path d="M254 206 L286 198" stroke="#5E5A57" stroke-width="5"/>
+        <path d="M314 198 L346 206" stroke="#5E5A57" stroke-width="5"/>
+        <path d="M258 232 Q272 240 286 232 M314 232 Q328 240 342 232" stroke="#3a2e2a" stroke-width="4"/>
+        <ellipse cx="272" cy="236" rx="7" ry="6" fill="#2B211D" stroke="none"/>
+        <ellipse cx="328" cy="236" rx="7" ry="6" fill="#2B211D" stroke="none"/>
+        <path d="M254 252 Q262 258 270 254 M330 254 Q338 258 346 252" stroke="#D2A182" stroke-width="2.5"/>
         <path d="M300 246 Q296 266 306 270" stroke="#C4927A" stroke-width="3"/>
-        <path d="M280 286 Q300 304 320 286" stroke="#8E4A42" stroke-width="4"/>
-        <ellipse cx="258" cy="268" rx="14" ry="7" fill="#EF9F98" stroke="none" opacity=".35"/>
-        <ellipse cx="342" cy="268" rx="14" ry="7" fill="#EF9F98" stroke="none" opacity=".35"/>
+        <path d="M284 292 Q300 284 316 292" stroke="#8E4A42" stroke-width="4"/>
+        <path d="M282 304 Q300 300 318 304" stroke="#D9AA8C" stroke-width="2"/>
       </g>
     </svg>
     <!-- 共通パーツ：看護師（直立で描き、各スプライトで回転） -->
@@ -1172,6 +1251,12 @@ ol.safety li.sub::before{content:none!important}
     </div>
   </div>
   <div id="alarmBanner" aria-live="assertive">アラームが鳴っている</div>
+  <div id="choiceBox" role="group" aria-live="polite" hidden>
+    <p class="ctag">あなたなら、どうしますか？</p>
+    <p id="choiceQ"></p>
+    <div id="choiceOpts"></div>
+    <p id="choiceFb"></p>
+  </div>
   <div id="feelBar" role="group" aria-label="いまの気持ちをタップ">
     <span class="feelq" id="feelQ">いまの気持ち</span>
     <div class="feelrow" id="feelRow"></div>
@@ -1305,116 +1390,177 @@ const THEMES = [
     ]
   },
   {
-    id:'home-bpsd', ready:true, minutes:10, world:'living', person:'ハナさん',
-    tag:'在宅 × 認知症', trainingTag:'虐待防止・認知症ケア研修',
-    title:'認知症のBPSD編（入浴）',
-    lead:'「拒否」に見える行動の、その人の側の理由。',
+    id:'home-bpsd', ready:true, minutes:10, world:'living', person:'田中さん', flow:'abuse', voiceLow:true,
+    tag:'在宅 × 認知症 × 虐待防止', trainingTag:'認知症ケア・高齢者虐待防止研修',
+    title:'認知症のBPSD・虐待防止編（入浴）',
+    lead:'「拒否」に見える行動と、追い詰められていくケアの側。両方の目線から。',
     limit:{yaw:115, up:50, down:-65},
-    looks:{ceiling:[0,0], vent:[-70,2], door:[106,-4], family:[0,-58]},
-    jumpLabels:{ceiling:'正面（庭）', vent:'左を見る（写真）', door:'右うしろ（入口）', family:'手元を見る'},
+    looks:{ceiling:[0,0], vent:[-70,2], door:[106,-4], family:[44,-56]},
+    jumpLabels:{ceiling:'正面（庭）', vent:'左を見る（写真）', door:'右うしろ（入口）', family:'足元を見る'},
     exploreName:'暮らしの環境',
-    actPlaceholder:'例：お風呂の前に、まずハナさんの好きな話から始める',
-    memoPlaceholder:'例：急かすほど、ハナさんは怖くなっていた。「拒否」には、ハナさんの側の理由があった。',
-    cardTitle:'30秒の関わりカード', cardStep:'4 / 5　ケアの前に、これだけは',
+    memoPlaceholder:'例：佐藤さんを追い詰めていたのは時間だった。田中さんには床が穴に見えていた。ひとりで抱えず報告する。',
+    cardTitle:'30秒の関わりカード', cardStep:'5 / 5　ケアの前に、これだけは',
     cardNote:'「拒否」に見える行動には、その人の側の理由があります。不適切なケアは、気づかないうちに始まります。',
     patient:[
-      ['名前','田村 ハナさん（仮名）・84歳・女性'],
+      ['名前','田中 正雄さん（仮名）・82歳・男性'],
+      ['これまで','元小学校教師。いまも「先生」と呼ばれると、表情がやわらぐ'],
       ['病気','アルツハイマー型認知症'],
-      ['暮らし','自宅で一人暮らし。近くに住む娘が、毎日のように顔を出す'],
-      ['サービス','訪問介護 週2回（入浴の手伝い・家事）'],
-      ['好きなこと','和裁。庭の花をながめること']
+      ['暮らし','息子のお嫁さんと二人暮らし。夜中に何度も起きる'],
+      ['サービス','訪問介護 週2回（入浴の手伝い）。入浴を嫌がり、大声を出すことがある']
     ],
     story:[
-      {sec:5, img:'hana-1.svg', text:'田村ハナさん。若い頃は和裁の仕事で、夜おそくまで着物を縫って家族を支えてきた。'},
-      {sec:5, img:'hana-2.svg', text:'夫を見送ってからも、近くに住む娘と、お茶を飲みながら笑い合う毎日。'},
-      {sec:5, img:'hana-3.svg', text:'ある日、鍋を火にかけたことを忘れた。少しずつ、覚えていられないことが増えていった。'},
-      {sec:7, img:'hana-4.svg', text:'今日は、カレンダーに「おふろ」と書いてある日。でも、それが何の日だったのか、ハナさんにはよくわからない。'}
+      {sec:5, img:'tanaka-1.svg', text:'田中正雄さん。40年、小学校の先生として、子どもたちに国語を教えてきた。'},
+      {sec:5, img:'tanaka-2.svg', text:'妻を見送ってからは、息子のお嫁さんと二人で暮らしている。'},
+      {sec:5, img:'tanaka-3.svg', text:'物忘れが増え、夜中に何度も起きるようになった。お嫁さんは、眠れない夜が続いている。'},
+      {sec:7, img:'tanaka-4.svg', text:'今日はカレンダーに「おふろ」と書いてある日。でも、それが何の日なのか、田中さんにはわからない。'}
     ],
     sprites:[
       {id:'lap', src:'lv-lap', type:'bill', yaw:0, pitch:-64, d:1.25, w:1.5, static:true},
       {id:'sideNurse', src:'lv-sideNurse', type:'stand', x:2.2, z:0.2, h:4.7},
-      {id:'overBad', src:'lv-overBad', type:'stand', x:1.2, z:-1.6, h:4.7, lean:6},
+      {id:'overBad', src:'lv-overBad', type:'stand', x:-0.5, z:-1.6, h:4.7, lean:6},
       {id:'doorHelper', src:'lv-doorHelper', type:'stand', x:4.0, z:1.5, h:4.7},
-      {id:'overGood', src:'lv-overGood', type:'stand', x:-0.2, z:-1.3, h:4.7, sink:0.9},
-      {id:'daughter', src:'lv-daughter', type:'stand', x:4.0, z:1.2, h:4.6}
+      {id:'overGood', src:'lv-overGood', type:'stand', x:-0.9, z:-1.0, h:4.7, sink:0.9},
+      {id:'yome', src:'lv-yome', type:'stand', x:4.0, z:1.1, h:4.5}
     ],
-    bad:{ label:'1 / 5　よくある場面',
-      intro:'今日は、ヘルパーさんが来る日。\nハナさんは、居間のいすに座って\n庭をながめています。',
+    bad:{ label:'1 / 5　田中さんの目線で',
+      intro:'今日は、ヘルパーさんが来る日。\n田中さんは、居間のいすに座って\n庭をながめています。',
       trigger:{banner:'うしろで、戸の開く音がした', sfx:'doorOpen'},
       cues:[
       {t:1.5, sfx:'steps'},
-      {t:4.5, show:'sideNurse', speech:['ヘルパー','ハナさーん、お風呂の時間ですよー。']},
-      {t:8, ask:true},
-      {t:10, hide:'sideNurse', show:'overBad', speech:['ヘルパー','さ、脱ぎましょうね。はい、ボタン外しますよ。']},
-      {t:16, speech:['あなた','……結構です。']},
-      {t:20, speech:['ヘルパー','だめですよ。もう3日も入ってないんですから。ほら、腕あげて。']},
-      {t:26.5, speech:['あなた','やめて！ 触らないで！']},
-      {t:29.5, ask:true},
-      {t:31.5, speech:['ヘルパー','……はいはい、わかりました。今日はやめときますね。']},
-      {t:37, hide:'overBad', sfx:'leave', speech:null},
-      {t:41, speech:['ヘルパー（記録）','本日、入浴拒否あり。声かけするも、大声で拒否される。']},
-      {t:47, speech:null, ask:true},
-      {t:51, end:true}
+      {t:4, show:'sideNurse', speech:['ヘルパー','田中さーん、お風呂行きますよー。']},
+      {t:7.5, speech:['あなた','……あんた、誰だ。']},
+      {t:10, ask:true},
+      {t:11, hide:'sideNurse', show:'overBad', speech:['ヘルパー','佐藤ですよ。毎週来てるでしょ。ほら、時間ないから立って。']},
+      {t:17, look:'family', lookMs:5000},
+      {t:18, speech:['ヘルパー','早くして。こっちですよ。']},
+      {t:21.5, speech:['あなた','そっちには行かん！ 穴があいとる！']},
+      {t:25, ask:true},
+      {t:27, speech:['ヘルパー','穴なんてないですよ。……もう、ここで脱いじゃいましょう。ボタン外しますね。']},
+      {t:34, speech:['あなた','やめろ！ 何をする！']},
+      {t:37, ask:true},
+      {t:39, speech:['ヘルパー','ちょっと、座ってて！']},
+      {t:43, hide:'overBad', sfx:'leave', speech:null},
+      {t:46.5, speech:['ヘルパー（遠く）','お嫁さーん、今日も入浴拒否です。']},
+      {t:51, speech:null, ask:true},
+      {t:55, end:true}
     ],
-      endText:'このヘルパーも、次の訪問に追われていました。忙しいとき、誰にでも起こりうる場面です。記録には「入浴拒否」と残りました。ハナさんの側には、どんな理由があったのでしょうか。',
+      endText:'ヘルパーの佐藤さんは、ヘルパー歴8年の真面目な中堅です。それでも、こうした関わりは起こります。田中さんの目線で、あなたの中にはどんな気持ちが浮かびましたか？',
       endNext:'浮かんだ気持ちを残す'
     },
-    good:{ label:'4 / 5　もう一度、同じ場面',
-      intro:'もう一度、同じ日の同じ場面です。\n今度は、関わり方の違うヘルパーが来ます。\n\n気持ちが動いたら、右のボタンで残してください。',
+    good:{ label:'4 / 5　やり直し（関わりを選ぶ）',
+      intro:'もう一度、同じ場面です。\n今度は、あなたがヘルパーの関わりを選びます。\n\n田中さんの目線のまま、途中で選択肢が出ます。',
       trigger:{banner:'戸をたたく音がした', sfx:'knock', look:'door'},
       cues:[
-      {t:1.5, speech:['ヘルパー','ハナさん、こんにちは。ヘルパーの山本です。入ってもいいですか？']},
-      {t:8, speech:['あなた','……はい、どうぞ。']},
-      {t:11, sfx:'doorOpen'},
-      {t:12, show:'doorHelper', speech:['ヘルパー','失礼します。今日は少し寒いですね。']},
-      {t:17.5, hide:'doorHelper', sfx:'steps'},
-      {t:19, show:'overGood', speech:['ヘルパー','ハナさん、あの写真の着物、ハナさんが縫ったんですか？']},
-      {t:25, hint:'vent', speech:['あなた','そうよ。若い頃は、毎晩縫ってたの。']},
-      {t:30, ask:true},
-      {t:31.5, speech:['ヘルパー','すごいなあ。だから手がきれいなんですね。']},
-      {t:36, speech:['ヘルパー','今日は体を温めたいんですけど、足だけお湯につけるのと、背中を拭くのと、どっちがいいですか？']},
-      {t:45, speech:['あなた','……じゃあ、足だけ。']},
-      {t:49, speech:['ヘルパー','わかりました。ひざにタオルをかけたまま、ゆっくりやりましょうね。']},
-      {t:55, ask:true},
-      {t:57, hide:'overGood', sfx:'doorOpen'},
-      {t:58.5, show:'daughter', speech:['娘','お母さん、来たよ。あら、足湯？ 気持ちよさそう。']},
-      {t:65, speech:['ヘルパー','今日は足湯にしました。お風呂のこと、また一緒に相談させてください。']},
-      {t:72, speech:null, ask:true},
-      {t:76, end:true}
+      {t:1.5, speech:['ヘルパー','こんにちは。入ってもいいですか？']},
+      {t:5, sfx:'doorOpen'},
+      {t:6, show:'doorHelper'},
+      {t:6.5, speech:['あなた','……あんた、誰だ。']},
+      {t:9.5, choice:{q:'「あんた、誰だ」と言われました。どうしますか？', opts:[
+        {t:'「何回も来てるじゃないですか」と伝える', fb:'覚えていないことを指摘されると、田中さんは恥ずかしさと怒りを感じます。'},
+        {t:'時間がないので、そのまま腕を取って立たせる', fb:'急に腕をつかまれると、恐怖で抵抗が強くなります。身体的虐待のグレーゾーンです。'},
+        {t:'正面に回り、目の高さで「田中先生、こんにちは。ヘルパーの佐藤です」と名乗る', good:true, short:'正面から目の高さで、「先生」と呼んで名乗る', say:'田中先生、こんにちは。ヘルパーの佐藤です。'}
+      ]}},
+      {t:10, hide:'doorHelper', show:'overGood'},
+      {t:11, speech:['あなた','……先生、か。懐かしいな。']},
+      {t:15, speech:['ヘルパー','先生、お風呂の準備ができています。一緒に行きませんか？']},
+      {t:21, look:'family', lookMs:4500},
+      {t:22, speech:['あなた','そっちには行かん！ 穴があいとる！']},
+      {t:25, ask:true},
+      {t:26.5, choice:{q:'田中さんが足元を見て、動こうとしません。どうしますか？', opts:[
+        {t:'「穴なんてないですよ。早く行きましょう」と手を引く', fb:'田中さんには本当に穴に見えています。否定されて手を引かれると、怖さが増します。'},
+        {t:'「ちょっと座ってて」と待ってもらう', fb:'言葉で行動を止める「スピーチロック」にあたります。心理的虐待の芽になりえます。'},
+        {t:'濃い色のマットが穴に見えているのかもと考え、マットを片付けて「平らですよ、私が先に歩きますね」と伝える', good:true, short:'足元がどう見えているか考え、マットを片付ける', say:'マットを片付けますね。ここは平らですよ。私が先に歩きますね。'}
+      ]}},
+      {t:27, hide:'holeMat'},
+      {t:28, speech:['あなた','……そうか。平らか。']},
+      {t:32, choice:{q:'お風呂の前に、上着を脱ぐ場面です。どうしますか？', opts:[
+        {t:'手早く、こちらでボタンを外して脱がせる', fb:'知らない人に服を脱がされるのは、とても怖く、恥ずかしいことです。'},
+        {t:'「脱がないとお風呂に入れませんよ」と強く言う', fb:'強い言葉で従わせることは、心理的虐待のグレーゾーンです。'},
+        {t:'「先生、上着はご自分で脱げますか？ 寒くないよう、タオルをかけますね」と選んでもらう', good:true, short:'自分で脱げるか聞き、タオルで体を覆う', say:'先生、上着はご自分で脱げますか？ 寒くないように、タオルをかけますね。'}
+      ]}},
+      {t:33, speech:['あなた','……自分でやる。']},
+      {t:37, ask:true},
+      {t:38.5, hide:'overGood', sfx:'steps'},
+      {t:40, show:'yome', speech:['お嫁さん','すみません、いつも……。夜中も何度も起こされて、もう、私……。']},
+      {t:47, choice:{q:'お嫁さんの疲れに気づきました。どうしますか？', opts:[
+        {t:'「ご家族も、がんばってくださいね」と励ます', fb:'励ましは、追い詰められた家族をさらに苦しめることがあります。'},
+        {t:'「大変ですね」と話を聞いて、そのまま帰る', fb:'聞くことは大切ですが、それだけでは支援につながりません。'},
+        {t:'「教えてくださってありがとうございます。サービス提供責任者に報告して、ケアマネジャーさんとも相談してもらいますね」と伝える', good:true, short:'家族の疲れをサ責に報告し、チームで相談する', say:'教えてくださって、ありがとうございます。サービス提供責任者に報告して、ケアマネジャーさんとも相談してもらいますね。'}
+      ]}},
+      {t:48, speech:['お嫁さん','……そうしてもらえると、助かります。']},
+      {t:53, speech:null, ask:true},
+      {t:57, end:true}
     ],
-      endText:'同じ「お風呂」でも、関わり方でハナさんの体験はここまで変わります。最後に、ケアの前に確かめたいことを見ておきましょう。',
-      endNext:'30秒の関わりカードへ'
+      endText:'同じ入浴の場面でも、関わりを変えると、田中さんの体験もお嫁さんの表情も変わります。このあと、佐藤さんたちがどうなったかを見てみましょう。',
+      endNext:'その後の4コマへ'
     },
     thoughts:[
-      ['うしろから声をかけられたとき','誰？ どうして、うちの中にいるの。'],
-      ['「脱ぎましょうね」と言われたとき','知らない人の前で、裸になんてなれるわけがない。'],
-      ['ボタンに手をかけられたとき','やめて。私の服よ。自分でできるのに。'],
-      ['「3日も入ってない」と言われたとき','私が汚いって言うの？ 恥ずかしい。'],
-      ['戸が閉まったあと','あの人、怒ってた。私、何か悪いことをしたのかしら。']
+      ['うしろから声をかけられたとき','誰だ。どうして私の家に、知らない人がいる。'],
+      ['「毎週来てるでしょ」と言われたとき','覚えていない。でも、それを言われるのは恥ずかしい。'],
+      ['足元を見たとき','床に黒い穴がある。落ちる。行けるわけがない。'],
+      ['ボタンに手をかけられたとき','教壇に立ってきた私が、知らない人に裸にされるのか。'],
+      ['「座ってて」と言われたとき','私は子どもじゃない。']
     ],
     feel:{
-      bad:['誰？','怖い','恥ずかしい','やめて','急かさないで','自分でできる','寒い','放っておいて','悲しい','わからない'],
-      good:['ほっとした','わかってくれた','うれしい','自分で決められた','恥ずかしくない','懐かしい','娘が来て安心']
+      bad:['誰だ？','怖い','落ちそう','恥ずかしい','やめてくれ','急かすな','子ども扱いするな','わからない','悲しい'],
+      good:['ほっとした','わかってくれた','先生と呼ばれてうれしい','安心して歩けた','自分で決められた','恥ずかしくない','家族も楽になれそう']
     },
-    emotions:['知らない人が家にいる怖さ','裸になることの恥ずかしさ','子ども扱いされた悔しさ','自分でできるのにという気持ち','何をされるかわからない不安','怒らせてしまった悲しさ','断ったことへの申し訳なさ','うまく言葉にならない'],
-    actions:['正面から、目の高さで名乗る','触れる前に、何をするか伝える','選べる形で聞く','その人の好きなことから話す','嫌がったら、いったん引く','タオルで体を覆う','「拒否」ではなく、その人の理由を記録する'],
-    safety:[
-      ['正面から、目の高さで、名乗る','うしろや横からの声かけは、驚かせ、怖がらせます。'],
-      ['体に触れる前に、何をするか伝える','急に触れられることは、それだけで恐怖になります。'],
-      ['選べる形で聞く','「今日か明日か」「足だけか全身か」。決めるのは、その人です。'],
-      ['嫌がったら、いったん引いて時間をおく','無理に進めず、時間や人、やり方を変えてみます。'],
-      ['体の不調を確かめる','痛み、便秘、発熱、眠れていないなど。行動の裏に、体のサインが隠れていることがあります。'],
-      ['#不適切なケアにしないために',''],
-      ['「拒否」「問題行動」と記録していないか','その人の側の理由と、どう関わったかを書きます。'],
-      ['急かす・無理に脱がせる・子ども扱いの言葉になっていないか','「つい」の関わりが、不適切なケアや虐待の入り口になります。'],
-      ['ひとりで抱えず、共有したか','事業所の上司やケアマネ、ご家族と、関わり方を一緒に考えます。']
+    emotions:['知らない人が家にいる怖さ','穴に落ちそうな恐怖','裸にされることの恥ずかしさ','子ども扱いされた悔しさ','覚えていないことへの戸惑い','急かされることへの怒り','うまく言葉にならない'],
+    actions:['正面から、目の高さで名乗る','足元がどう見えているか考える','触れる前に、何をするか伝える','選べる形で聞く','家族の疲れを報告する'],
+    factors:['時間に追われていた（40分で入浴）','1日7件で、休む間もない','人手不足','相談できる人・時間がない','家族から責められた','「入浴させなきゃ」という責任感','田中さんの理由に気づく余裕がなかった'],
+    learn:[
+      {step:'2 / 5　知る①　BPSDとユマニチュード', title:'「拒否」の裏にあるもの',
+        slides:[
+          {h:'BPSD（行動・心理症状）とは', body:'<p>認知症の中核症状（記憶や見当識、判断力の低下など）に、<b>本人の不安・体調・環境・周りの関わり方</b>が重なって表れる行動や心理の症状です。拒否、大声、歩き回る、妄想などがあります。</p><p>行動には、その人なりの理由があります。</p>'},
+          {h:'見え方が変わることがある', body:'<p>認知症では、空間や奥行きのとらえ方が変わることがあります。<b>濃い色のマットや床の模様が、穴や段差に見える</b>ことも。</p><p>田中さんの「穴があいとる！」は、本人にとって本当の怖さです。</p>'},
+          {h:'ユマニチュードの4つの柱', body:'<ul><li><b>見る</b>：正面から、目の高さで、近くで</li><li><b>話す</b>：やさしく、前向きな言葉で、途切れなく</li><li><b>触れる</b>：広く、やさしく、ゆっくり。つかまない</li><li><b>立つ</b>：自分の足で立つ機会を大切にする</li></ul>'}
+        ],
+        quiz:{q:'田中さんが「そっちには行かん！」と大声を出しました。まず考えたいことは？',
+          opts:['認知症だから、仕方がない','わがままなので、はっきり注意する','田中さんには、何かが怖く見えたり感じたりしているのかもしれない'],
+          answer:2, explain:'大声や拒否は、不安や恐怖のサインかもしれません。その人に何が見え、何を感じているのかを考えることが出発点です。'}
+      },
+      {step:'3 / 5　知る②　虐待とグレーゾーン', title:'「つい」が、虐待の入り口になる',
+        slides:[
+          {h:'高齢者虐待の5つの類型', body:'<ul><li>身体的虐待</li><li>介護・世話の放棄・放任（ネグレクト）</li><li>心理的虐待</li><li>性的虐待</li><li>経済的虐待</li></ul><p>高齢者虐待防止法で定められています。</p>'},
+          {h:'グレーゾーン（不適切なケア）', body:'<ul><li>腕を強く引く、急かす</li><li>「ちょっと待って」「座ってて」で動きを止める（<b>スピーチロック</b>）</li><li>子ども扱いの言葉、本人の前での「拒否」という言い方</li></ul><p>真面目な人ほど、時間に追われて「つい」が起こります。積み重なると、虐待につながります。</p>'},
+          {h:'ひとりで抱えない', body:'<p>おかしいと感じたら、<b>サービス提供責任者や上司に報告・相談</b>します。</p><p>家族の疲れも、支援が必要なサインです。ケアマネジャーやチームで、関わり方やサービスを見直します。</p>'}
+        ],
+        quiz:{q:'「ちょっと座ってて！」と強い口調で言い、動きを止めること。これは？',
+          opts:['問題のない、ふつうの声かけ','スピーチロック（言葉による行動の制限）にあたり、心理的虐待の芽になりうる','身体的虐待そのもの'],
+          answer:1, explain:'言葉で行動を止めることを「スピーチロック」といいます。すぐに虐待とは言えなくても、不適切なケアのサインです。'}
+      }
     ],
-    safetyPrep:'訪問のはじめに、その日の体調（痛み・便秘・眠り・熱）を、ご本人やご家族と確かめてから声をかけましょう。',
+    film:{
+      helper:{step:'3 / 5　佐藤さんの一日（佐藤さんの目線で）', scenes:[
+        {img:'sato-1.svg', hud:'8:30　訪問 0 / 7件', lines:[['サ責','佐藤さん、今日も7件ね。人が足りなくて、ごめん。'],['サ責','田中さんの入浴、40分で回してね。'],['あなた（佐藤）','……はい。']]},
+        {img:'sato-2.svg', hud:'13:15　訪問 4 / 7件　残り25分', lines:[['田中さん','あんた誰だ！ 帰れ！'],['あなた（佐藤）','（あと25分しかない……）田中さん、早くして。ほら、立って。'],['田中さん','行かん！'],['あなた（佐藤）','ちょっと、座ってて！']]},
+        {img:'sato-3.svg', hud:'13:55　玄関', lines:[['お嫁さん','また入れなかったんですか。お金払ってるんだから、ちゃんとやってください。'],['お嫁さん','……夜中も、何度も起こされるんです。']]},
+        {img:'sato-4.svg', hud:'14:00　訪問 5 / 7件', lines:[['あなた（佐藤）','私、何やってるんだろう……。'],['あなた（佐藤）','でも、次の家に行かなきゃ。']]}
+      ]},
+      ending:{step:'4 / 5　その後', scenes:[
+        {img:'end-1.svg', lines:[['ナレーション','佐藤さんは、田中さんのことと、お嫁さんの疲れを、サービス提供責任者に報告した。']]},
+        {img:'end-2.svg', lines:[['ナレーション','ケアマネジャー、事業所、お嫁さんで集まり、入浴の時間とやり方を見直した。']]},
+        {img:'end-3.svg', lines:[['ナレーション','お嫁さんは、ショートステイを使って、久しぶりにゆっくり眠ることができた。']]},
+        {img:'end-4.svg', lines:[['ナレーション','「先生、気持ちいいですか？」 足湯から始めた入浴に、田中さんは笑った。']]}
+      ]}
+    },
+    safety:[
+      ['正面から、目の高さで、名乗る','その人に合った呼び方で。うしろや横からの声かけは、驚かせ、怖がらせます。'],
+      ['足元や周りが、どう見えているか考える','濃い色のマット、影、段差。穴や壁に見えていることがあります。'],
+      ['触れる前に伝える。腕はつかまない','下から支えるように、やさしく、ゆっくり触れます。'],
+      ['選べる形で聞く','「自分で脱ぐか、手伝うか」「足だけか、全身か」。決めるのは、その人です。'],
+      ['嫌がったら、いったん引いて時間をおく','無理に進めず、時間や人、やり方を変えてみます。'],
+      ['#不適切なケアにしないために',''],
+      ['急かす・「座ってて」で止める・子ども扱いになっていないか','スピーチロックも、不適切なケアのサインです。'],
+      ['「拒否」と記録していないか','その人の側の理由と、どう関わったかを書きます。'],
+      ['自分や家族の限界に気づいたら、報告したか','サービス提供責任者に報告し、チームで支える形を考えます。']
+    ],
+    safetyPrep:'訪問のはじめに、その日の体調（痛み・便秘・眠り）と、ご家族の様子も確かめましょう。',
     questions:[
       {id:'dfeel', label:'認知症の人の見え方・感じ方を知りたい'},
       {id:'family', label:'家族への説明や支え方'},
       {id:'body', label:'行動の裏にある体の不調の見つけ方'},
-      {id:'talk', label:'声のかけ方・関わり方の技法'},
+      {id:'talk', label:'声のかけ方・関わり方の技法（ユマニチュードなど）'},
       {id:'abuse', label:'不適切なケア・虐待の防止'},
       {id:'team', label:'チームや事業所での共有のしかた'}
     ]
@@ -1500,6 +1646,7 @@ const $ = s => document.querySelector(s);
 const $$ = s => Array.from(document.querySelectorAll(s));
 let currentView = 'home';
 function go(name){
+  if(name !== 'film' && film){ film.tok++; film = null; hush(); }
   currentView = name;
   $$('.view').forEach(v => v.classList.toggle('on', v.id === 'v-' + name));
   window.scrollTo(0,0);
@@ -1575,6 +1722,94 @@ function openIntro(t){
   go('intro');
 }
 
+/* ===== 知る（スライドとクイズ） ===== */
+let learnIdx = 0, learnSlideI = 0, learnDone = null, quizAnswered = false;
+function openLearn(k, done){
+  learnIdx = k; learnSlideI = 0; learnDone = done; quizAnswered = false;
+  const L = theme.learn[k];
+  $('#learnStep').textContent = L.step; $('#learnTitle').textContent = L.title;
+  $('#learnQuiz').hidden = true; $('#learnSlide').hidden = false; showLearnSlide(); go('learn');
+}
+function showLearnSlide(){
+  const L = theme.learn[learnIdx], sl = L.slides[learnSlideI];
+  $('#learnSlide').innerHTML = `<h3>${esc(sl.h)}</h3>${sl.body}`;
+  $('#learnDots').innerHTML = L.slides.map((_, i) => `<i class="${i <= learnSlideI ? 'on' : ''}"></i>`).join('') + '<i class="' + (quizAnswered ? 'on' : '') + '"></i>';
+  $('#learnNext').disabled = false; $('#learnNext').textContent = '次へ';
+}
+function showQuiz(){
+  const Q = theme.learn[learnIdx].quiz;
+  $('#learnSlide').hidden = true; $('#learnDots').innerHTML = ''; $('#learnQuiz').hidden = false;
+  $('#quizQ').textContent = Q.q; $('#quizFb').textContent = ''; quizAnswered = false;
+  $('#quizOpts').innerHTML = Q.opts.map((o, k) => `<button type="button" data-k="${k}">${esc(o)}</button>`).join('');
+  $('#learnNext').disabled = true; $('#learnNext').textContent = '次へ進む'; window.scrollTo(0, 0);
+}
+$('#quizOpts').addEventListener('click', e => {
+  const b = e.target.closest('button'); if(!b || quizAnswered) return;
+  const Q = theme.learn[learnIdx].quiz, k = +b.dataset.k; quizAnswered = true;
+  $$('#quizOpts button').forEach((x, i) => { x.disabled = true; if(i === Q.answer) x.classList.add('ok'); });
+  if(k !== Q.answer) b.classList.add('ng');
+  $('#quizFb').innerHTML = `<b>${k === Q.answer ? 'そのとおりです。' : 'ここがポイントです。'}</b>${esc(Q.explain)}`;
+  if(draft){ draft.quiz = draft.quiz || []; draft.quiz[learnIdx] = k === Q.answer; }
+  $('#learnNext').disabled = false;
+});
+$('#learnNext').addEventListener('click', () => {
+  const L = theme.learn[learnIdx];
+  if(!$('#learnQuiz').hidden){ if(learnDone) learnDone(); return; }
+  if(learnSlideI < L.slides.length - 1){ learnSlideI++; showLearnSlide(); window.scrollTo(0, 0); }
+  else showQuiz();
+});
+
+/* ===== 一人称の場面（声と字幕で進む、短い紙芝居） ===== */
+let film = null;
+function openFilm(key, done){
+  const F = theme.film[key];
+  film = {F, si: 0, li: 0, done, tok: 0};
+  $('#filmStep').textContent = F.step; go('film'); playFilm();
+}
+function filmLine(){
+  const sc = film.F.scenes[film.si], ln = sc.lines[film.li];
+  if($('#filmImg').getAttribute('src') !== 'img/' + sc.img) $('#filmImg').src = 'img/' + sc.img;
+  $('#filmHud').textContent = sc.hud || '';
+  $('#filmWho').textContent = ln[0] && ln[0] !== 'ナレーション' ? ln[0] : ''; $('#filmText').textContent = ln[1];
+  return ln;
+}
+async function playFilm(){
+  const tok = ++film.tok; hush();
+  while(film && tok === film.tok){
+    const ln = filmLine();
+    speak(ln[0] || 'ナレーション', ln[1]);
+    const t0 = performance.now(), minT = 900 + ln[1].length * 120;
+    await new Promise(r => setTimeout(r, 300));
+    while(film && tok === film.tok && (talking || performance.now() - t0 < minT)) await new Promise(r => setTimeout(r, 150));
+    if(!film || tok !== film.tok) return;
+    await new Promise(r => setTimeout(r, 700));
+    if(!film || tok !== film.tok) return;
+    if(!filmStep(1)){ endFilm(); return; }
+  }
+}
+function filmStep(d){
+  const S = film.F.scenes; let si = film.si, li = film.li + d;
+  if(li >= S[si].lines.length){ si++; li = 0; }
+  if(li < 0){ si--; if(si < 0){ si = 0; li = 0; } else li = S[si].lines.length - 1; }
+  if(si >= S.length) return false;
+  film.si = si; film.li = li; return true;
+}
+function endFilm(){ if(!film) return; const d = film.done; film.tok++; hush(); film = null; if(d) d(); }
+$('#filmNextBtn').addEventListener('click', () => { if(!film) return; if(!filmStep(1)){ endFilm(); return; } playFilm(); });
+$('#filmPrev').addEventListener('click', () => { if(!film) return; filmStep(-1); playFilm(); });
+$('#filmSkip').addEventListener('click', () => endFilm());
+
+/* ===== 佐藤さんを追い詰めていたもの ===== */
+let factorSel;
+function openHelperReflect(){
+  factorSel = makeChips($('#factorChips'), theme.factors);
+  $('#helperNote').value = ''; go('helperReflect');
+}
+$('#toLearn2').addEventListener('click', () => {
+  if(draft){ draft.factors = [...factorSel]; draft.helperNote = $('#helperNote').value.trim(); }
+  openLearn(1, () => { startVR.skipStory = true; startVR('good'); });
+});
+
 /* テーマごとの呼び名・文言を画面に反映 */
 function applyThemeText(t){
   $$('.pname').forEach(e => e.textContent = t.person || '佐藤さん');
@@ -1641,6 +1876,7 @@ $('#toDeclare').addEventListener('click', () => {
   go('voices');
 });
 $('#toDeclare2').addEventListener('click', () => {
+  if(theme.flow === 'abuse'){ openLearn(0, () => openFilm('helper', openHelperReflect)); return; }
   actSel = makeChips($('#actChips'), theme.actions, {max: 3, onChange: updateAct});
   $('#actOwn').value = ''; updateAct();
   go('declare');
@@ -1843,6 +2079,8 @@ async function buildReport(themeId){
   section('体験して感じたこと', [feelings, latest.emotions.join('、'), latest.memo ? '「' + latest.memo + '」' : ''].filter(Boolean).join('\n'));
   section('次の訪問で最初にすること', declText(latest));
   section('学びのメモ', latest.reflection || '');
+  if((latest.factors || []).length) section('佐藤さんを追い詰めていたもの', latest.factors.join('、') + (latest.helperNote ? `\n声をかけるなら：「${latest.helperNote}」` : ''));
+  if((latest.choices || []).length) section('やり直しで選んだ関わり', latest.choices.map(c => `● ${c.picked}（${c.first ? '1回目で選べた' : '選び直した'}）`).join('\n'));
   if(revs.length){
     section(`臨床での振り返り（${revs.length}回）`, revs.map(({v}) => `● ${fmtDate(new Date(v.date))}：${v.result}` + (v.reaction ? `\n　反応：${v.reaction}` : '') + (v.learning ? `\n　学び：${v.learning}` : '') + (v.insight ? `\n　大切にしたいこと：${v.insight}` : '')).join('\n'));
     const learns = revs.filter(x => x.v.learning);
@@ -1859,7 +2097,7 @@ async function buildReport(themeId){
   out.getContext('2d').drawImage(c, 0, 0);
   const text = ['【受講＆振り返りレポート】', `テーマ：${t.title}`, t.trainingTag ? `研修の区分：${t.trainingTag}` : '', `はじめの学習：${fmtDate(new Date(first.date))}　学習${rs.length}回・臨床での振り返り${revs.length}回`,
     repName ? `氏名：${repName}` : '', repOffice ? `事業所：${repOffice}` : '',
-    feelings ? `体験中に浮かんだ気持ち：${feelings}` : '', `次の訪問で最初にすること：${declText(latest)}`, latest.reflection ? `学びのメモ：${latest.reflection}` : '',
+    feelings ? `体験中に浮かんだ気持ち：${feelings}` : '', (latest.factors || []).length ? `佐藤さんを追い詰めていたもの：${latest.factors.join('、')}` : '', (latest.choices || []).length ? `やり直しで選んだ関わり：${latest.choices.map(c => c.picked).join('／')}` : '', `次の訪問で最初にすること：${declText(latest)}`, latest.reflection ? `学びのメモ：${latest.reflection}` : '',
     ...revs.map(({v}) => `臨床での振り返り（${fmtDate(new Date(v.date))}）：${v.result}${v.learning ? '／学び：' + v.learning : ''}${v.insight ? '／' + v.insight : ''}`),
     qs.length ? `明確になった課題：${qs.join('、')}` : ''].filter(Boolean).join('\n');
   const blob = await new Promise(r => out.toBlob(r, 'image/png'));
@@ -2006,9 +2244,12 @@ function buildWorld(){
     if(LIVING){
       /* 居間：いすに座った目線（床は目から約1.1m下）。テーブル・湯のみ・いすのひじ掛け・ラグ */
       floor.position.set(0, FLOOR_Y, 0); floor.rotation.set(-Math.PI / 2, 0, 0); scene.add(floor);
-      const rugTex = cvs(256, 256, (x) => { x.fillStyle = '#B88C7A'; x.beginPath(); x.arc(128,128,124,0,7); x.fill(); x.strokeStyle = '#E8D3B6'; x.lineWidth = 6; x.beginPath(); x.arc(128,128,104,0,7); x.stroke(); });
-      const rug = new THREE.Mesh(new THREE.PlaneGeometry(5.5, 5.5), new THREE.MeshBasicMaterial({map: rugTex, transparent:true}));
-      rug.position.set(0, FLOOR_Y + 0.01, -1.2); rug.rotation.set(-Math.PI / 2, 0, 0); scene.add(rug);
+      /* 濃い色の丸いマット：認知症の人には、床にあいた穴のように見えることがある */
+      const rugTex = cvs(256, 256, (x) => { const g = x.createRadialGradient(128,128,10,128,128,124); g.addColorStop(0,'#0E0B0A'); g.addColorStop(.7,'#2A1E18'); g.addColorStop(.92,'#4A3428'); g.addColorStop(1,'rgba(74,52,40,0)');
+        x.fillStyle = g; x.beginPath(); x.arc(128,128,124,0,7); x.fill(); x.strokeStyle = 'rgba(90,64,50,.6)'; x.lineWidth = 3; [90, 60, 30].forEach(r => { x.beginPath(); x.arc(128,128,r,0,7); x.stroke(); }); });
+      const rug = new THREE.Mesh(new THREE.PlaneGeometry(2.6, 2.6), new THREE.MeshBasicMaterial({map: rugTex, transparent:true, depthWrite:false}));
+      rug.position.set(1.4, FLOOR_Y + 0.01, -1.3); rug.rotation.set(-Math.PI / 2, 0, 0); scene.add(rug);
+      figs.holeMat = {mesh: rug, target: 1, static: true};
       const wood = ['#9C7650','#9C7650','#B88A5E','#7E5E40','#A5774E','#A5774E'];
       const tTop = FLOOR_Y + 2.15;
       box(2.6, 0.12, 1.5, 0, tTop, -2.7, wood);
@@ -2118,7 +2359,7 @@ const SPRITES = [
   {id:'overGood',  type:'stand', x:-1.85, y:-0.2, h:4.7, lean:10, sink:0.8},
   {id:'board',     type:'bill',  yaw:4, pitch:14, d:1.35, w:0.72}
 ];
-const ENTER = {sideNurse:[-0.9, 0, 1], overBad:[-0.6, 0, 1], overGood:[-0.5, 0, 1], board:[0, -0.5, 0.94], doorHelper:[0.5, 0, 1], daughter:[0.5, 0, 1]};
+const ENTER = {sideNurse:[-0.9, 0, 1], overBad:[-0.6, 0, 1], overGood:[-0.5, 0, 1], board:[0, -0.5, 0.94], doorHelper:[0.5, 0, 1], daughter:[0.5, 0, 1], yome:[0.5, 0, 1]};
 let breathT0 = 0, lastT = 0;
 const ease = t => 1 - Math.pow(1 - t, 3);
 function frame(now){
@@ -2306,7 +2547,12 @@ function speak(who, text){
     const busy = scene === 'bad';
     if(who === '妻'){ u.rate = 0.9; u.pitch = 0.85; }
     else if(who === '娘'){ u.rate = 1.0; u.pitch = 1.0; }
-    else if(who === 'あなた'){ u.rate = 0.82; u.pitch = 0.75; }
+    else if(who === 'お嫁さん'){ u.rate = 0.95; u.pitch = 0.9; }
+    else if(who === 'サ責'){ u.rate = 1.15; u.pitch = 0.95; }
+    else if(who === '田中さん'){ u.rate = 0.82; u.pitch = 0.7; }
+    else if(who === 'あなた（佐藤）'){ u.rate = 1.05; u.pitch = 1.05; }
+    else if(who === 'ナレーション'){ u.rate = 1.0; u.pitch = 1.0; }
+    else if(who === 'あなた'){ u.rate = 0.82; u.pitch = theme.voiceLow ? 0.65 : 0.75; }
     else if(who === 'ヘルパー（記録）'){ u.rate = 1.25; u.pitch = 1.0; }
     else { u.rate = busy ? 1.3 : 1.05; u.pitch = busy ? 1.0 : 1.1; }
     u.volume = 0.9;
@@ -2359,6 +2605,8 @@ function clearScene(){
   timers.forEach(clearTimeout); timers = []; clearTimeout(innerTimer); hush();
   alarmOff(); for(const id in figs){ if(id !== 'alarmLight' && !figs[id].static) showFig(id, false); }
   (theme.sprites || SPRITES).filter(x => x.static).forEach(x => showFig(x.id, true));
+  if(figs.holeMat) showFig('holeMat', true);
+  $('#choiceBox').hidden = true;
   $('#inner').classList.remove('on'); $('#speech').classList.remove('on'); prologTok++; hideProlog();
   $('#glare').classList.remove('on'); vr.classList.remove('calm'); $$('.jump button').forEach(b => b.classList.remove('hint'));
 }
@@ -2368,7 +2616,7 @@ function applyCue(c){
   if(c.alarm === false) alarmOff();
   if(c.show) showFig(c.show, true);
   if(c.hide) showFig(c.hide, false);
-  if(c.look){ const [y,p] = LOOKS[c.look]; forceLook(y, p); }
+  if(c.look){ const [y,p] = LOOKS[c.look]; forceLook(y, p, c.lookMs); }
   if(c.hint){ $$('.jump button').forEach(b => b.classList.toggle('hint', b.dataset.look === c.hint)); timers.push(setTimeout(() => $$('.jump button').forEach(b => b.classList.remove('hint')), 6000)); }
   if(c.inner){ const el = $('#inner'); el.textContent = c.inner; el.classList.add('on'); clearTimeout(innerTimer); innerTimer = setTimeout(() => el.classList.remove('on'), 3600); }
   if('speech' in c){
@@ -2434,6 +2682,24 @@ async function prologue(which){
   return alive();
 }
 
+/* ===== やり直し：場面の途中で関わりを選ぶ ===== */
+function askChoice(ch){
+  return new Promise(res => {
+    const box = $('#choiceBox'); box.hidden = false; $('#choiceQ').textContent = ch.q; $('#choiceFb').textContent = '';
+    let tries = 0;
+    $('#choiceOpts').innerHTML = ch.opts.map((o, k) => `<button type="button" data-k="${k}">${esc(o.t)}</button>`).join('');
+    $('#choiceOpts').onclick = e => {
+      const b = e.target.closest('button'); if(!b || b.disabled) return;
+      const o = ch.opts[+b.dataset.k]; tries++;
+      if(!o.good){ b.classList.add('ng'); b.disabled = true; $('#choiceFb').textContent = o.fb || ''; return; }
+      b.classList.add('ok'); $('#choiceFb').textContent = '';
+      if(draft){ draft.choices = draft.choices || []; draft.choices.push({q: ch.q, picked: o.short || o.t, first: tries === 1}); }
+      timers.push(setTimeout(() => { box.hidden = true; if(o.say) applyCue({speech:['ヘルパー', o.say]}); res(); }, 700));
+    };
+  });
+}
+$('#choiceBox').addEventListener('pointerdown', e => e.stopPropagation());
+
 /* ===== 話している人の方を自動で向く ===== */
 let autoLook = true, lastDrag = 0, forcedUntil = 0;
 /* アラームや話し始めの瞬間は、2秒ほど強制的にその方向へ向ける（その間は指の操作を受けつけない） */
@@ -2444,8 +2710,8 @@ function faceDir(id){
   return [Math.atan2(p.x, -p.z) * 180 / Math.PI, Math.atan2(p.y, Math.hypot(p.x, p.z)) * 180 / Math.PI];
 }
 function lookAtSpeaker(who){
-  if(!autoLook) return;
-  const ids = who === '妻' ? ['wifeSmile', 'wife'] : who === '娘' ? ['daughter'] : /^(看護師|ヘルパー)$/.test(who) ? ['overGood', 'overBad', 'sideNurse', 'doorHelper'] : [];
+  if(!autoLook || performance.now() < forcedUntil) return;   /* 足元を見せている途中などは、そちらを優先 */
+  const ids = who === '妻' ? ['wifeSmile', 'wife'] : who === '娘' ? ['daughter'] : who === 'お嫁さん' ? ['yome'] : /^(看護師|ヘルパー)$/.test(who) ? ['overGood', 'overBad', 'sideNurse', 'doorHelper'] : [];
   const id = ids.find(i => figs[i] && figs[i].target > 0.5); if(!id) return;
   const d = faceDir(id); if(d) forceLook(d[0], d[1] * 0.85);
 }
@@ -2458,7 +2724,8 @@ function runCues(cues, which){
     if(scene !== which || i >= cues.length) return;
     const c = cues[i], due = sceneStart + c.t * 1000 + delay, wait = due - performance.now();
     if(wait > 0){ timers.push(setTimeout(step, wait)); return; }
-    if(talking && ('speech' in c || c.end)){ delay += 120; timers.push(setTimeout(step, 120)); return; }
+    if(talking && ('speech' in c || c.end || c.choice)){ delay += 120; timers.push(setTimeout(step, 120)); return; }
+    if(c.choice){ i++; const t0 = performance.now(); askChoice(c.choice).then(() => { if(scene !== which) return; delay += performance.now() - t0; step(); }); return; }
     i++; applyCue(c); step();
   };
   step();
@@ -2582,7 +2849,7 @@ async function startExplore(){
 }
 $('#startExplore').addEventListener('click', startExplore);
 $('#vrReplay').addEventListener('click', () => { startVR.skipStory = true; startVR(scene); });
-$('#vrNext').addEventListener('click', () => { const s = scene; closeVR(); if(s === 'bad') openReflect(); else openCard(); });
+$('#vrNext').addEventListener('click', () => { const s = scene; closeVR(); if(s === 'bad') openReflect(); else if(theme.flow === 'abuse'){ if(draft) draft.actions = (draft.choices || []).map(c => c.picked); openFilm('ending', openCard); } else openCard(); });
 $('#stopBtn').addEventListener('click', () => {
   if(scene === 'explore'){ closeVR(); $('#stopBtn').textContent = '体験を止める'; return; }
   if($('#story').classList.contains('on')){ finishStory(); return; }
