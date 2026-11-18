@@ -1814,7 +1814,8 @@ async function playFilm(){
   const tok = ++film.tok; hush();
   while(film && tok === film.tok){
     const ln = filmLine();
-    speak(ln[0] || 'ナレーション', ln[1]);
+    const nIdx = film.F.scenes.slice(0, film.si).reduce((a, sc) => a + sc.lines.length, 0) + film.li + 1;
+    speak(ln[0] || 'ナレーション', ln[1], voiceId(({helper:'sato', ending:'end'})[film.key] || film.key, String(nIdx).padStart(2, '0')));
     const t0 = performance.now(), minT = 900 + ln[1].length * 120;
     await new Promise(r => setTimeout(r, 300));
     while(film && tok === film.tok && (talking || performance.now() - t0 < minT)) await new Promise(r => setTimeout(r, 150));
@@ -2588,7 +2589,8 @@ const VOICE_FILES = new Set(['vent-story-1','vent-story-2','vent-story-3','vent-
   'vent-good-01','vent-good-02','vent-good-03','vent-good-04','vent-good-05','vent-good-06','vent-good-07','vent-good-08','vent-good-09',
   'bpsd-story-1','bpsd-story-2','bpsd-story-3','bpsd-story-4',
   'bpsd-bad-01','bpsd-bad-03','bpsd-bad-04','bpsd-bad-06','bpsd-bad-08','bpsd-bad-09',
-  'bpsd-good-01','bpsd-good-03','bpsd-good-05','bpsd-good-07','bpsd-good-09','bpsd-good-11','bpsd-good-12','bpsd-good-13']);
+  'bpsd-good-01','bpsd-good-03','bpsd-good-05','bpsd-good-07','bpsd-good-09','bpsd-good-11','bpsd-good-12','bpsd-good-13',
+  'bpsd-sato-01','bpsd-sato-02','bpsd-sato-03','bpsd-sato-04','bpsd-sato-05','bpsd-sato-06','bpsd-sato-07','bpsd-sato-08','bpsd-sato-09','bpsd-sato-10','bpsd-sato-11']);
 const VOICE_PREFIX = {'home-vent':'vent', 'home-bpsd':'bpsd'};
 let voiceAudio = null, voiceEndedAt = 0;
 function voiceId(kind, n){ const pre = VOICE_PREFIX[theme.id]; return pre ? `${pre}-${kind}-${n}` : ''; }
