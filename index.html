@@ -475,11 +475,11 @@ ol.safety b{display:block}
       <h3>臨床のあとの振り返り方</h3>
       <ol class="note">
         <li>体験したテーマの場面に、実際の訪問で出会う</li>
-        <li>この一覧の「臨床での振り返りを書く」を押す</li>
+        <li>この一覧から記録をタップし、「臨床での振り返りを追記する」を押す</li>
         <li>決めたことができたかを選び、気づいたことを書いて保存する</li>
         <li>次に学ぶとよさそうなテーマが出て、受講レポートにも自動で追記されます</li>
       </ol>
-      <p class="note">記録をタップすると、これまでのレポートを見られます。</p>
+      <p class="note">記録をタップすると、これまでのレポートも見られます。</p>
     </div>
     <div id="memList" class="wrap" style="gap:10px"></div>
     <button class="btn ghost back" type="button" data-go="home">← ライブラリへ</button>
@@ -493,6 +493,7 @@ ol.safety b{display:block}
     <div class="card repbox">
       <img id="memRepImg" alt="受講＆振り返りレポート">
     </div>
+    <button class="btn" type="button" id="memRevisit">臨床での振り返りを追記する</button>
     <button class="btn ghost" type="button" data-go="memories">← 一覧に戻る</button>
     <div class="row"><button class="btn sub" type="button" data-rep="save">レポートを画像で保存する</button><button class="btn sub" type="button" data-rep="copy">レポートのテキストをコピーする</button></div>
     <button class="btn homebig" type="button" data-go="home">ホームに戻る</button>
@@ -1349,7 +1350,10 @@ async function saveFile(filename, blob){
 }
 /* ===== 振り返り一覧（テーマごとに1つ） ===== */
 const revisitsOf = r => r.revisits || (r.revisit ? [r.revisit] : []);
+let memRepTheme = null;
+$('#memRevisit').addEventListener('click', () => openRevisit(memRepTheme));
 async function openMemReport(themeId){
+  memRepTheme = themeId;
   const me = loadReporter(); repName = me.consent ? (me.name || '') : ''; repOffice = me.consent ? (me.office || '') : '';
   $('#h-memrep').textContent = (THEMES.find(t => t.id === themeId) || {}).title || '受講＆振り返りレポート';
   $('#memRepImg').removeAttribute('src'); go('memreport'); window.scrollTo(0, 0);
@@ -1371,9 +1375,7 @@ function renderMemories(){
       <small>最新の学習：${fmtDate(new Date(latest.date))}</small>
       <span>${latest.pledge ? '実行宣言：' + esc(pledgeText(latest)) : '最初にすること：' + esc(declText(latest))}</span>`;
     b.addEventListener('click', () => openMemReport(t.id));
-    const rv = document.createElement('button'); rv.type = 'button'; rv.className = 'btn sub memrev'; rv.textContent = '臨床での振り返りを書く';
-    rv.addEventListener('click', () => openRevisit(t.id));
-    wrap.append(b, rv); box.appendChild(wrap);
+    wrap.append(b); box.appendChild(wrap);
   });
 }
 let resSel, qSel;
