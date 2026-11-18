@@ -2579,7 +2579,33 @@ function toggleMute(){
 let ttsOn = true, jaVoice = null;
 function pickVoice(){ try{ const vs = speechSynthesis.getVoices(); jaVoice = vs.find(v => /ja/i.test(v.lang)) || null; }catch(e){} }
 if('speechSynthesis' in window){ pickVoice(); try{ speechSynthesis.onvoiceschanged = pickVoice; }catch(e){} }
-function speak(who, text){
+/* 収録した音声（Vrew）。ファイルがあるセリフはそれを流し、ないセリフは機械音声で読む */
+const VOICE_FILES = new Set(['vent-story-1','vent-story-2','vent-story-3','vent-story-4']);
+const VOICE_PREFIX = {'home-vent':'vent', 'home-bpsd':'bpsd'};
+let voiceAudio = null;
+function voiceId(kind, n){ const pre = VOICE_PREFIX[theme.id]; return pre ? `${pre}-${kind}-${n}` : ''; }
+function playVoice(id, text){
+  if(!id || !VOICE_FILES.has(id)) return false;
+  try{
+    hush();
+    const a = new Audio(`audio/${id}.mp3`); voiceAudio = a;
+    const done = () => { if(voiceAudio !== a || !talking) return; talking = false; clearTimeout(talkGuard);
+      const shown = $('#speech').innerHTML; timers.push(setTimeout(() => { if(!talking && $('#speech').innerHTML === shown) $('#speech').classList.remove('on'); }, 1200)); };
+    a.onended = done;
+    a.onerror = () => { if(voiceAudio !== a) return; voiceAudio = null; talking = false; speak.fallback(text); };
+    talking = true; clearTimeout(talkGuard);
+    talkGuard = setTimeout(done, 4000 + text.length * 300);   /* 終了通知が来ないときの保険 */
+    const pr = a.play(); if(pr && pr.catch) pr.catch(() => a.onerror());
+    return true;
+  }catch(e){ return false; }
+}
+function speak(who, text, id){
+  if(!ttsOn || muted) return;
+  if(playVoice(id, text)) return;
+  speakTts(who, text);
+}
+speak.fallback = text => speakTts('ナレーション', text);
+function speakTts(who, text){
   if(!ttsOn || muted || !('speechSynthesis' in window)) return;
   try{
     const said = text.replace(/管/g, 'くだ');   /* 読み上げだけ読み方を直す（字幕はそのまま） */
@@ -2606,7 +2632,7 @@ function speak(who, text){
     speechSynthesis.speak(u);
   }catch(e){}
 }
-function hush(){ talking = false; clearTimeout(talkGuard); try{ speechSynthesis.cancel(); }catch(e){} }
+function hush(){ talking = false; clearTimeout(talkGuard); if(voiceAudio){ try{ voiceAudio.pause(); }catch(e){} voiceAudio = null; } try{ speechSynthesis.cancel(); }catch(e){} }
 function warmVoice(){ try{ if('speechSynthesis' in window){ const u = new SpeechSynthesisUtterance(' '); u.volume = 0; speechSynthesis.speak(u); } }catch(e){} }
 function toggleTts(){
   ttsOn = !ttsOn; if(!ttsOn) hush();
@@ -2808,7 +2834,7 @@ function showPanel(narrate = true){
     $('#panelArt').innerHTML = `<img src="img/${p.img}" alt="">`; $('#panelText').textContent = p.text;
     $$('#storyDots span').forEach((d,i) => d.classList.toggle('on', i <= storyIdx));
     panel.classList.add('on');
-    hush(); if(narrate) speak('ナレーション', p.text);   /* 先に進んだときだけ読み上げる（戻ったときは読み返さない） */
+    hush(); if(narrate) speak('ナレーション', p.text, voiceId('story', storyIdx + 1));   /* 先に進んだときだけ読み上げる（戻ったときは読み返さない） */
   }, 250);
   const last = storyIdx === st.length - 1;
   $('#storyPrev').hidden = storyIdx === 0;
