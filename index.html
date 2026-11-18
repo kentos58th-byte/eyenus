@@ -278,6 +278,9 @@ ol.safety li.sub::before{content:none!important}
 .mythoughts .bub{border-radius:14px 14px 14px 4px;font-size:.92rem;animation:none}
 #story{position:absolute;inset:0;z-index:6;background:#121A1C;display:none;flex-direction:column;align-items:center;justify-content:center;gap:18px;padding:24px 16px}
 #story.on{display:flex}
+#story>*{transition:opacity 2s ease}
+#story.leaving>*{opacity:0}
+#fade.slow{transition:opacity 2.8s ease}
 #story .panel{width:min(420px,100%);background:#F7F4EE;border-radius:6px;padding:14px;box-shadow:0 0 0 5px #F7F4EE,0 0 0 8px #2B2321;display:flex;flex-direction:column;gap:12px;opacity:0;transition:opacity .6s}
 #story .panel.on{opacity:1}
 #panelArt svg,#panelArt img{width:100%;height:auto;display:block;border:3px solid #2B2321;border-radius:3px;background:#fff;aspect-ratio:4/3;object-fit:cover}
@@ -2811,7 +2814,11 @@ async function startVR(which){
   startVR.skipStory = false; startVR.withStory = false;
   if(wantStory){ await playStory(); }
   if(scene !== which || !vr.classList.contains('on')) return;
-  const fade = $('#fade'); fade.classList.remove('off'); requestAnimationFrame(() => requestAnimationFrame(() => fade.classList.add('off')));
+  const fade = $('#fade'); fade.classList.remove('off'); fade.classList.toggle('slow', !!wantStory);
+  requestAnimationFrame(() => requestAnimationFrame(() => fade.classList.add('off')));
+  if(wantStory) setTimeout(() => fade.classList.remove('slow'), 3000);
+  if(wantStory) await new Promise(r => setTimeout(r, 1800));   /* 部屋が見えてくるのを待ってから始める */
+  if(scene !== which || !vr.classList.contains('on')) return;
   if(theme.world !== 'living') breathing(); ticking(); renderBubbles(); renderFeelRow();
   sceneStart = performance.now();
   if(!(await prologue(which))) return;
@@ -2823,7 +2830,7 @@ function playStory(){
   return new Promise(res => {
     storyResolve = res; storyIdx = 0;
     $('#storyDots').innerHTML = theme.story.map(() => '<span></span>').join('');
-    $('#story').classList.add('on'); showPanel();
+    $('#story').classList.remove('leaving'); $('#story').classList.add('on'); showPanel();
   });
 }
 function showPanel(narrate = true){
@@ -2851,7 +2858,16 @@ function showPanel(narrate = true){
   storyTimer = setTimeout(tick, 800);
 }
 function nextPanel(){ if(storyIdx < theme.story.length - 1){ storyIdx++; showPanel(); } else finishStory(); }
-function finishStory(){ clearTimeout(storyTimer); hush(); $('#story').classList.remove('on'); if(storyResolve){ const r = storyResolve; storyResolve = null; r(); } }
+function finishStory(){
+  clearTimeout(storyTimer); hush();
+  const st = $('#story'); if(st.classList.contains('leaving')) return;
+  /* 体験へ移る前に、ゆっくり暗くして一呼吸おく（次が始まると構えられるように） */
+  st.classList.add('leaving');
+  storyTimer = setTimeout(() => {
+    st.classList.remove('on', 'leaving');
+    if(storyResolve){ const r = storyResolve; storyResolve = null; r(); }
+  }, storyOnly ? 1200 : 3200);
+}
 $('#storyNext').addEventListener('click', nextPanel);
 $('#storyPrev').addEventListener('click', () => { if(storyIdx > 0){ storyIdx--; showPanel(false); } });
 $('#storySkip').addEventListener('click', finishStory);
@@ -2883,7 +2899,7 @@ $('#vrMenu').addEventListener('click', e => {
   if(act === 'restart'){ if(storyOnly) return; finishStoryQuiet(); startVR.skipStory = true; startVR(scene || 'bad'); }
   if(act === 'home'){ storyOnly = false; closeVR(); go('home'); }
 });
-function finishStoryQuiet(){ clearTimeout(storyTimer); hush(); $('#story').classList.remove('on'); storyResolve = null; }
+function finishStoryQuiet(){ clearTimeout(storyTimer); hush(); $('#story').classList.remove('on', 'leaving'); storyResolve = null; }
 function replayStory(){
   if(storyOnly){ storyIdx = 0; showPanel(); return; }
   finishStoryQuiet(); startVR.withStory = true; startVR(scene || 'bad');
