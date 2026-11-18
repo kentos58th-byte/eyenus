@@ -2582,14 +2582,14 @@ if('speechSynthesis' in window){ pickVoice(); try{ speechSynthesis.onvoiceschang
 /* 収録した音声（Vrew）。ファイルがあるセリフはそれを流し、ないセリフは機械音声で読む */
 const VOICE_FILES = new Set(['vent-story-1','vent-story-2','vent-story-3','vent-story-4']);
 const VOICE_PREFIX = {'home-vent':'vent', 'home-bpsd':'bpsd'};
-let voiceAudio = null;
+let voiceAudio = null, voiceEndedAt = 0;
 function voiceId(kind, n){ const pre = VOICE_PREFIX[theme.id]; return pre ? `${pre}-${kind}-${n}` : ''; }
 function playVoice(id, text){
   if(!id || !VOICE_FILES.has(id)) return false;
   try{
     hush();
     const a = new Audio(`audio/${id}.mp3`); voiceAudio = a;
-    const done = () => { if(voiceAudio !== a || !talking) return; talking = false; clearTimeout(talkGuard);
+    const done = () => { if(voiceAudio !== a || !talking) return; talking = false; voiceEndedAt = performance.now(); clearTimeout(talkGuard);
       const shown = $('#speech').innerHTML; timers.push(setTimeout(() => { if(!talking && $('#speech').innerHTML === shown) $('#speech').classList.remove('on'); }, 1200)); };
     a.onended = done;
     a.onerror = () => { if(voiceAudio !== a) return; voiceAudio = null; talking = false; speak.fallback(text); };
@@ -2842,7 +2842,12 @@ function showPanel(narrate = true){
   $('#storySkip').hidden = last;
   /* 読み上げが終わり、決めた秒数がたったら次のコマへ */
   const t0 = performance.now(), idx = storyIdx;
-  const tick = () => { if(storyIdx !== idx) return; if(performance.now() - t0 >= p.sec * 1000 && !talking) nextPanel(); else storyTimer = setTimeout(tick, 200); };
+  const recorded = narrate && ttsOn && !muted && VOICE_FILES.has(voiceId('story', storyIdx + 1));
+  /* 収録音声：話し終えてから1秒あけて次へ。機械音声：決めた秒数と読み終わりを待つ */
+  const ready = () => recorded
+    ? (!talking && voiceEndedAt > t0 && performance.now() - voiceEndedAt >= 1000) || (!talking && !voiceAudio && performance.now() - t0 >= p.sec * 1000 + 1500)
+    : (performance.now() - t0 >= p.sec * 1000 && !talking);
+  const tick = () => { if(storyIdx !== idx) return; if(ready()) nextPanel(); else storyTimer = setTimeout(tick, 150); };
   storyTimer = setTimeout(tick, 800);
 }
 function nextPanel(){ if(storyIdx < theme.story.length - 1){ storyIdx++; showPanel(); } else finishStory(); }
