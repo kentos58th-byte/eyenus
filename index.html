@@ -61,6 +61,7 @@ a{color:var(--accent)}
 .row{display:flex;gap:10px;flex-wrap:wrap}
 .row>.btn{flex:1 1 200px}
 .btn.back{margin-top:6px}
+.btn.navback{width:100%;margin-top:4px}
 
 /* ライブラリ */
 .theme{display:grid;grid-template-columns:1fr auto;gap:6px 12px;align-items:center;text-align:left;width:100%;cursor:pointer;background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:16px}
@@ -411,6 +412,7 @@ ol.safety li.sub::before{content:none!important}
       <button class="btn ghost" type="button" id="replayBad">もう一度体験する</button>
       <button class="btn" type="button" id="toDeclare" disabled>次へ</button>
     </div>
+    <button class="btn ghost navback" type="button" data-navback>← 前のページに戻る</button>
   </div>
 </section>
 
@@ -429,6 +431,7 @@ ol.safety li.sub::before{content:none!important}
     <p class="note">重なったところも、違ったところも、どちらも大切な気づきです。</p>
     <button class="btn ghost" type="button" data-story-only style="align-self:flex-start;min-height:40px;padding:8px 14px"><span class="pname">佐藤さん</span>の物語を読み返す</button>
     <button class="btn" type="button" id="toDeclare2">次へ</button>
+    <button class="btn ghost navback" type="button" data-navback>← 前のページに戻る</button>
   </div>
 </section>
 
@@ -444,6 +447,7 @@ ol.safety li.sub::before{content:none!important}
     <input type="text" id="actOwn" placeholder="例：アラームより先に、佐藤さんの顔を見る">
     <button class="btn ghost" type="button" data-story-only style="align-self:flex-start;min-height:40px;padding:8px 14px"><span class="pname">佐藤さん</span>の物語を読み返す</button>
     <button class="btn" type="button" id="startGood" disabled>関わり方を変えた場面を体験する</button>
+    <button class="btn ghost navback" type="button" data-navback>← 前のページに戻る</button>
   </div>
 </section>
 
@@ -459,6 +463,7 @@ ol.safety li.sub::before{content:none!important}
     </div>
     <p class="note" id="cardNote">機種によらない一般的な目安です。必ず主治医の指示と事業所の手順を優先してください。</p>
     <button class="btn" type="button" id="toCommit">次へ</button>
+    <button class="btn ghost navback" type="button" data-navback>← 前のページに戻る</button>
   </div>
 </section>
 
@@ -473,7 +478,7 @@ ol.safety li.sub::before{content:none!important}
     <textarea id="cmReflect" placeholder="例：処置を急ぐほど、佐藤さんを置き去りにしていた。顔を見るだけで安心が変わる。"></textarea>
     <input type="hidden" id="cmTask"><input type="hidden" id="cmPledge">
     <button class="btn" type="button" id="doCommit">記録する</button>
-    <button class="btn ghost back" type="button" data-go="card">← 安全行動カードに戻る</button>
+    <button class="btn ghost navback" type="button" data-navback>← 前のページに戻る</button>
   </div>
 </section>
 
@@ -498,6 +503,7 @@ ol.safety li.sub::before{content:none!important}
       <p class="note">今日の学びから自動で作りました。臨床で振り返るたびに、このレポートに追記されていきます。</p>
       <div id="saveRepBox"></div>
     </div>
+    <button class="btn ghost navback" type="button" data-navback>← 前のページに戻る</button>
   </div>
 </section>
 
@@ -534,6 +540,7 @@ ol.safety li.sub::before{content:none!important}
       <p id="quizFb" class="note"></p>
     </div>
     <button class="btn" type="button" id="learnNext">次へ</button>
+    <button class="btn ghost navback" type="button" data-navback>← 前のページに戻る</button>
   </div>
 </section>
 
@@ -561,6 +568,7 @@ ol.safety li.sub::before{content:none!important}
     <label for="helperNote" class="note">もし佐藤さんの同僚だったら、どんな声をかけますか？（任意）</label>
     <textarea id="helperNote" placeholder="例：ひとりで抱えないで。一緒にサ責に相談しよう"></textarea>
     <button class="btn" type="button" id="toLearn2">次へ</button>
+    <button class="btn ghost navback" type="button" data-navback>← 前のページに戻る</button>
   </div>
 </section>
 
@@ -1646,6 +1654,7 @@ const $ = s => document.querySelector(s);
 const $$ = s => Array.from(document.querySelectorAll(s));
 let currentView = 'home';
 function go(name){
+  requestAnimationFrame(() => $$('[data-navback]').forEach(b => b.hidden = !navStack.length && name !== 'learn'));
   if(name !== 'film' && film){ film.tok++; film = null; hush(); }
   currentView = name;
   $$('.view').forEach(v => v.classList.toggle('on', v.id === 'v-' + name));
@@ -1713,7 +1722,7 @@ function openIntro(t){
   $('#introTag').textContent = t.tag;
   $('#h-intro').textContent = t.title;
   $('#patientInfo').innerHTML = t.patient.map(([k,v]) => `<dt>${k}</dt><dd>${v}</dd>`).join('');
-  practiced = false;
+  practiced = false; navStack = [];
   draft = {id: 'r' + Date.now(), theme: t.id, themeTitle: t.title, date: new Date().toISOString(), emotions: [], memo: '', actions: [], actOwn: '', thoughts: [], revisit: null};
   applyThemeText(t);
   const st = themeStatus(t.id);
@@ -1721,6 +1730,26 @@ function openIntro(t){
   if(st.count) $('#introMineNote').textContent = `学習 ${st.count}回・臨床での振り返り ${st.revisits}回。実際の場面に出会ったら、振り返りを書いて学びを積み重ねていきましょう。`;
   go('intro');
 }
+
+/* ===== 一つ前のページに戻る（学びの流れの中だけ） ===== */
+let navStack = [];
+function navPush(restore){ navStack.push(restore); }
+function navBack(){
+  const r = navStack.pop(); if(r) r(); else go('home');
+}
+function reopenVrEnd(which){
+  /* 体験の直後のページから戻ったときは、体験の終わりの画面を開き直す（体験をやり直すかどうかはそこで選べる） */
+  scene = which; const S = theme[which];
+  vr.classList.add('on'); document.body.style.overflow = 'hidden';
+  $('#vrPhase').textContent = S.label; $('#fade').classList.remove('off');
+  $('#vrEndText').textContent = S.endText; $('#vrNextLabel').textContent = S.endNext;
+  $('#vrEnd').classList.add('on');
+}
+document.addEventListener('click', e => {
+  if(!e.target.closest('[data-navback]')) return;
+  if(currentView === 'learn' && learnBack()) return;
+  navBack();
+});
 
 /* ===== 知る（スライドとクイズ） ===== */
 let learnIdx = 0, learnSlideI = 0, learnDone = null, quizAnswered = false;
@@ -1752,9 +1781,14 @@ $('#quizOpts').addEventListener('click', e => {
   if(draft){ draft.quiz = draft.quiz || []; draft.quiz[learnIdx] = k === Q.answer; }
   $('#learnNext').disabled = false;
 });
+function learnBack(){
+  if(!$('#learnQuiz').hidden){ $('#learnQuiz').hidden = true; $('#learnSlide').hidden = false; learnSlideI = theme.learn[learnIdx].slides.length - 1; showLearnSlide(); return true; }
+  if(learnSlideI > 0){ learnSlideI--; showLearnSlide(); window.scrollTo(0, 0); return true; }
+  return false;
+}
 $('#learnNext').addEventListener('click', () => {
   const L = theme.learn[learnIdx];
-  if(!$('#learnQuiz').hidden){ if(learnDone) learnDone(); return; }
+  if(!$('#learnQuiz').hidden){ const k = learnIdx, d = learnDone; navPush(() => openLearn(k, d)); if(d) d(); return; }
   if(learnSlideI < L.slides.length - 1){ learnSlideI++; showLearnSlide(); window.scrollTo(0, 0); }
   else showQuiz();
 });
@@ -1763,7 +1797,7 @@ $('#learnNext').addEventListener('click', () => {
 let film = null;
 function openFilm(key, done){
   const F = theme.film[key];
-  film = {F, si: 0, li: 0, done, tok: 0};
+  film = {F, si: 0, li: 0, done, tok: 0, key};
   $('#filmStep').textContent = F.step; go('film'); playFilm();
 }
 function filmLine(){
@@ -1794,9 +1828,9 @@ function filmStep(d){
   if(si >= S.length) return false;
   film.si = si; film.li = li; return true;
 }
-function endFilm(){ if(!film) return; const d = film.done; film.tok++; hush(); film = null; if(d) d(); }
+function endFilm(){ if(!film) return; const d = film.done, key = film.key; film.tok++; hush(); film = null; navPush(() => openFilm(key, d)); if(d) d(); }
 $('#filmNextBtn').addEventListener('click', () => { if(!film) return; if(!filmStep(1)){ endFilm(); return; } playFilm(); });
-$('#filmPrev').addEventListener('click', () => { if(!film) return; filmStep(-1); playFilm(); });
+$('#filmPrev').addEventListener('click', () => { if(!film) return; if(film.si === 0 && film.li === 0){ film.tok++; film = null; hush(); navBack(); return; } filmStep(-1); playFilm(); });
 $('#filmSkip').addEventListener('click', () => endFilm());
 
 /* ===== 佐藤さんを追い詰めていたもの ===== */
@@ -1806,6 +1840,7 @@ function openHelperReflect(){
   $('#helperNote').value = ''; go('helperReflect');
 }
 $('#toLearn2').addEventListener('click', () => {
+  navPush(() => go('helperReflect'));
   if(draft){ draft.factors = [...factorSel]; draft.helperNote = $('#helperNote').value.trim(); }
   openLearn(1, () => { startVR.skipStory = true; startVR('good'); });
 });
@@ -1870,12 +1905,14 @@ function openReflect(){
 }
 $('#emoMemo').addEventListener('input', () => draft && canGoDeclare());
 $('#toDeclare').addEventListener('click', () => {
+  navPush(() => go('reflect'));
   draft.emotions = [...emoSel]; draft.memo = $('#emoMemo').value.trim();
   $('#myWords').innerHTML = `<h3>あなたが感じたこと</h3><div class="mythoughts">${thoughtsHTML(draft.thoughts, 'bad')}</div>${draft.emotions.length ? `<p>${esc(draft.emotions.join('、'))}</p>` : ''}${draft.memo ? `<p class="quote voice">${esc(draft.memo)}</p>` : ''}`;
   $('#thoughtList').innerHTML = theme.thoughts.map(([w,t]) => `<li><small>${w}</small><span class="voice">「${t}」</span></li>`).join('');
   go('voices');
 });
 $('#toDeclare2').addEventListener('click', () => {
+  navPush(() => go('voices'));
   if(theme.flow === 'abuse'){ openLearn(0, () => openFilm('helper', openHelperReflect)); return; }
   actSel = makeChips($('#actChips'), theme.actions, {max: 3, onChange: updateAct});
   $('#actOwn').value = ''; updateAct();
@@ -1886,6 +1923,7 @@ $('#actOwn').addEventListener('input', updateAct);
 $('#replayBad').addEventListener('click', () => { startVR.skipStory = true; startVR('bad'); });
 $('#startBad').addEventListener('click', () => startVR('bad'));
 $('#startGood').addEventListener('click', () => {
+  navPush(() => go('declare'));
   draft.actions = [...actSel]; draft.actOwn = $('#actOwn').value.trim();
   startVR('good');
 });
@@ -1901,6 +1939,7 @@ function openCard(){
 function pledgeText(r){ return r.pledge ? `私は、${r.pledge}します。` : ''; }
 function canCommit(){}
 $('#toCommit').addEventListener('click', () => {
+  navPush(() => go('card'));
   $('#commitLook').innerHTML = `<h3>振り返り</h3>
     ${feelSummary(draft.thoughts, 'bad').size ? `<p class="note">1回目に浮かんだ気持ち：${esc([...feelSummary(draft.thoughts, 'bad').keys()].join('、'))}</p>` : ''}
     ${feelSummary(draft.thoughts, 'good').size ? `<p class="note">2回目に浮かんだ気持ち：${esc([...feelSummary(draft.thoughts, 'good').keys()].join('、'))}</p>` : ''}
@@ -1910,6 +1949,7 @@ $('#toCommit').addEventListener('click', () => {
 });
 ['#cmTask','#cmPledge'].forEach(q => $(q).addEventListener('input', canCommit));
 $('#doCommit').addEventListener('click', () => {
+  navPush(() => go('commit'));
   draft.reflection = $('#cmReflect').value.trim();
   draft.task = $('#cmTask').value.trim();
   draft.pledge = $('#cmPledge').value.trim().replace(/します。?$/, '');
@@ -2551,7 +2591,7 @@ function speak(who, text){
     else if(who === 'サ責'){ u.rate = 1.15; u.pitch = 0.95; }
     else if(who === '田中さん'){ u.rate = 0.82; u.pitch = 0.7; }
     else if(who === 'あなた（佐藤）'){ u.rate = 1.05; u.pitch = 1.05; }
-    else if(who === 'ナレーション'){ u.rate = 0.95; u.pitch = 1.0; }
+    else if(who === 'ナレーション'){ u.rate = 0.82; u.pitch = 1.0; }
     else if(who === 'あなた'){ u.rate = 0.82; u.pitch = theme.voiceLow ? 0.65 : 0.75; }
     else if(who === 'ヘルパー（記録）'){ u.rate = 1.25; u.pitch = 1.0; }
     else { u.rate = busy ? 1.3 : 1.05; u.pitch = busy ? 1.0 : 1.1; }
@@ -2760,7 +2800,7 @@ function playStory(){
     $('#story').classList.add('on'); showPanel();
   });
 }
-function showPanel(){
+function showPanel(narrate = true){
   clearTimeout(storyTimer);
   const st = theme.story, p = st[storyIdx], panel = $('#story .panel');
   panel.classList.remove('on');
@@ -2768,7 +2808,7 @@ function showPanel(){
     $('#panelArt').innerHTML = `<img src="img/${p.img}" alt="">`; $('#panelText').textContent = p.text;
     $$('#storyDots span').forEach((d,i) => d.classList.toggle('on', i <= storyIdx));
     panel.classList.add('on');
-    hush(); speak('ナレーション', p.text);   /* 4コマはナレーションで読み上げる */
+    hush(); if(narrate) speak('ナレーション', p.text);   /* 先に進んだときだけ読み上げる（戻ったときは読み返さない） */
   }, 250);
   const last = storyIdx === st.length - 1;
   $('#storyPrev').hidden = storyIdx === 0;
@@ -2782,7 +2822,7 @@ function showPanel(){
 function nextPanel(){ if(storyIdx < theme.story.length - 1){ storyIdx++; showPanel(); } else finishStory(); }
 function finishStory(){ clearTimeout(storyTimer); hush(); $('#story').classList.remove('on'); if(storyResolve){ const r = storyResolve; storyResolve = null; r(); } }
 $('#storyNext').addEventListener('click', nextPanel);
-$('#storyPrev').addEventListener('click', () => { if(storyIdx > 0){ storyIdx--; showPanel(); } });
+$('#storyPrev').addEventListener('click', () => { if(storyIdx > 0){ storyIdx--; showPanel(false); } });
 $('#storySkip').addEventListener('click', finishStory);
 /* 物語だけを読み返す（体験中ではない画面から） */
 async function openStoryOnly(){
@@ -2853,7 +2893,7 @@ async function startExplore(){
 }
 $('#startExplore').addEventListener('click', startExplore);
 $('#vrReplay').addEventListener('click', () => { startVR.skipStory = true; startVR(scene); });
-$('#vrNext').addEventListener('click', () => { const s = scene; closeVR(); if(s === 'bad') openReflect(); else if(theme.flow === 'abuse'){ if(draft) draft.actions = (draft.choices || []).map(c => c.picked); openFilm('ending', openCard); } else openCard(); });
+$('#vrNext').addEventListener('click', () => { const s = scene; closeVR(); navPush(() => reopenVrEnd(s)); if(s === 'bad') openReflect(); else if(theme.flow === 'abuse'){ if(draft) draft.actions = (draft.choices || []).map(c => c.picked); openFilm('ending', openCard); } else openCard(); });
 $('#stopBtn').addEventListener('click', () => {
   if(scene === 'explore'){ closeVR(); $('#stopBtn').textContent = '体験を止める'; return; }
   if($('#story').classList.contains('on')){ finishStory(); return; }
