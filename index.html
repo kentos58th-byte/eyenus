@@ -345,9 +345,17 @@ ol.safety b{display:block}
     </div>
     <div class="card">
       <h3>操作のしかた</h3>
-      <p class="note">画面をドラッグするか、下のボタンで視線を動かします。スマホを動かして見回せる端末もあります。佐藤さんは首を動かせないため、目を動かして見える範囲しか見えません。佐藤さんの心の声は字幕に出ません。音と、あなた自身の頭に浮かぶ言葉を大切にしてください。音が出るので、音量を確認してください。</p>
+      <p class="note">体験に入ると、最初に操作の練習があります。画面を指でなぞって見回し、気持ちが動いたら右のボタンで残します。佐藤さんの心の声は字幕に出ません。音と、あなた自身の中に浮かぶ気持ちを大切にしてください。音が出るので、音量を確認してください。</p>
     </div>
     <button class="btn" id="startBad" type="button">体験を始める</button>
+    <div class="card" id="introMine" hidden>
+      <h3>わたしの記録</h3>
+      <p class="note" id="introMineNote"></p>
+      <div class="row">
+        <button class="btn sub" type="button" id="introReport">レポートを見る</button>
+        <button class="btn sub" type="button" id="introRevisit">臨床での振り返りを書く</button>
+      </div>
+    </div>
     <button class="btn ghost back" type="button" data-go="home">← ライブラリへ</button>
   </div>
 </section>
@@ -500,6 +508,9 @@ ol.safety b{display:block}
     <div class="chips" id="resultChips"></div>
     <label for="revReaction" class="note">利用者さんやご家族の反応（任意）</label>
     <textarea id="revReaction" placeholder="例：名前を呼んで目を合わせたら、まばたきで返してくれた"></textarea>
+    <label for="revLearn"><b id="revLearnQ">今回の経験から、新しく学んだこと</b></label>
+    <p class="note">経験を自分の言葉にしておくと、次の場面で使える知恵になります。「〜なときは、〜が大切」の形で書いてみましょう（任意）。</p>
+    <textarea id="revLearn" placeholder="例：家族がそばにいるときは、処置の前に家族にもひとこと声をかけると、本人も家族も落ち着く"></textarea>
     <label for="revInsight" class="note">次の訪問で大切にしたいことを、ひとことで（任意）</label>
     <input type="text" id="revInsight" placeholder="例：処置の前に、まず顔を見る">
     <h3>新しく出てきた疑問はありますか？</h3>
@@ -1162,7 +1173,7 @@ function renderHome(){
       if(st.revisits) pill = `<span class="pill done">臨床で振り返り ${st.revisits}回</span>`;
       if(st.count && st.waiting) pill = `<span class="pill todo">臨床での振り返り待ち</span>`;
       if(st.count){
-        const steps = [['体験', st.count > 0], ['臨床で経験', st.revisits > 0], ['振り返り', st.revisits > 0], ['もう一度体験', st.count > 1 && st.revisits > 0]];
+        const steps = [['体験', st.count > 0], ['臨床で経験', st.revisits > 0], ['振り返り', st.revisits > 0]];
         cycle = `<span class="cycle">${steps.map(([n,on]) => `<i class="${on?'on':''}">${n}</i>`).join('<b>→</b>')}</span>
           <span class="meta">学習 ${st.count}回・臨床での振り返り ${st.revisits}回・前回の学習は${daysAgo(st.last) ? daysAgo(st.last) + '日前' : '今日'}</span>`;
       }
@@ -1191,8 +1202,14 @@ function openIntro(t){
   $('#patientInfo').innerHTML = t.patient.map(([k,v]) => `<dt>${k}</dt><dd>${v}</dd>`).join('');
   practiced = false;
   draft = {id: 'r' + Date.now(), theme: t.id, themeTitle: t.title, date: new Date().toISOString(), emotions: [], memo: '', actions: [], actOwn: '', thoughts: [], revisit: null};
+  const st = themeStatus(t.id);
+  $('#introMine').hidden = !st.count;
+  if(st.count) $('#introMineNote').textContent = `学習 ${st.count}回・臨床での振り返り ${st.revisits}回。実際の場面に出会ったら、振り返りを書いて学びを積み重ねていきましょう。`;
   go('intro');
 }
+
+$('#introReport').addEventListener('click', () => openMemReport(theme.id));
+$('#introRevisit').addEventListener('click', () => openRevisit(theme.id));
 
 /* ===== チップ ===== */
 function makeChips(box, items, {max = 99, onChange} = {}){
@@ -1371,7 +1388,9 @@ function openRevisit(themeId){
     <h3>決めたこと</h3><p class="quote">${esc(declText(r))}</p>
     ${r.task ? `<h3>行動レベルの課題</h3><p class="quote">${esc(r.task)}</p>` : ''}
     ${r.pledge ? `<h3>実行宣言</h3><p class="pledgebox">${esc(pledgeText(r))}</p>` : ''}
-    ${history.length ? `<h3>これまでの振り返り</h3>${history.map(h => `<p class="note">${fmtDate(new Date(h.v.date))}：${esc(h.v.result)}${h.v.insight?'　「'+esc(h.v.insight)+'」':''}</p>`).join('')}` : ''}`;
+    ${history.length ? `<h3>これまでの振り返り（${history.length}回）</h3>${history.map(h => `<p class="note">${fmtDate(new Date(h.v.date))}：${esc(h.v.result)}${h.v.insight?'　「'+esc(h.v.insight)+'」':''}</p>${h.v.learning ? `<p class="quote voice">学び：${esc(h.v.learning)}</p>` : ''}`).join('')}` : ''}`;
+  $('#revLearnQ').textContent = history.some(h => h.v.learning) ? '今回の経験から、これまでの学びにつけ足すこと・新しく学んだこと' : '今回の経験から、新しく学んだこと';
+  $('#revLearn').value = '';
   resSel = makeChips($('#resultChips'), RESULTS, {max: 1, onChange: s => $('#saveRevisit').disabled = !s.size});
   qSel = makeChips($('#qChips'), theme.questions);
   $('#revReaction').value = ''; $('#revInsight').value = ''; $('#saveRevisit').disabled = true;
@@ -1379,7 +1398,7 @@ function openRevisit(themeId){
 }
 $('#saveRevisit').addEventListener('click', () => {
   const recs = loadRecords(); const r = recs.find(x => x.id === currentRecId); if(!r) return;
-  const v = {date: new Date().toISOString(), result: [...resSel][0], reaction: $('#revReaction').value.trim(), insight: $('#revInsight').value.trim(), questions: [...qSel]};
+  const v = {date: new Date().toISOString(), result: [...resSel][0], reaction: $('#revReaction').value.trim(), learning: $('#revLearn').value.trim(), insight: $('#revInsight').value.trim(), questions: [...qSel]};
   r.revisits = revisitsOf(r).concat(v); r.revisit = v;
   saveRecords(recs);
   renderRecommend(r);
@@ -1389,6 +1408,7 @@ function renderRecommend(r){
   const resultLine = {'決めたとおりにできた':'実際の場面で、そのとおりに関わることができました。','一部できた':'実際の場面で、一部を実践できました。','できなかった':'今回はできませんでした。できなかった理由も、大切な学びです。','まだその場面に出会っていない':'まだその場面には出会っていません。出会ったときに、思い出してみてください。'}[v.result] || '';
   $('#recoSummary').innerHTML = `<p>「${esc(r.pledge ? pledgeText(r) : declText(r))}」と宣言して、${resultLine}</p>
     ${v.reaction?`<h3>利用者さん・ご家族の反応</h3><p class="quote">${esc(v.reaction)}</p>`:''}
+    ${v.learning?`<h3>今回の経験から学んだこと</h3><p class="quote voice">${esc(v.learning)}</p>`:''}
     ${v.insight?`<h3>次の訪問で大切にしたいこと</h3><p class="quote voice">${esc(v.insight)}</p>`:'<p class="note">次の訪問で大切にしたいことを一言にしておくと、経験が自分の言葉として残ります。</p>'}`;
   const ids = v.questions.length ? v.questions : ['feeling'];
   $('#recoList').innerHTML = ids.map(id => RECO[id]).filter(Boolean).map(x =>
@@ -1446,7 +1466,9 @@ async function buildReport(themeId){
   section('次の訪問で最初にすること', declText(latest));
   section('学びのメモ', latest.reflection || '');
   if(revs.length){
-    section(`臨床での振り返り（${revs.length}回）`, revs.map(({v}) => `● ${fmtDate(new Date(v.date))}：${v.result}` + (v.reaction ? `\n　反応：${v.reaction}` : '') + (v.insight ? `\n　大切にしたいこと：${v.insight}` : '')).join('\n'));
+    section(`臨床での振り返り（${revs.length}回）`, revs.map(({v}) => `● ${fmtDate(new Date(v.date))}：${v.result}` + (v.reaction ? `\n　反応：${v.reaction}` : '') + (v.learning ? `\n　学び：${v.learning}` : '') + (v.insight ? `\n　大切にしたいこと：${v.insight}` : '')).join('\n'));
+    const learns = revs.filter(x => x.v.learning);
+    if(learns.length) section('経験から得た学びの深まり', learns.map(({v}, i) => `${i + 1}. ${v.learning}（${fmtDate(new Date(v.date))}）`).join('\n'));
     const lastIns = [...revs].reverse().find(x => x.v.insight);
     section('振り返りで見えた変化', [`はじめに決めたこと：${declText(first)}`, `いちばん新しい結果：${revs[revs.length - 1].v.result}`, lastIns ? `いま大切にしたいこと：${lastIns.v.insight}` : ''].filter(Boolean).join('\n'));
     section('明確になった課題・次に学びたいこと', qs.join('\n'));
@@ -1460,7 +1482,7 @@ async function buildReport(themeId){
   const text = ['【受講＆振り返りレポート】', `テーマ：${t.title}`, `はじめの学習：${fmtDate(new Date(first.date))}　学習${rs.length}回・臨床での振り返り${revs.length}回`,
     repName ? `氏名：${repName}` : '', repOffice ? `事業所：${repOffice}` : '',
     feelings ? `体験中に浮かんだ気持ち：${feelings}` : '', `次の訪問で最初にすること：${declText(latest)}`, latest.reflection ? `学びのメモ：${latest.reflection}` : '',
-    ...revs.map(({v}) => `臨床での振り返り（${fmtDate(new Date(v.date))}）：${v.result}${v.insight ? '／' + v.insight : ''}`),
+    ...revs.map(({v}) => `臨床での振り返り（${fmtDate(new Date(v.date))}）：${v.result}${v.learning ? '／学び：' + v.learning : ''}${v.insight ? '／' + v.insight : ''}`),
     qs.length ? `明確になった課題：${qs.join('、')}` : ''].filter(Boolean).join('\n');
   const blob = await new Promise(r => out.toBlob(r, 'image/png'));
   return {blob, text};
