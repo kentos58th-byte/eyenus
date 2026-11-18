@@ -2583,7 +2583,8 @@ let ttsOn = true, jaVoice = null;
 function pickVoice(){ try{ const vs = speechSynthesis.getVoices(); jaVoice = vs.find(v => /ja/i.test(v.lang)) || null; }catch(e){} }
 if('speechSynthesis' in window){ pickVoice(); try{ speechSynthesis.onvoiceschanged = pickVoice; }catch(e){} }
 /* 収録した音声（Vrew）。ファイルがあるセリフはそれを流し、ないセリフは機械音声で読む */
-const VOICE_FILES = new Set(['vent-story-1','vent-story-2','vent-story-3','vent-story-4']);
+const VOICE_FILES = new Set(['vent-story-1','vent-story-2','vent-story-3','vent-story-4',
+  'vent-bad-01','vent-bad-02','vent-bad-03','vent-bad-04','vent-bad-05']);
 const VOICE_PREFIX = {'home-vent':'vent', 'home-bpsd':'bpsd'};
 let voiceAudio = null, voiceEndedAt = 0;
 function voiceId(kind, n){ const pre = VOICE_PREFIX[theme.id]; return pre ? `${pre}-${kind}-${n}` : ''; }
@@ -2690,7 +2691,7 @@ function applyCue(c){
   if(c.inner){ const el = $('#inner'); el.textContent = c.inner; el.classList.add('on'); clearTimeout(innerTimer); innerTimer = setTimeout(() => el.classList.remove('on'), 3600); }
   if('speech' in c){
     const el = $('#speech');
-    if(c.speech){ el.innerHTML = `<b>${c.speech[0]}</b>${esc(c.speech[1])}`; el.classList.add('on'); speak(c.speech[0], c.speech[1]); lookAtSpeaker(c.speech[0]); }
+    if(c.speech){ el.innerHTML = `<b>${c.speech[0]}</b>${esc(c.speech[1])}`; el.classList.add('on'); speak(c.speech[0], c.speech[1], c._vid); lookAtSpeaker(c.speech[0]); }
     else el.classList.remove('on');
   }
   if(c.sfx === 'door') doorSound();
@@ -2763,7 +2764,7 @@ function askChoice(ch){
       if(!o.good){ b.classList.add('ng'); b.disabled = true; $('#choiceFb').textContent = o.fb || ''; return; }
       b.classList.add('ok'); $('#choiceFb').textContent = '';
       if(draft){ draft.choices = draft.choices || []; draft.choices.push({q: ch.q, picked: o.short || o.t, first: tries === 1}); }
-      timers.push(setTimeout(() => { box.hidden = true; if(o.say) applyCue({speech:['ヘルパー', o.say]}); res(); }, 700));
+      timers.push(setTimeout(() => { box.hidden = true; if(o.say) applyCue({speech:['ヘルパー', o.say], _vid: ch._vid}); res(); }, 700));
     };
   });
 }
@@ -2788,7 +2789,9 @@ function lookAtSpeaker(who){
 /* 台詞は前の読み上げが終わるまで待ってから出す（字幕と声をそろえる）。待った分だけ、以降の進行も後ろにずらす */
 let talking = false, talkGuard = 0;
 function runCues(cues, which){
-  let i = 0, delay = 0;
+  let i = 0, delay = 0, n = 0;
+  /* 台本の番号（例：vent-bad-01）をセリフに振る。選択肢のあとのセリフも1つ数える */
+  cues.forEach(c => { if(c.speech) c._vid = voiceId(which, String(++n).padStart(2, '0')); else if(c.choice) c.choice._vid = voiceId(which, String(++n).padStart(2, '0')); });
   const step = () => {
     if(scene !== which || i >= cues.length) return;
     const c = cues[i], due = sceneStart + c.t * 1000 + delay, wait = due - performance.now();
