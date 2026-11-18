@@ -2551,7 +2551,7 @@ function speak(who, text){
     else if(who === 'サ責'){ u.rate = 1.15; u.pitch = 0.95; }
     else if(who === '田中さん'){ u.rate = 0.82; u.pitch = 0.7; }
     else if(who === 'あなた（佐藤）'){ u.rate = 1.05; u.pitch = 1.05; }
-    else if(who === 'ナレーション'){ u.rate = 1.0; u.pitch = 1.0; }
+    else if(who === 'ナレーション'){ u.rate = 0.95; u.pitch = 1.0; }
     else if(who === 'あなた'){ u.rate = 0.82; u.pitch = theme.voiceLow ? 0.65 : 0.75; }
     else if(who === 'ヘルパー（記録）'){ u.rate = 1.25; u.pitch = 1.0; }
     else { u.rate = busy ? 1.3 : 1.05; u.pitch = busy ? 1.0 : 1.1; }
@@ -2768,15 +2768,19 @@ function showPanel(){
     $('#panelArt').innerHTML = `<img src="img/${p.img}" alt="">`; $('#panelText').textContent = p.text;
     $$('#storyDots span').forEach((d,i) => d.classList.toggle('on', i <= storyIdx));
     panel.classList.add('on');
+    hush(); speak('ナレーション', p.text);   /* 4コマはナレーションで読み上げる */
   }, 250);
   const last = storyIdx === st.length - 1;
   $('#storyPrev').hidden = storyIdx === 0;
   $('#storyNext').textContent = last ? '体験へ進む' : '次へ';
   $('#storySkip').hidden = last;
-  storyTimer = setTimeout(nextPanel, p.sec * 1000);
+  /* 読み上げが終わり、決めた秒数がたったら次のコマへ */
+  const t0 = performance.now(), idx = storyIdx;
+  const tick = () => { if(storyIdx !== idx) return; if(performance.now() - t0 >= p.sec * 1000 && !talking) nextPanel(); else storyTimer = setTimeout(tick, 200); };
+  storyTimer = setTimeout(tick, 800);
 }
 function nextPanel(){ if(storyIdx < theme.story.length - 1){ storyIdx++; showPanel(); } else finishStory(); }
-function finishStory(){ clearTimeout(storyTimer); $('#story').classList.remove('on'); if(storyResolve){ const r = storyResolve; storyResolve = null; r(); } }
+function finishStory(){ clearTimeout(storyTimer); hush(); $('#story').classList.remove('on'); if(storyResolve){ const r = storyResolve; storyResolve = null; r(); } }
 $('#storyNext').addEventListener('click', nextPanel);
 $('#storyPrev').addEventListener('click', () => { if(storyIdx > 0){ storyIdx--; showPanel(); } });
 $('#storySkip').addEventListener('click', finishStory);
@@ -2808,7 +2812,7 @@ $('#vrMenu').addEventListener('click', e => {
   if(act === 'restart'){ if(storyOnly) return; finishStoryQuiet(); startVR.skipStory = true; startVR(scene || 'bad'); }
   if(act === 'home'){ storyOnly = false; closeVR(); go('home'); }
 });
-function finishStoryQuiet(){ clearTimeout(storyTimer); $('#story').classList.remove('on'); storyResolve = null; }
+function finishStoryQuiet(){ clearTimeout(storyTimer); hush(); $('#story').classList.remove('on'); storyResolve = null; }
 function replayStory(){
   if(storyOnly){ storyIdx = 0; showPanel(); return; }
   finishStoryQuiet(); startVR.withStory = true; startVR(scene || 'bad');
