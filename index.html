@@ -1685,8 +1685,8 @@ window.addEventListener('resize', () => { if(vr.classList.contains('on')) layout
 
 /* ドラッグ */
 let drag = null;
-stage.addEventListener('pointerdown', e => { drag = {x: e.clientX, y: e.clientY, ty: view.ty, tp: view.tp}; stage.setPointerCapture(e.pointerId); });
-stage.addEventListener('pointermove', e => { if(!drag) return; lastDrag = performance.now(); setTarget(drag.ty - (e.clientX - drag.x) * 0.22, drag.tp + (e.clientY - drag.y) * 0.22); });
+stage.addEventListener('pointerdown', e => { if(performance.now() < forcedUntil) return; drag = {x: e.clientX, y: e.clientY, ty: view.ty, tp: view.tp}; stage.setPointerCapture(e.pointerId); });
+stage.addEventListener('pointermove', e => { if(!drag) return; if(performance.now() < forcedUntil){ drag = null; return; } lastDrag = performance.now(); setTarget(drag.ty - (e.clientX - drag.x) * 0.22, drag.tp + (e.clientY - drag.y) * 0.22); });
 stage.addEventListener('pointerup', () => drag = null);
 stage.addEventListener('pointercancel', () => drag = null);
 /* 視点ジャンプ */
@@ -1883,7 +1883,7 @@ function applyCue(c){
   if(c.alarm === false) alarmOff();
   if(c.show) showFig(c.show, true);
   if(c.hide) showFig(c.hide, false);
-  if(c.look && autoLook && performance.now() - lastDrag >= 1000){ const [y,p] = LOOKS[c.look]; setTarget(y, p); }
+  if(c.look){ const [y,p] = LOOKS[c.look]; forceLook(y, p); }
   if(c.hint){ $$('.jump button').forEach(b => b.classList.toggle('hint', b.dataset.look === c.hint)); timers.push(setTimeout(() => $$('.jump button').forEach(b => b.classList.remove('hint')), 6000)); }
   if(c.inner){ const el = $('#inner'); el.textContent = c.inner; el.classList.add('on'); clearTimeout(innerTimer); innerTimer = setTimeout(() => el.classList.remove('on'), 3600); }
   if('speech' in c){
@@ -1938,25 +1938,27 @@ async function prologue(which){
   }
   P.classList.remove('on', 'guide');
   /* 3. アラーム。視点をいったん正面（天井）に戻す */
-  setTarget(0, 0); alarmOn();
+  setTarget(0, 0); forcedUntil = performance.now() + 1200; drag = null; alarmOn();
   const ab = $('#alarmBanner'); ab.classList.add('on');
-  timers.push(setTimeout(() => { if(alive() && autoLook && performance.now() - lastDrag >= 1000){ const [y, p] = LOOKS.vent; setTarget(y, p); } }, 1500));   /* 鳴っている方（呼吸器）へ目を向ける */
+  timers.push(setTimeout(() => { if(alive()){ const [y, p] = LOOKS.vent; forceLook(y, p); } }, 1200));   /* 鳴っている方（呼吸器）へ目を向ける */
   timers.push(setTimeout(() => ab.classList.remove('on'), 3200));
   return alive();
 }
 
 /* ===== 話している人の方を自動で向く ===== */
-let autoLook = true, lastDrag = 0;
+let autoLook = true, lastDrag = 0, forcedUntil = 0;
+/* アラームや話し始めの瞬間は、2秒ほど強制的にその方向へ向ける（その間は指の操作を受けつけない） */
+function forceLook(y, p, ms){ if(!autoLook) return; setTarget(y, p); forcedUntil = performance.now() + (ms || 2000); if(drag) drag = null; }
 function faceDir(id){
   const f = figs[id]; if(!f || !f.mesh.userData.face) return null;
   const p = f.mesh.userData.face;
   return [Math.atan2(p.x, -p.z) * 180 / Math.PI, Math.atan2(p.y, Math.hypot(p.x, p.z)) * 180 / Math.PI];
 }
 function lookAtSpeaker(who){
-  if(!autoLook || performance.now() - lastDrag < 1000) return;
+  if(!autoLook) return;
   const ids = who === '妻' ? ['wifeSmile', 'wife'] : ['overGood', 'overBad', 'sideNurse'];
   const id = ids.find(i => figs[i] && figs[i].target > 0.5); if(!id) return;
-  const d = faceDir(id); if(d) setTarget(d[0], d[1] * 0.85);
+  const d = faceDir(id); if(d) forceLook(d[0], d[1] * 0.85);
 }
 
 /* 台詞は前の読み上げが終わるまで待ってから出す（字幕と声をそろえる）。待った分だけ、以降の進行も後ろにずらす */
