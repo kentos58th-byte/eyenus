@@ -2584,7 +2584,8 @@ function pickVoice(){ try{ const vs = speechSynthesis.getVoices(); jaVoice = vs.
 if('speechSynthesis' in window){ pickVoice(); try{ speechSynthesis.onvoiceschanged = pickVoice; }catch(e){} }
 /* 収録した音声（Vrew）。ファイルがあるセリフはそれを流し、ないセリフは機械音声で読む */
 const VOICE_FILES = new Set(['vent-story-1','vent-story-2','vent-story-3','vent-story-4',
-  'vent-bad-01','vent-bad-02','vent-bad-03','vent-bad-04','vent-bad-05']);
+  'vent-bad-01','vent-bad-02','vent-bad-03','vent-bad-04','vent-bad-05',
+  'vent-good-01','vent-good-02','vent-good-03','vent-good-04','vent-good-05','vent-good-06','vent-good-07','vent-good-08','vent-good-09']);
 const VOICE_PREFIX = {'home-vent':'vent', 'home-bpsd':'bpsd'};
 let voiceAudio = null, voiceEndedAt = 0;
 function voiceId(kind, n){ const pre = VOICE_PREFIX[theme.id]; return pre ? `${pre}-${kind}-${n}` : ''; }
