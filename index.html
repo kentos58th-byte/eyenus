@@ -113,6 +113,11 @@ ol.safety b{display:block}
 .pledge{display:flex;align-items:center;gap:6px;flex-wrap:wrap;font-weight:700}
 .pledge input{flex:1 1 100%;min-width:0}
 .pledgebox{border:2px solid var(--accent);border-radius:12px;padding:12px 14px;background:#fff;font-size:1.08rem;font-weight:700;line-height:1.6}
+#splash{position:fixed;inset:0;z-index:100;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#B4E115,#5BC12D);transition:opacity .6s ease}
+#splash img{width:min(78vw,440px);height:auto;display:block;animation:splashIn .8s ease both}
+#splash.out{opacity:0;pointer-events:none}
+@keyframes splashIn{from{opacity:0;transform:scale(.94)}to{opacity:1;transform:scale(1)}}
+.mark{width:84px;height:auto;display:block;margin:0 0 6px -2px}
 .hero{display:flex;flex-direction:column;gap:4px;padding:6px 0 10px;border-bottom:1px solid var(--line, #D5DEDE);margin-bottom:4px}
 .appname{font-size:2.3rem;letter-spacing:.12em;margin:0;line-height:1.2}
 .byline{color:var(--muted);font-size:.8rem;letter-spacing:.06em;margin-top:-2px}
@@ -229,9 +234,11 @@ ol.safety b{display:block}
 <body>
 
 <!-- ===== ホーム（ライブラリ） ===== -->
+<div id="splash" aria-hidden="true"><img src="img/logo-white.png" alt=""></div>
 <section class="view on" id="v-home" aria-labelledby="h-home">
   <div class="wrap">
     <header class="hero">
+      <img class="mark" src="img/mark.png" alt="" width="84" height="45">
       <h1 id="h-home" class="appname">アイナス</h1>
       <div class="byline">created by KenMaP</div>
       <p class="catch">その人の人生の続きに、<br>あなたのケアがある。</p>
@@ -1949,6 +1956,14 @@ document.addEventListener('keydown', e => { if(e.key === 'Escape' && vr.classLis
 renderHome();
 </script>
 <script>
+/* 起動画面：アイコンと同じ絵を見せてからホームへ */
+(function(){
+  const sp = document.getElementById('splash'); if(!sp) return;
+  const t0 = performance.now();
+  const hide = () => { const wait = Math.max(0, 1800 - (performance.now() - t0)); setTimeout(() => { sp.classList.add('out'); setTimeout(() => sp.remove(), 700); }, wait); };
+  if(document.readyState === 'complete') hide(); else window.addEventListener('load', hide);
+  setTimeout(hide, 4000);   /* 読み込みが遅いときも待たせすぎない */
+})();
 if('serviceWorker' in navigator && location.protocol === 'https:'){
   window.addEventListener('load', () => navigator.serviceWorker.register('sw.js').catch(() => {}));
 }
