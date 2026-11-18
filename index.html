@@ -118,6 +118,17 @@ ol.safety b{display:block}
 #splash.out{opacity:0;pointer-events:none}
 @keyframes splashIn{from{opacity:0;transform:scale(.94)}to{opacity:1;transform:scale(1)}}
 .mark{width:84px;height:auto;display:block;margin:0 0 6px -2px}
+.share{align-items:center;text-align:center}
+.share img{width:200px;height:200px;border-radius:12px;border:1px solid var(--line);background:#fff;padding:6px}
+.share .url{font-size:.8rem;color:var(--muted);word-break:break-all;margin:0}
+.share .row{justify-content:center;width:100%}
+.btn.danger{background:#fff;color:#A23B2E;border:1.5px solid #D9A39A}
+#confirm .btn.danger{background:#A23B2E;color:#fff;border-color:#A23B2E}
+#confirm{position:fixed;inset:0;z-index:90;background:rgba(14,21,23,.55);display:flex;align-items:center;justify-content:center;padding:20px}
+#confirm[hidden]{display:none}
+.cbox{background:var(--surface);border-radius:16px;padding:22px 20px 18px;max-width:360px;width:100%;box-shadow:0 10px 40px rgba(0,0,0,.3)}
+.cbox p{margin:0 0 16px;font-weight:700;line-height:1.7}
+.cbox .row>.btn{flex:1 1 0}
 .hero{display:flex;flex-direction:column;gap:4px;padding:6px 0 10px;border-bottom:1px solid var(--line, #D5DEDE);margin-bottom:4px}
 .appname{font-size:2.3rem;letter-spacing:.12em;margin:0;line-height:1.2}
 .byline{color:var(--muted);font-size:.8rem;letter-spacing:.06em;margin-top:-2px}
@@ -261,8 +272,31 @@ ol.safety b{display:block}
         <li>記録はこの端末のブラウザの中だけに保存されます。利用者さんが特定できる情報は書かないでください。</li>
       </ul>
     </div>
+    <div class="card share">
+      <h3>デモ版を共有する</h3>
+      <p class="note">このQRコードをスマホのカメラで読み取ると、アイナスのデモ版が開きます。</p>
+      <img src="img/qr.png" alt="デモ版のURLのQRコード" width="200" height="200">
+      <p class="url">https://kentos58th-byte.github.io/eyenus/</p>
+      <div class="row">
+        <button class="btn sub" type="button" id="shareUrl">URLを送る・コピー</button>
+      </div>
+    </div>
+    <div class="card">
+      <h3>試作版の記録を消す</h3>
+      <p class="note">この端末に保存された振り返り記録と研修の履歴を、すべて削除します。</p>
+      <button class="btn danger" type="button" id="wipeBtn">今までの記録を削除する</button>
+    </div>
   </div>
 </section>
+<div id="confirm" role="alertdialog" aria-modal="true" aria-labelledby="confirmMsg" hidden>
+  <div class="cbox">
+    <p id="confirmMsg">今までの記録が全て削除されますが、よろしいですか？</p>
+    <div class="row">
+      <button class="btn sub" type="button" id="wipeNo">いいえ</button>
+      <button class="btn danger" type="button" id="wipeYes">はい</button>
+    </div>
+  </div>
+</div>
 
 <!-- ===== テーマ紹介 ===== -->
 <section class="view" id="v-intro" aria-labelledby="h-intro">
@@ -1952,6 +1986,22 @@ $('#stopBtn').addEventListener('click', () => {
   $('#vrEnd').classList.add('on');
 });
 document.addEventListener('keydown', e => { if(e.key === 'Escape' && vr.classList.contains('on') && !$('#vrEnd').classList.contains('on')) $('#stopBtn').click(); });
+
+/* ===== デモ版の共有 ===== */
+const DEMO_URL = 'https://kentos58th-byte.github.io/eyenus/';
+$('#shareUrl').addEventListener('click', async () => {
+  try{ if(navigator.share){ await navigator.share({title:'アイナス（デモ版）', text:'その人の人生の続きに、あなたのケアがある。', url: DEMO_URL}); return; } }catch(e){ if(e && e.name === 'AbortError') return; }
+  try{ await navigator.clipboard.writeText(DEMO_URL); toast('URLをコピーしました'); }catch(e){ toast('コピーできませんでした'); }
+});
+/* ===== 試作版：記録をすべて削除 ===== */
+$('#wipeBtn').addEventListener('click', () => { $('#confirm').hidden = false; $('#wipeNo').focus(); });
+$('#wipeNo').addEventListener('click', () => { $('#confirm').hidden = true; });
+$('#confirm').addEventListener('click', e => { if(e.target.id === 'confirm') $('#confirm').hidden = true; });
+$('#wipeYes').addEventListener('click', () => {
+  try{ Object.keys(localStorage).filter(k => k.startsWith('kenmap')).forEach(k => localStorage.removeItem(k)); }catch(e){}
+  memStore = []; draft = null; currentRecId = null;
+  $('#confirm').hidden = true; renderHome(); window.scrollTo(0, 0); toast('記録をすべて削除しました');
+});
 
 renderHome();
 </script>
