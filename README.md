@@ -29,6 +29,7 @@ KenMaP（集中ケア認定看護師）。看護・介護職の教育に用い�
 - `js/three.min.js` … 3D表示（three.js r128）
 - `img/` … 物語（4コマ漫画）
 - `manifest.webmanifest` / `sw.js` / `icons/` … ホーム画面追加・オフライン対応
+- `kenshu/` … KenMaP研修・学習会設計支援ツール（設定方法は `kenshu/README.md`）
 
 ## 注意
 学習を補助するための教材です。実際のケアは、主治医の指示と事業所の手順を優先してください。

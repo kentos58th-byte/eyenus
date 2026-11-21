@@ -1,0 +1,3183 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>KenMaP研修・学習会設計支援ツール</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@500;700;900&display=swap" rel="stylesheet">
+<style>
+/*
+VOICE: 明るく前向き。研修づくりを「やらされ」ではなく「ワクワクする準備」にする
+IDEA: 旅のしおり・すごろく。ねらい→デザイン→本番→ふりかえりを進む道のり
+PICTURE: 色つきの時間軸レール（活動ごとに色が変わる）と、進む道のりのステップ
+COLOUR and TYPE: 深い青緑を土台に、コーラル・ひまわり・空色・ミントの差し色。丸ゴシック
+LAYOUT: 上に道のり、下に作業面。スマホでは1列に積む
+*/
+:root{
+  --teal:#1F6F72; --teal-d:#14504F; --teal-soft:#E3F1F0;
+  --coral:#FF7A59; --coral-soft:#FFE8E1; --sun:#FFC845; --sun-soft:#FFF4D6;
+  --sky:#4FB3E8; --sky-soft:#E1F2FC; --mint:#4CC29E; --mint-soft:#DFF5EE; --grape:#8C7AE6; --grape-soft:#ECE8FC;
+  --ink:#1E2A32; --muted:#55636B; --line:#E6E3DA; --bg:#FAF9F5; --card:#FFFFFF; --danger:#C2412B;
+}
+*{box-sizing:border-box;min-width:0}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:"Zen Maru Gothic","Hiragino Maru Gothic ProN","Hiragino Sans","Noto Sans JP",system-ui,sans-serif;font-size:16px;line-height:1.7;overflow-x:clip}
+button,input,select,textarea{font:inherit;color:inherit}
+a{color:var(--teal)}
+.wrap{max-width:1120px;margin:0 auto;padding:0 16px}
+/* ---- ヘッダー ---- */
+.hero{background:var(--teal);color:#fff;position:relative;overflow:hidden}
+.hero::before{content:"";position:absolute;inset:0;background-image:radial-gradient(circle at 12% 30%,rgba(255,200,69,.55) 0 7px,transparent 8px),radial-gradient(circle at 88% 25%,rgba(255,122,89,.6) 0 10px,transparent 11px),radial-gradient(circle at 70% 85%,rgba(79,179,232,.55) 0 6px,transparent 7px),radial-gradient(circle at 30% 90%,rgba(76,194,158,.6) 0 9px,transparent 10px),radial-gradient(rgba(255,255,255,.09) 1.5px,transparent 2px);background-size:auto,auto,auto,auto,22px 22px;pointer-events:none}
+.hero .wrap{position:relative;display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:10px;padding-top:16px;padding-bottom:16px}
+.brand{font-weight:900;font-size:22px;letter-spacing:.02em}
+.brand b{color:var(--sun)}
+.brand small{font-size:13px;font-weight:700;opacity:.9;margin-left:8px}
+.mode{font-size:12.5px;font-weight:700;padding:4px 12px;border-radius:999px;background:rgba(255,255,255,.16)}
+/* ---- 道のり（ステップ） ---- */
+.road{background:var(--card);border-bottom:1px solid var(--line)}
+.road ol{list-style:none;margin:0 auto;padding:14px 16px;max-width:1120px;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;position:relative}
+.road li{position:relative}
+.road button{width:100%;display:flex;align-items:center;gap:10px;border:2px solid var(--line);background:#fff;border-radius:18px;padding:8px 12px;min-height:56px;cursor:pointer;text-align:left;transition:transform .15s}
+.road button:hover{transform:translateY(-2px)}
+.road .num{flex:none;width:34px;height:34px;border-radius:50%;display:grid;place-items:center;font-weight:900;background:var(--bg);color:var(--muted)}
+.road .lbl{font-weight:900;font-size:15px;line-height:1.25}
+.road .lbl small{display:block;font-weight:500;font-size:11.5px;color:var(--muted)}
+.road button[aria-current="step"]{border-color:var(--teal);background:var(--teal-soft)}
+.road button[aria-current="step"] .num{background:var(--teal);color:#fff}
+.road li:nth-child(1) .num{box-shadow:0 0 0 3px var(--sun-soft)} .road li:nth-child(2) .num{box-shadow:0 0 0 3px var(--coral-soft)} .road li:nth-child(3) .num{box-shadow:0 0 0 3px var(--sky-soft)} .road li:nth-child(4) .num{box-shadow:0 0 0 3px var(--mint-soft)}
+@media(max-width:640px){.road ol{grid-template-columns:repeat(4,minmax(0,1fr));gap:4px;padding:10px 8px}.road button{flex-direction:column;gap:2px;padding:6px 2px;text-align:center;border-radius:14px}.road .lbl small{display:none}.road .lbl{font-size:12.5px}}
+main{padding:20px 0 64px}
+/* ---- カード・見出し ---- */
+.card{background:var(--card);border:1.5px solid var(--line);border-radius:22px;padding:22px;margin-bottom:16px}
+#view.anim .card{animation:pop .35s ease both}
+@keyframes pop{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+.kicker{display:inline-flex;align-items:center;gap:6px;font-size:13px;font-weight:900;padding:3px 12px;border-radius:999px;background:var(--sun-soft);color:#7A5600;margin-bottom:6px}
+h1{font-size:clamp(24px,3.4vw,34px);line-height:1.3;margin:0 0 6px;font-weight:900;text-wrap:balance}
+h2{font-size:21px;margin:0 0 4px;font-weight:900}
+h3{font-size:17px;margin:0 0 6px;font-weight:900}
+.lead{color:var(--muted);margin:0 0 16px;font-size:14.5px}
+label.f{display:block;font-weight:900;font-size:14.5px;margin:16px 0 4px}
+.hint{display:block;font-weight:500;color:var(--muted);font-size:13px}
+input[type=text],input[type=date],input[type=number],input[type=password],select,textarea{width:100%;border:2px solid var(--line);border-radius:14px;padding:10px 14px;background:#fff;min-height:46px;font-size:16px}
+textarea{min-height:88px;resize:vertical}
+input:focus,select:focus,textarea:focus{outline:none;border-color:var(--teal);box-shadow:0 0 0 4px var(--teal-soft)}
+button:focus-visible,a:focus-visible{outline:3px solid var(--sky);outline-offset:2px}
+.grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:0 16px}
+.row{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.spacer{flex:1}
+/* ---- ボタン ---- */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:48px;padding:0 22px;border-radius:999px;border:0;background:var(--teal);color:#fff;font-weight:900;cursor:pointer;text-decoration:none;box-shadow:0 4px 0 var(--teal-d);transition:transform .08s,box-shadow .08s;font-size:15.5px}
+.btn:active{transform:translateY(3px);box-shadow:0 1px 0 var(--teal-d)}
+.btn.sun{background:var(--sun);color:#3D2B00;box-shadow:0 4px 0 #D9A21E}
+.btn.sun:active{box-shadow:0 1px 0 #D9A21E}
+.btn.sub{background:#fff;color:var(--teal);border:2px solid var(--teal);box-shadow:0 3px 0 var(--teal-soft)}
+.btn.ghost{background:#fff;color:var(--ink);border:2px solid var(--line);box-shadow:none}
+.btn.danger{background:#fff;color:var(--danger);border:2px solid #F0C9C0;box-shadow:none}
+.btn.sm{min-height:40px;padding:0 14px;font-size:14px}
+.btn.xs{min-height:36px;padding:0 10px;font-size:13px;box-shadow:none}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.icon{width:18px;height:18px;flex:none}
+/* ---- チップ（指導法） ---- */
+.chips{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:10px}
+.chip{position:relative;display:flex;gap:10px;align-items:flex-start;border:2px solid var(--line);border-radius:18px;padding:12px 14px;cursor:pointer;background:#fff;transition:transform .12s,border-color .12s}
+.chip:hover{transform:translateY(-2px)}
+.chip input{position:absolute;opacity:0;pointer-events:none}
+.chip .dot{flex:none;width:36px;height:36px;border-radius:12px;display:grid;place-items:center}
+.chip .t{font-weight:900;line-height:1.35}
+.chip .d{font-size:12.5px;color:var(--muted);line-height:1.5}
+.chip .check{position:absolute;top:8px;right:10px;width:22px;height:22px;border-radius:50%;border:2px solid var(--line);display:grid;place-items:center;background:#fff}
+.chip:has(input:checked){border-color:var(--teal);background:var(--teal-soft)}
+.chip:has(input:checked) .check{background:var(--teal);border-color:var(--teal)}
+.chip:has(input:checked) .check::after{content:"";width:6px;height:11px;border:solid #fff;border-width:0 3px 3px 0;transform:rotate(45deg) translate(-1px,-1px)}
+.chip:has(input:focus-visible){outline:3px solid var(--sky);outline-offset:2px}
+/* ---- 時間軸 ---- */
+.sub-nav{display:flex;gap:6px;overflow-x:auto;padding:4px;background:#fff;border:1.5px solid var(--line);border-radius:999px;margin-bottom:16px}
+.sub-nav button{flex:1 0 auto;border:0;background:none;border-radius:999px;padding:8px 14px;min-height:44px;font-weight:900;color:var(--muted);cursor:pointer;white-space:nowrap}
+.sub-nav button[aria-current="page"]{background:var(--coral);color:#fff}
+.timebar{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:14px}
+.timebar .track{flex:1 1 220px;height:16px;border-radius:999px;background:#EEECE5;overflow:hidden;display:flex}
+.timebar .seg{height:100%}
+.timebar .lab{font-weight:900;font-variant-numeric:tabular-nums;white-space:nowrap}
+.over{color:var(--danger)}
+.tl{position:relative;padding-left:0}
+.blk{display:grid;grid-template-columns:76px 1fr;gap:0;margin-bottom:12px}
+.blk .rail{position:relative;display:flex;flex-direction:column;align-items:center;padding-top:14px}
+.blk .rail .time{font-weight:900;font-size:15px;font-variant-numeric:tabular-nums}
+.blk .rail .dur{font-size:12px;color:var(--muted)}
+.blk .rail::after{content:"";position:absolute;top:62px;bottom:-12px;width:6px;border-radius:3px;background:var(--c,var(--teal));opacity:.35}
+.blk:last-child .rail::after{display:none}
+.blk .body{background:#fff;border:2px solid var(--line);border-left:8px solid var(--c,var(--teal));border-radius:18px;padding:14px 16px}
+.blk.now .body{border-color:var(--c,var(--teal));box-shadow:0 0 0 4px var(--sun-soft)}
+.blk.done .body{opacity:.6}
+.blk-head{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.tag{display:inline-flex;align-items:center;font-size:12px;font-weight:900;padding:2px 10px;border-radius:999px;background:var(--bg);color:var(--ink)}
+.tag.tg{background:var(--sky-soft);color:#0F5A80}
+.tag.live{background:var(--coral);color:#fff}
+.tag.rec{background:var(--sun-soft);color:#7A5600}
+.minbox{display:flex;align-items:center;gap:4px}
+.minbox input{width:64px;text-align:center;padding:6px;min-height:40px}
+.minbox button{width:36px;height:36px;border-radius:50%;border:2px solid var(--line);background:#fff;font-weight:900;cursor:pointer}
+.kv{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:0 12px}
+.meta{font-size:13.5px;color:var(--muted);margin-top:6px;display:grid;gap:2px}
+.meta b{color:var(--ink)}
+.addbar{border:2px dashed #D6D2C6;border-radius:18px;padding:12px;display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-left:76px}
+@media(max-width:600px){.blk{grid-template-columns:56px 1fr}.addbar{margin-left:0}}
+/* ---- ツール ---- */
+.tools{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px}
+.tool{border:2px solid var(--line);border-radius:20px;padding:16px;background:#fff;display:flex;flex-direction:column;gap:8px}
+.tool .ic{width:46px;height:46px;border-radius:14px;display:grid;place-items:center}
+.tool .nm{font-weight:900;font-size:16.5px}
+.tool .ds{font-size:13px;color:var(--muted);flex:1}
+.item{border:2px solid var(--line);border-radius:18px;padding:14px 16px;background:#fff;margin-bottom:10px}
+.item.active{border-color:var(--coral);box-shadow:0 0 0 4px var(--coral-soft)}
+/* ---- 結果表示 ---- */
+.bars{display:flex;flex-direction:column;gap:8px}
+.bar-row{display:grid;grid-template-columns:minmax(80px,30%) minmax(0,1fr) 92px;gap:8px;align-items:center;font-size:14.5px}
+.bar-track{background:#EEECE5;border-radius:999px;height:24px;overflow:hidden}
+.bar-fill{height:100%;border-radius:999px;transition:width .5s;background:var(--teal)}
+.bar-row:nth-child(4n+2) .bar-fill{background:var(--coral)} .bar-row:nth-child(4n+3) .bar-fill{background:var(--sky)} .bar-row:nth-child(4n+4) .bar-fill{background:var(--mint)}
+.bar-fill.correct{background:var(--mint)!important}
+.bar-num{text-align:right;font-variant-numeric:tabular-nums;color:var(--muted);white-space:nowrap}
+.cloud{display:flex;flex-wrap:wrap;gap:6px 16px;align-items:baseline;justify-content:center;padding:12px}
+.cloud span{font-weight:900;line-height:1.2;color:var(--teal)}
+.cloud span:nth-child(4n+2){color:var(--coral)} .cloud span:nth-child(4n+3){color:#2C8FC4} .cloud span:nth-child(4n){color:#7A5600}
+.posts{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:10px}
+.post{background:var(--sun-soft);border-radius:16px;padding:12px 14px;font-size:14.5px;white-space:pre-wrap;word-break:break-word;transform:rotate(-.4deg)}
+.post:nth-child(even){background:var(--sky-soft);transform:rotate(.5deg)}
+.post:nth-child(3n){background:var(--mint-soft)}
+.big-num{font-size:36px;font-weight:900;color:var(--teal);line-height:1.2}
+.muted{color:var(--muted)} .small{font-size:13.5px}
+.empty{color:var(--muted);text-align:center;padding:22px 8px;font-size:14.5px}
+.split{display:flex;flex-wrap:wrap;gap:16px;align-items:flex-start}
+.split > .main{flex:999 1 540px}
+.split > .side{flex:1 1 300px}
+.qr{background:#fff;border:2px solid var(--line);border-radius:18px;padding:12px;text-align:center}
+.qr svg{width:170px;height:170px}
+.code{font-size:30px;font-weight:900;letter-spacing:.14em;color:var(--teal)}
+.url{font-size:12px;word-break:break-all;color:var(--muted)}
+.timer{display:flex;align-items:center;gap:14px;flex-wrap:wrap;background:var(--ink);color:#fff;border-radius:20px;padding:14px 18px;margin-bottom:14px}
+.timer .clock{font-size:34px;font-weight:900;font-variant-numeric:tabular-nums;line-height:1}
+.timer .clock.over{color:#FF9C85}
+.timer .what{font-weight:900}
+.timer .btn.sub{background:transparent;color:#fff;border-color:rgba(255,255,255,.5);box-shadow:none}
+/* ---- 受講者 ---- */
+.choice{display:flex;align-items:center;gap:12px;border:2px solid var(--line);border-radius:16px;padding:12px 16px;margin-bottom:8px;min-height:54px;cursor:pointer;background:#fff;font-weight:700}
+.choice input{width:22px;height:22px;accent-color:var(--teal)}
+.choice:has(input:checked){border-color:var(--teal);background:var(--teal-soft)}
+.scale{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:6px}
+.scale label{position:relative;display:grid;place-items:center;border:2px solid var(--line);border-radius:14px;min-height:56px;cursor:pointer;background:#fff;font-weight:900;font-size:18px}
+.scale input{position:absolute;opacity:0;pointer-events:none}
+.scale label:has(input:checked){border-color:var(--teal);background:var(--teal);color:#fff}
+.scale label:has(input:focus-visible){outline:3px solid var(--sky)}
+.scale-ends{display:flex;justify-content:space-between;font-size:12.5px;color:var(--muted);margin-top:4px}
+.warn{font-size:13px;color:#6E4A00;background:var(--sun-soft);border-radius:12px;padding:8px 12px;margin:8px 0}
+.participant{max-width:560px;margin:0 auto;padding:0 16px 48px}
+.p-top{background:var(--teal);color:#fff;text-align:center;padding:18px 16px 26px;border-radius:0 0 28px 28px;margin-bottom:-10px;position:relative;overflow:hidden}
+.p-top::before{content:"";position:absolute;inset:0;background-image:radial-gradient(circle at 10% 40%,rgba(255,200,69,.6) 0 6px,transparent 7px),radial-gradient(circle at 90% 30%,rgba(255,122,89,.6) 0 8px,transparent 9px);pointer-events:none}
+.p-title{font-weight:900;font-size:20px;position:relative}
+.wait{display:grid;place-items:center;gap:10px;text-align:center;padding:34px 16px;color:var(--muted)}
+.wait .bub{display:flex;gap:8px}
+.wait .bub i{width:12px;height:12px;border-radius:50%;background:var(--coral);animation:bob 1s infinite ease-in-out}
+.wait .bub i:nth-child(2){background:var(--sun);animation-delay:.15s}.wait .bub i:nth-child(3){background:var(--sky);animation-delay:.3s}
+@keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+.thanks{text-align:center;padding:26px 12px}
+.thanks .ok{width:64px;height:64px;border-radius:50%;background:var(--mint);display:grid;place-items:center;margin:0 auto 10px;animation:pop .35s ease both}
+/* ---- 投影 ---- */
+.screen{min-height:100vh;display:flex;flex-direction:column;padding:28px 40px;gap:22px;background:var(--bg)}
+.screen-head{display:flex;flex-wrap:wrap;gap:20px;align-items:center;justify-content:space-between}
+.screen-title{font-size:clamp(22px,2.6vw,36px);font-weight:900;color:var(--teal)}
+.screen-q{font-size:clamp(28px,4vw,54px);font-weight:900;line-height:1.35}
+.screen .bar-row{font-size:clamp(16px,1.8vw,26px);grid-template-columns:minmax(120px,30%) minmax(0,1fr) 120px}
+.screen .bar-track{height:clamp(26px,3vw,46px)}
+.screen .post{font-size:clamp(15px,1.5vw,21px)}
+.screen-join{display:flex;align-items:center;gap:16px;background:#fff;border:2px solid var(--line);border-radius:20px;padding:12px 16px}
+.screen-join svg{width:120px;height:120px}
+/* ---- その他 ---- */
+.notice{background:var(--sky-soft);border-radius:18px;padding:14px 16px;font-size:14.5px}
+.carry{background:var(--sun-soft);border-radius:18px;padding:14px 16px;margin-bottom:16px}
+.status{display:flex;gap:14px;align-items:center;background:var(--mint-soft);border-radius:18px;padding:16px}
+.status .st-ic{flex:none;width:52px;height:52px;border-radius:16px;background:#fff;display:grid;place-items:center}
+.demo-panel{border:2.5px dashed #E9C98A;border-radius:22px;padding:14px;background:#FFFCF3}
+.modal{position:fixed;inset:0;background:rgba(30,42,50,.5);display:flex;align-items:center;justify-content:center;padding:16px;z-index:60}
+.modal-box{background:#fff;border-radius:24px;padding:22px;max-width:560px;width:100%;max-height:88vh;overflow:auto;animation:pop .25s ease both}
+.toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:var(--ink);color:#fff;padding:10px 20px;border-radius:999px;font-size:14.5px;font-weight:700;z-index:70;opacity:0;transition:opacity .2s;pointer-events:none}
+.toast.show{opacity:1}
+.guide dt{font-weight:900;margin-top:12px}
+.guide dd{margin:2px 0 0}
+pre.copy{white-space:pre-wrap;background:var(--bg);border-radius:14px;padding:12px;font-size:13px;max-height:320px;overflow:auto;font-family:inherit}
+.future{background:var(--grape-soft);border-radius:18px;padding:14px 16px;font-size:14px}
+fieldset{border:0;padding:0;margin:0 0 18px}
+legend{font-weight:900;margin-bottom:6px;padding:0}
+.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+footer.foot{text-align:center;padding:24px 16px;color:var(--muted);font-size:13px}
+footer.foot button{background:none;border:0;color:var(--teal);text-decoration:underline;cursor:pointer;min-height:44px}
+@media(max-width:600px){.card{padding:16px;border-radius:18px}.screen{padding:16px}.bar-row{grid-template-columns:minmax(70px,34%) minmax(0,1fr) 80px}}
+</style>
+<script src="config.js"></script>
+</head>
+<body>
+<div id="app"><p style="padding:24px">読み込み中…</p></div>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+<script>
+/* qrcode-generator 1.4.4 (MIT License, Kazuhiko Arase) */
+//---------------------------------------------------------------------
+//
+// QR Code Generator for JavaScript
+//
+// Copyright (c) 2009 Kazuhiko Arase
+//
+// URL: http://www.d-project.com/
+//
+// Licensed under the MIT license:
+//  http://www.opensource.org/licenses/mit-license.php
+//
+// The word 'QR Code' is registered trademark of
+// DENSO WAVE INCORPORATED
+//  http://www.denso-wave.com/qrcode/faqpatent-e.html
+//
+//---------------------------------------------------------------------
+
+var qrcode = function() {
+
+  //---------------------------------------------------------------------
+  // qrcode
+  //---------------------------------------------------------------------
+
+  /**
+   * qrcode
+   * @param typeNumber 1 to 40
+   * @param errorCorrectionLevel 'L','M','Q','H'
+   */
+  var qrcode = function(typeNumber, errorCorrectionLevel) {
+
+    var PAD0 = 0xEC;
+    var PAD1 = 0x11;
+
+    var _typeNumber = typeNumber;
+    var _errorCorrectionLevel = QRErrorCorrectionLevel[errorCorrectionLevel];
+    var _modules = null;
+    var _moduleCount = 0;
+    var _dataCache = null;
+    var _dataList = [];
+
+    var _this = {};
+
+    var makeImpl = function(test, maskPattern) {
+
+      _moduleCount = _typeNumber * 4 + 17;
+      _modules = function(moduleCount) {
+        var modules = new Array(moduleCount);
+        for (var row = 0; row < moduleCount; row += 1) {
+          modules[row] = new Array(moduleCount);
+          for (var col = 0; col < moduleCount; col += 1) {
+            modules[row][col] = null;
+          }
+        }
+        return modules;
+      }(_moduleCount);
+
+      setupPositionProbePattern(0, 0);
+      setupPositionProbePattern(_moduleCount - 7, 0);
+      setupPositionProbePattern(0, _moduleCount - 7);
+      setupPositionAdjustPattern();
+      setupTimingPattern();
+      setupTypeInfo(test, maskPattern);
+
+      if (_typeNumber >= 7) {
+        setupTypeNumber(test);
+      }
+
+      if (_dataCache == null) {
+        _dataCache = createData(_typeNumber, _errorCorrectionLevel, _dataList);
+      }
+
+      mapData(_dataCache, maskPattern);
+    };
+
+    var setupPositionProbePattern = function(row, col) {
+
+      for (var r = -1; r <= 7; r += 1) {
+
+        if (row + r <= -1 || _moduleCount <= row + r) continue;
+
+        for (var c = -1; c <= 7; c += 1) {
+
+          if (col + c <= -1 || _moduleCount <= col + c) continue;
+
+          if ( (0 <= r && r <= 6 && (c == 0 || c == 6) )
+              || (0 <= c && c <= 6 && (r == 0 || r == 6) )
+              || (2 <= r && r <= 4 && 2 <= c && c <= 4) ) {
+            _modules[row + r][col + c] = true;
+          } else {
+            _modules[row + r][col + c] = false;
+          }
+        }
+      }
+    };
+
+    var getBestMaskPattern = function() {
+
+      var minLostPoint = 0;
+      var pattern = 0;
+
+      for (var i = 0; i < 8; i += 1) {
+
+        makeImpl(true, i);
+
+        var lostPoint = QRUtil.getLostPoint(_this);
+
+        if (i == 0 || minLostPoint > lostPoint) {
+          minLostPoint = lostPoint;
+          pattern = i;
+        }
+      }
+
+      return pattern;
+    };
+
+    var setupTimingPattern = function() {
+
+      for (var r = 8; r < _moduleCount - 8; r += 1) {
+        if (_modules[r][6] != null) {
+          continue;
+        }
+        _modules[r][6] = (r % 2 == 0);
+      }
+
+      for (var c = 8; c < _moduleCount - 8; c += 1) {
+        if (_modules[6][c] != null) {
+          continue;
+        }
+        _modules[6][c] = (c % 2 == 0);
+      }
+    };
+
+    var setupPositionAdjustPattern = function() {
+
+      var pos = QRUtil.getPatternPosition(_typeNumber);
+
+      for (var i = 0; i < pos.length; i += 1) {
+
+        for (var j = 0; j < pos.length; j += 1) {
+
+          var row = pos[i];
+          var col = pos[j];
+
+          if (_modules[row][col] != null) {
+            continue;
+          }
+
+          for (var r = -2; r <= 2; r += 1) {
+
+            for (var c = -2; c <= 2; c += 1) {
+
+              if (r == -2 || r == 2 || c == -2 || c == 2
+                  || (r == 0 && c == 0) ) {
+                _modules[row + r][col + c] = true;
+              } else {
+                _modules[row + r][col + c] = false;
+              }
+            }
+          }
+        }
+      }
+    };
+
+    var setupTypeNumber = function(test) {
+
+      var bits = QRUtil.getBCHTypeNumber(_typeNumber);
+
+      for (var i = 0; i < 18; i += 1) {
+        var mod = (!test && ( (bits >> i) & 1) == 1);
+        _modules[Math.floor(i / 3)][i % 3 + _moduleCount - 8 - 3] = mod;
+      }
+
+      for (var i = 0; i < 18; i += 1) {
+        var mod = (!test && ( (bits >> i) & 1) == 1);
+        _modules[i % 3 + _moduleCount - 8 - 3][Math.floor(i / 3)] = mod;
+      }
+    };
+
+    var setupTypeInfo = function(test, maskPattern) {
+
+      var data = (_errorCorrectionLevel << 3) | maskPattern;
+      var bits = QRUtil.getBCHTypeInfo(data);
+
+      // vertical
+      for (var i = 0; i < 15; i += 1) {
+
+        var mod = (!test && ( (bits >> i) & 1) == 1);
+
+        if (i < 6) {
+          _modules[i][8] = mod;
+        } else if (i < 8) {
+          _modules[i + 1][8] = mod;
+        } else {
+          _modules[_moduleCount - 15 + i][8] = mod;
+        }
+      }
+
+      // horizontal
+      for (var i = 0; i < 15; i += 1) {
+
+        var mod = (!test && ( (bits >> i) & 1) == 1);
+
+        if (i < 8) {
+          _modules[8][_moduleCount - i - 1] = mod;
+        } else if (i < 9) {
+          _modules[8][15 - i - 1 + 1] = mod;
+        } else {
+          _modules[8][15 - i - 1] = mod;
+        }
+      }
+
+      // fixed module
+      _modules[_moduleCount - 8][8] = (!test);
+    };
+
+    var mapData = function(data, maskPattern) {
+
+      var inc = -1;
+      var row = _moduleCount - 1;
+      var bitIndex = 7;
+      var byteIndex = 0;
+      var maskFunc = QRUtil.getMaskFunction(maskPattern);
+
+      for (var col = _moduleCount - 1; col > 0; col -= 2) {
+
+        if (col == 6) col -= 1;
+
+        while (true) {
+
+          for (var c = 0; c < 2; c += 1) {
+
+            if (_modules[row][col - c] == null) {
+
+              var dark = false;
+
+              if (byteIndex < data.length) {
+                dark = ( ( (data[byteIndex] >>> bitIndex) & 1) == 1);
+              }
+
+              var mask = maskFunc(row, col - c);
+
+              if (mask) {
+                dark = !dark;
+              }
+
+              _modules[row][col - c] = dark;
+              bitIndex -= 1;
+
+              if (bitIndex == -1) {
+                byteIndex += 1;
+                bitIndex = 7;
+              }
+            }
+          }
+
+          row += inc;
+
+          if (row < 0 || _moduleCount <= row) {
+            row -= inc;
+            inc = -inc;
+            break;
+          }
+        }
+      }
+    };
+
+    var createBytes = function(buffer, rsBlocks) {
+
+      var offset = 0;
+
+      var maxDcCount = 0;
+      var maxEcCount = 0;
+
+      var dcdata = new Array(rsBlocks.length);
+      var ecdata = new Array(rsBlocks.length);
+
+      for (var r = 0; r < rsBlocks.length; r += 1) {
+
+        var dcCount = rsBlocks[r].dataCount;
+        var ecCount = rsBlocks[r].totalCount - dcCount;
+
+        maxDcCount = Math.max(maxDcCount, dcCount);
+        maxEcCount = Math.max(maxEcCount, ecCount);
+
+        dcdata[r] = new Array(dcCount);
+
+        for (var i = 0; i < dcdata[r].length; i += 1) {
+          dcdata[r][i] = 0xff & buffer.getBuffer()[i + offset];
+        }
+        offset += dcCount;
+
+        var rsPoly = QRUtil.getErrorCorrectPolynomial(ecCount);
+        var rawPoly = qrPolynomial(dcdata[r], rsPoly.getLength() - 1);
+
+        var modPoly = rawPoly.mod(rsPoly);
+        ecdata[r] = new Array(rsPoly.getLength() - 1);
+        for (var i = 0; i < ecdata[r].length; i += 1) {
+          var modIndex = i + modPoly.getLength() - ecdata[r].length;
+          ecdata[r][i] = (modIndex >= 0)? modPoly.getAt(modIndex) : 0;
+        }
+      }
+
+      var totalCodeCount = 0;
+      for (var i = 0; i < rsBlocks.length; i += 1) {
+        totalCodeCount += rsBlocks[i].totalCount;
+      }
+
+      var data = new Array(totalCodeCount);
+      var index = 0;
+
+      for (var i = 0; i < maxDcCount; i += 1) {
+        for (var r = 0; r < rsBlocks.length; r += 1) {
+          if (i < dcdata[r].length) {
+            data[index] = dcdata[r][i];
+            index += 1;
+          }
+        }
+      }
+
+      for (var i = 0; i < maxEcCount; i += 1) {
+        for (var r = 0; r < rsBlocks.length; r += 1) {
+          if (i < ecdata[r].length) {
+            data[index] = ecdata[r][i];
+            index += 1;
+          }
+        }
+      }
+
+      return data;
+    };
+
+    var createData = function(typeNumber, errorCorrectionLevel, dataList) {
+
+      var rsBlocks = QRRSBlock.getRSBlocks(typeNumber, errorCorrectionLevel);
+
+      var buffer = qrBitBuffer();
+
+      for (var i = 0; i < dataList.length; i += 1) {
+        var data = dataList[i];
+        buffer.put(data.getMode(), 4);
+        buffer.put(data.getLength(), QRUtil.getLengthInBits(data.getMode(), typeNumber) );
+        data.write(buffer);
+      }
+
+      // calc num max data.
+      var totalDataCount = 0;
+      for (var i = 0; i < rsBlocks.length; i += 1) {
+        totalDataCount += rsBlocks[i].dataCount;
+      }
+
+      if (buffer.getLengthInBits() > totalDataCount * 8) {
+        throw 'code length overflow. ('
+          + buffer.getLengthInBits()
+          + '>'
+          + totalDataCount * 8
+          + ')';
+      }
+
+      // end code
+      if (buffer.getLengthInBits() + 4 <= totalDataCount * 8) {
+        buffer.put(0, 4);
+      }
+
+      // padding
+      while (buffer.getLengthInBits() % 8 != 0) {
+        buffer.putBit(false);
+      }
+
+      // padding
+      while (true) {
+
+        if (buffer.getLengthInBits() >= totalDataCount * 8) {
+          break;
+        }
+        buffer.put(PAD0, 8);
+
+        if (buffer.getLengthInBits() >= totalDataCount * 8) {
+          break;
+        }
+        buffer.put(PAD1, 8);
+      }
+
+      return createBytes(buffer, rsBlocks);
+    };
+
+    _this.addData = function(data, mode) {
+
+      mode = mode || 'Byte';
+
+      var newData = null;
+
+      switch(mode) {
+      case 'Numeric' :
+        newData = qrNumber(data);
+        break;
+      case 'Alphanumeric' :
+        newData = qrAlphaNum(data);
+        break;
+      case 'Byte' :
+        newData = qr8BitByte(data);
+        break;
+      case 'Kanji' :
+        newData = qrKanji(data);
+        break;
+      default :
+        throw 'mode:' + mode;
+      }
+
+      _dataList.push(newData);
+      _dataCache = null;
+    };
+
+    _this.isDark = function(row, col) {
+      if (row < 0 || _moduleCount <= row || col < 0 || _moduleCount <= col) {
+        throw row + ',' + col;
+      }
+      return _modules[row][col];
+    };
+
+    _this.getModuleCount = function() {
+      return _moduleCount;
+    };
+
+    _this.make = function() {
+      if (_typeNumber < 1) {
+        var typeNumber = 1;
+
+        for (; typeNumber < 40; typeNumber++) {
+          var rsBlocks = QRRSBlock.getRSBlocks(typeNumber, _errorCorrectionLevel);
+          var buffer = qrBitBuffer();
+
+          for (var i = 0; i < _dataList.length; i++) {
+            var data = _dataList[i];
+            buffer.put(data.getMode(), 4);
+            buffer.put(data.getLength(), QRUtil.getLengthInBits(data.getMode(), typeNumber) );
+            data.write(buffer);
+          }
+
+          var totalDataCount = 0;
+          for (var i = 0; i < rsBlocks.length; i++) {
+            totalDataCount += rsBlocks[i].dataCount;
+          }
+
+          if (buffer.getLengthInBits() <= totalDataCount * 8) {
+            break;
+          }
+        }
+
+        _typeNumber = typeNumber;
+      }
+
+      makeImpl(false, getBestMaskPattern() );
+    };
+
+    _this.createTableTag = function(cellSize, margin) {
+
+      cellSize = cellSize || 2;
+      margin = (typeof margin == 'undefined')? cellSize * 4 : margin;
+
+      var qrHtml = '';
+
+      qrHtml += '<table style="';
+      qrHtml += ' border-width: 0px; border-style: none;';
+      qrHtml += ' border-collapse: collapse;';
+      qrHtml += ' padding: 0px; margin: ' + margin + 'px;';
+      qrHtml += '">';
+      qrHtml += '<tbody>';
+
+      for (var r = 0; r < _this.getModuleCount(); r += 1) {
+
+        qrHtml += '<tr>';
+
+        for (var c = 0; c < _this.getModuleCount(); c += 1) {
+          qrHtml += '<td style="';
+          qrHtml += ' border-width: 0px; border-style: none;';
+          qrHtml += ' border-collapse: collapse;';
+          qrHtml += ' padding: 0px; margin: 0px;';
+          qrHtml += ' width: ' + cellSize + 'px;';
+          qrHtml += ' height: ' + cellSize + 'px;';
+          qrHtml += ' background-color: ';
+          qrHtml += _this.isDark(r, c)? '#000000' : '#ffffff';
+          qrHtml += ';';
+          qrHtml += '"/>';
+        }
+
+        qrHtml += '</tr>';
+      }
+
+      qrHtml += '</tbody>';
+      qrHtml += '</table>';
+
+      return qrHtml;
+    };
+
+    _this.createSvgTag = function(cellSize, margin, alt, title) {
+
+      var opts = {};
+      if (typeof arguments[0] == 'object') {
+        // Called by options.
+        opts = arguments[0];
+        // overwrite cellSize and margin.
+        cellSize = opts.cellSize;
+        margin = opts.margin;
+        alt = opts.alt;
+        title = opts.title;
+      }
+
+      cellSize = cellSize || 2;
+      margin = (typeof margin == 'undefined')? cellSize * 4 : margin;
+
+      // Compose alt property surrogate
+      alt = (typeof alt === 'string') ? {text: alt} : alt || {};
+      alt.text = alt.text || null;
+      alt.id = (alt.text) ? alt.id || 'qrcode-description' : null;
+
+      // Compose title property surrogate
+      title = (typeof title === 'string') ? {text: title} : title || {};
+      title.text = title.text || null;
+      title.id = (title.text) ? title.id || 'qrcode-title' : null;
+
+      var size = _this.getModuleCount() * cellSize + margin * 2;
+      var c, mc, r, mr, qrSvg='', rect;
+
+      rect = 'l' + cellSize + ',0 0,' + cellSize +
+        ' -' + cellSize + ',0 0,-' + cellSize + 'z ';
+
+      qrSvg += '<svg version="1.1" xmlns="http://www.w3.org/2000/svg"';
+      qrSvg += !opts.scalable ? ' width="' + size + 'px" height="' + size + 'px"' : '';
+      qrSvg += ' viewBox="0 0 ' + size + ' ' + size + '" ';
+      qrSvg += ' preserveAspectRatio="xMinYMin meet"';
+      qrSvg += (title.text || alt.text) ? ' role="img" aria-labelledby="' +
+          escapeXml([title.id, alt.id].join(' ').trim() ) + '"' : '';
+      qrSvg += '>';
+      qrSvg += (title.text) ? '<title id="' + escapeXml(title.id) + '">' +
+          escapeXml(title.text) + '</title>' : '';
+      qrSvg += (alt.text) ? '<description id="' + escapeXml(alt.id) + '">' +
+          escapeXml(alt.text) + '</description>' : '';
+      qrSvg += '<rect width="100%" height="100%" fill="white" cx="0" cy="0"/>';
+      qrSvg += '<path d="';
+
+      for (r = 0; r < _this.getModuleCount(); r += 1) {
+        mr = r * cellSize + margin;
+        for (c = 0; c < _this.getModuleCount(); c += 1) {
+          if (_this.isDark(r, c) ) {
+            mc = c*cellSize+margin;
+            qrSvg += 'M' + mc + ',' + mr + rect;
+          }
+        }
+      }
+
+      qrSvg += '" stroke="transparent" fill="black"/>';
+      qrSvg += '</svg>';
+
+      return qrSvg;
+    };
+
+    _this.createDataURL = function(cellSize, margin) {
+
+      cellSize = cellSize || 2;
+      margin = (typeof margin == 'undefined')? cellSize * 4 : margin;
+
+      var size = _this.getModuleCount() * cellSize + margin * 2;
+      var min = margin;
+      var max = size - margin;
+
+      return createDataURL(size, size, function(x, y) {
+        if (min <= x && x < max && min <= y && y < max) {
+          var c = Math.floor( (x - min) / cellSize);
+          var r = Math.floor( (y - min) / cellSize);
+          return _this.isDark(r, c)? 0 : 1;
+        } else {
+          return 1;
+        }
+      } );
+    };
+
+    _this.createImgTag = function(cellSize, margin, alt) {
+
+      cellSize = cellSize || 2;
+      margin = (typeof margin == 'undefined')? cellSize * 4 : margin;
+
+      var size = _this.getModuleCount() * cellSize + margin * 2;
+
+      var img = '';
+      img += '<img';
+      img += '\u0020src="';
+      img += _this.createDataURL(cellSize, margin);
+      img += '"';
+      img += '\u0020width="';
+      img += size;
+      img += '"';
+      img += '\u0020height="';
+      img += size;
+      img += '"';
+      if (alt) {
+        img += '\u0020alt="';
+        img += escapeXml(alt);
+        img += '"';
+      }
+      img += '/>';
+
+      return img;
+    };
+
+    var escapeXml = function(s) {
+      var escaped = '';
+      for (var i = 0; i < s.length; i += 1) {
+        var c = s.charAt(i);
+        switch(c) {
+        case '<': escaped += '&lt;'; break;
+        case '>': escaped += '&gt;'; break;
+        case '&': escaped += '&amp;'; break;
+        case '"': escaped += '&quot;'; break;
+        default : escaped += c; break;
+        }
+      }
+      return escaped;
+    };
+
+    var _createHalfASCII = function(margin) {
+      var cellSize = 1;
+      margin = (typeof margin == 'undefined')? cellSize * 2 : margin;
+
+      var size = _this.getModuleCount() * cellSize + margin * 2;
+      var min = margin;
+      var max = size - margin;
+
+      var y, x, r1, r2, p;
+
+      var blocks = {
+        '██': '█',
+        '█ ': '▀',
+        ' █': '▄',
+        '  ': ' '
+      };
+
+      var blocksLastLineNoMargin = {
+        '██': '▀',
+        '█ ': '▀',
+        ' █': ' ',
+        '  ': ' '
+      };
+
+      var ascii = '';
+      for (y = 0; y < size; y += 2) {
+        r1 = Math.floor((y - min) / cellSize);
+        r2 = Math.floor((y + 1 - min) / cellSize);
+        for (x = 0; x < size; x += 1) {
+          p = '█';
+
+          if (min <= x && x < max && min <= y && y < max && _this.isDark(r1, Math.floor((x - min) / cellSize))) {
+            p = ' ';
+          }
+
+          if (min <= x && x < max && min <= y+1 && y+1 < max && _this.isDark(r2, Math.floor((x - min) / cellSize))) {
+            p += ' ';
+          }
+          else {
+            p += '█';
+          }
+
+          // Output 2 characters per pixel, to create full square. 1 character per pixels gives only half width of square.
+          ascii += (margin < 1 && y+1 >= max) ? blocksLastLineNoMargin[p] : blocks[p];
+        }
+
+        ascii += '\n';
+      }
+
+      if (size % 2 && margin > 0) {
+        return ascii.substring(0, ascii.length - size - 1) + Array(size+1).join('▀');
+      }
+
+      return ascii.substring(0, ascii.length-1);
+    };
+
+    _this.createASCII = function(cellSize, margin) {
+      cellSize = cellSize || 1;
+
+      if (cellSize < 2) {
+        return _createHalfASCII(margin);
+      }
+
+      cellSize -= 1;
+      margin = (typeof margin == 'undefined')? cellSize * 2 : margin;
+
+      var size = _this.getModuleCount() * cellSize + margin * 2;
+      var min = margin;
+      var max = size - margin;
+
+      var y, x, r, p;
+
+      var white = Array(cellSize+1).join('██');
+      var black = Array(cellSize+1).join('  ');
+
+      var ascii = '';
+      var line = '';
+      for (y = 0; y < size; y += 1) {
+        r = Math.floor( (y - min) / cellSize);
+        line = '';
+        for (x = 0; x < size; x += 1) {
+          p = 1;
+
+          if (min <= x && x < max && min <= y && y < max && _this.isDark(r, Math.floor((x - min) / cellSize))) {
+            p = 0;
+          }
+
+          // Output 2 characters per pixel, to create full square. 1 character per pixels gives only half width of square.
+          line += p ? white : black;
+        }
+
+        for (r = 0; r < cellSize; r += 1) {
+          ascii += line + '\n';
+        }
+      }
+
+      return ascii.substring(0, ascii.length-1);
+    };
+
+    _this.renderTo2dContext = function(context, cellSize) {
+      cellSize = cellSize || 2;
+      var length = _this.getModuleCount();
+      for (var row = 0; row < length; row++) {
+        for (var col = 0; col < length; col++) {
+          context.fillStyle = _this.isDark(row, col) ? 'black' : 'white';
+          context.fillRect(row * cellSize, col * cellSize, cellSize, cellSize);
+        }
+      }
+    }
+
+    return _this;
+  };
+
+  //---------------------------------------------------------------------
+  // qrcode.stringToBytes
+  //---------------------------------------------------------------------
+
+  qrcode.stringToBytesFuncs = {
+    'default' : function(s) {
+      var bytes = [];
+      for (var i = 0; i < s.length; i += 1) {
+        var c = s.charCodeAt(i);
+        bytes.push(c & 0xff);
+      }
+      return bytes;
+    }
+  };
+
+  qrcode.stringToBytes = qrcode.stringToBytesFuncs['default'];
+
+  //---------------------------------------------------------------------
+  // qrcode.createStringToBytes
+  //---------------------------------------------------------------------
+
+  /**
+   * @param unicodeData base64 string of byte array.
+   * [16bit Unicode],[16bit Bytes], ...
+   * @param numChars
+   */
+  qrcode.createStringToBytes = function(unicodeData, numChars) {
+
+    // create conversion map.
+
+    var unicodeMap = function() {
+
+      var bin = base64DecodeInputStream(unicodeData);
+      var read = function() {
+        var b = bin.read();
+        if (b == -1) throw 'eof';
+        return b;
+      };
+
+      var count = 0;
+      var unicodeMap = {};
+      while (true) {
+        var b0 = bin.read();
+        if (b0 == -1) break;
+        var b1 = read();
+        var b2 = read();
+        var b3 = read();
+        var k = String.fromCharCode( (b0 << 8) | b1);
+        var v = (b2 << 8) | b3;
+        unicodeMap[k] = v;
+        count += 1;
+      }
+      if (count != numChars) {
+        throw count + ' != ' + numChars;
+      }
+
+      return unicodeMap;
+    }();
+
+    var unknownChar = '?'.charCodeAt(0);
+
+    return function(s) {
+      var bytes = [];
+      for (var i = 0; i < s.length; i += 1) {
+        var c = s.charCodeAt(i);
+        if (c < 128) {
+          bytes.push(c);
+        } else {
+          var b = unicodeMap[s.charAt(i)];
+          if (typeof b == 'number') {
+            if ( (b & 0xff) == b) {
+              // 1byte
+              bytes.push(b);
+            } else {
+              // 2bytes
+              bytes.push(b >>> 8);
+              bytes.push(b & 0xff);
+            }
+          } else {
+            bytes.push(unknownChar);
+          }
+        }
+      }
+      return bytes;
+    };
+  };
+
+  //---------------------------------------------------------------------
+  // QRMode
+  //---------------------------------------------------------------------
+
+  var QRMode = {
+    MODE_NUMBER :    1 << 0,
+    MODE_ALPHA_NUM : 1 << 1,
+    MODE_8BIT_BYTE : 1 << 2,
+    MODE_KANJI :     1 << 3
+  };
+
+  //---------------------------------------------------------------------
+  // QRErrorCorrectionLevel
+  //---------------------------------------------------------------------
+
+  var QRErrorCorrectionLevel = {
+    L : 1,
+    M : 0,
+    Q : 3,
+    H : 2
+  };
+
+  //---------------------------------------------------------------------
+  // QRMaskPattern
+  //---------------------------------------------------------------------
+
+  var QRMaskPattern = {
+    PATTERN000 : 0,
+    PATTERN001 : 1,
+    PATTERN010 : 2,
+    PATTERN011 : 3,
+    PATTERN100 : 4,
+    PATTERN101 : 5,
+    PATTERN110 : 6,
+    PATTERN111 : 7
+  };
+
+  //---------------------------------------------------------------------
+  // QRUtil
+  //---------------------------------------------------------------------
+
+  var QRUtil = function() {
+
+    var PATTERN_POSITION_TABLE = [
+      [],
+      [6, 18],
+      [6, 22],
+      [6, 26],
+      [6, 30],
+      [6, 34],
+      [6, 22, 38],
+      [6, 24, 42],
+      [6, 26, 46],
+      [6, 28, 50],
+      [6, 30, 54],
+      [6, 32, 58],
+      [6, 34, 62],
+      [6, 26, 46, 66],
+      [6, 26, 48, 70],
+      [6, 26, 50, 74],
+      [6, 30, 54, 78],
+      [6, 30, 56, 82],
+      [6, 30, 58, 86],
+      [6, 34, 62, 90],
+      [6, 28, 50, 72, 94],
+      [6, 26, 50, 74, 98],
+      [6, 30, 54, 78, 102],
+      [6, 28, 54, 80, 106],
+      [6, 32, 58, 84, 110],
+      [6, 30, 58, 86, 114],
+      [6, 34, 62, 90, 118],
+      [6, 26, 50, 74, 98, 122],
+      [6, 30, 54, 78, 102, 126],
+      [6, 26, 52, 78, 104, 130],
+      [6, 30, 56, 82, 108, 134],
+      [6, 34, 60, 86, 112, 138],
+      [6, 30, 58, 86, 114, 142],
+      [6, 34, 62, 90, 118, 146],
+      [6, 30, 54, 78, 102, 126, 150],
+      [6, 24, 50, 76, 102, 128, 154],
+      [6, 28, 54, 80, 106, 132, 158],
+      [6, 32, 58, 84, 110, 136, 162],
+      [6, 26, 54, 82, 110, 138, 166],
+      [6, 30, 58, 86, 114, 142, 170]
+    ];
+    var G15 = (1 << 10) | (1 << 8) | (1 << 5) | (1 << 4) | (1 << 2) | (1 << 1) | (1 << 0);
+    var G18 = (1 << 12) | (1 << 11) | (1 << 10) | (1 << 9) | (1 << 8) | (1 << 5) | (1 << 2) | (1 << 0);
+    var G15_MASK = (1 << 14) | (1 << 12) | (1 << 10) | (1 << 4) | (1 << 1);
+
+    var _this = {};
+
+    var getBCHDigit = function(data) {
+      var digit = 0;
+      while (data != 0) {
+        digit += 1;
+        data >>>= 1;
+      }
+      return digit;
+    };
+
+    _this.getBCHTypeInfo = function(data) {
+      var d = data << 10;
+      while (getBCHDigit(d) - getBCHDigit(G15) >= 0) {
+        d ^= (G15 << (getBCHDigit(d) - getBCHDigit(G15) ) );
+      }
+      return ( (data << 10) | d) ^ G15_MASK;
+    };
+
+    _this.getBCHTypeNumber = function(data) {
+      var d = data << 12;
+      while (getBCHDigit(d) - getBCHDigit(G18) >= 0) {
+        d ^= (G18 << (getBCHDigit(d) - getBCHDigit(G18) ) );
+      }
+      return (data << 12) | d;
+    };
+
+    _this.getPatternPosition = function(typeNumber) {
+      return PATTERN_POSITION_TABLE[typeNumber - 1];
+    };
+
+    _this.getMaskFunction = function(maskPattern) {
+
+      switch (maskPattern) {
+
+      case QRMaskPattern.PATTERN000 :
+        return function(i, j) { return (i + j) % 2 == 0; };
+      case QRMaskPattern.PATTERN001 :
+        return function(i, j) { return i % 2 == 0; };
+      case QRMaskPattern.PATTERN010 :
+        return function(i, j) { return j % 3 == 0; };
+      case QRMaskPattern.PATTERN011 :
+        return function(i, j) { return (i + j) % 3 == 0; };
+      case QRMaskPattern.PATTERN100 :
+        return function(i, j) { return (Math.floor(i / 2) + Math.floor(j / 3) ) % 2 == 0; };
+      case QRMaskPattern.PATTERN101 :
+        return function(i, j) { return (i * j) % 2 + (i * j) % 3 == 0; };
+      case QRMaskPattern.PATTERN110 :
+        return function(i, j) { return ( (i * j) % 2 + (i * j) % 3) % 2 == 0; };
+      case QRMaskPattern.PATTERN111 :
+        return function(i, j) { return ( (i * j) % 3 + (i + j) % 2) % 2 == 0; };
+
+      default :
+        throw 'bad maskPattern:' + maskPattern;
+      }
+    };
+
+    _this.getErrorCorrectPolynomial = function(errorCorrectLength) {
+      var a = qrPolynomial([1], 0);
+      for (var i = 0; i < errorCorrectLength; i += 1) {
+        a = a.multiply(qrPolynomial([1, QRMath.gexp(i)], 0) );
+      }
+      return a;
+    };
+
+    _this.getLengthInBits = function(mode, type) {
+
+      if (1 <= type && type < 10) {
+
+        // 1 - 9
+
+        switch(mode) {
+        case QRMode.MODE_NUMBER    : return 10;
+        case QRMode.MODE_ALPHA_NUM : return 9;
+        case QRMode.MODE_8BIT_BYTE : return 8;
+        case QRMode.MODE_KANJI     : return 8;
+        default :
+          throw 'mode:' + mode;
+        }
+
+      } else if (type < 27) {
+
+        // 10 - 26
+
+        switch(mode) {
+        case QRMode.MODE_NUMBER    : return 12;
+        case QRMode.MODE_ALPHA_NUM : return 11;
+        case QRMode.MODE_8BIT_BYTE : return 16;
+        case QRMode.MODE_KANJI     : return 10;
+        default :
+          throw 'mode:' + mode;
+        }
+
+      } else if (type < 41) {
+
+        // 27 - 40
+
+        switch(mode) {
+        case QRMode.MODE_NUMBER    : return 14;
+        case QRMode.MODE_ALPHA_NUM : return 13;
+        case QRMode.MODE_8BIT_BYTE : return 16;
+        case QRMode.MODE_KANJI     : return 12;
+        default :
+          throw 'mode:' + mode;
+        }
+
+      } else {
+        throw 'type:' + type;
+      }
+    };
+
+    _this.getLostPoint = function(qrcode) {
+
+      var moduleCount = qrcode.getModuleCount();
+
+      var lostPoint = 0;
+
+      // LEVEL1
+
+      for (var row = 0; row < moduleCount; row += 1) {
+        for (var col = 0; col < moduleCount; col += 1) {
+
+          var sameCount = 0;
+          var dark = qrcode.isDark(row, col);
+
+          for (var r = -1; r <= 1; r += 1) {
+
+            if (row + r < 0 || moduleCount <= row + r) {
+              continue;
+            }
+
+            for (var c = -1; c <= 1; c += 1) {
+
+              if (col + c < 0 || moduleCount <= col + c) {
+                continue;
+              }
+
+              if (r == 0 && c == 0) {
+                continue;
+              }
+
+              if (dark == qrcode.isDark(row + r, col + c) ) {
+                sameCount += 1;
+              }
+            }
+          }
+
+          if (sameCount > 5) {
+            lostPoint += (3 + sameCount - 5);
+          }
+        }
+      };
+
+      // LEVEL2
+
+      for (var row = 0; row < moduleCount - 1; row += 1) {
+        for (var col = 0; col < moduleCount - 1; col += 1) {
+          var count = 0;
+          if (qrcode.isDark(row, col) ) count += 1;
+          if (qrcode.isDark(row + 1, col) ) count += 1;
+          if (qrcode.isDark(row, col + 1) ) count += 1;
+          if (qrcode.isDark(row + 1, col + 1) ) count += 1;
+          if (count == 0 || count == 4) {
+            lostPoint += 3;
+          }
+        }
+      }
+
+      // LEVEL3
+
+      for (var row = 0; row < moduleCount; row += 1) {
+        for (var col = 0; col < moduleCount - 6; col += 1) {
+          if (qrcode.isDark(row, col)
+              && !qrcode.isDark(row, col + 1)
+              &&  qrcode.isDark(row, col + 2)
+              &&  qrcode.isDark(row, col + 3)
+              &&  qrcode.isDark(row, col + 4)
+              && !qrcode.isDark(row, col + 5)
+              &&  qrcode.isDark(row, col + 6) ) {
+            lostPoint += 40;
+          }
+        }
+      }
+
+      for (var col = 0; col < moduleCount; col += 1) {
+        for (var row = 0; row < moduleCount - 6; row += 1) {
+          if (qrcode.isDark(row, col)
+              && !qrcode.isDark(row + 1, col)
+              &&  qrcode.isDark(row + 2, col)
+              &&  qrcode.isDark(row + 3, col)
+              &&  qrcode.isDark(row + 4, col)
+              && !qrcode.isDark(row + 5, col)
+              &&  qrcode.isDark(row + 6, col) ) {
+            lostPoint += 40;
+          }
+        }
+      }
+
+      // LEVEL4
+
+      var darkCount = 0;
+
+      for (var col = 0; col < moduleCount; col += 1) {
+        for (var row = 0; row < moduleCount; row += 1) {
+          if (qrcode.isDark(row, col) ) {
+            darkCount += 1;
+          }
+        }
+      }
+
+      var ratio = Math.abs(100 * darkCount / moduleCount / moduleCount - 50) / 5;
+      lostPoint += ratio * 10;
+
+      return lostPoint;
+    };
+
+    return _this;
+  }();
+
+  //---------------------------------------------------------------------
+  // QRMath
+  //---------------------------------------------------------------------
+
+  var QRMath = function() {
+
+    var EXP_TABLE = new Array(256);
+    var LOG_TABLE = new Array(256);
+
+    // initialize tables
+    for (var i = 0; i < 8; i += 1) {
+      EXP_TABLE[i] = 1 << i;
+    }
+    for (var i = 8; i < 256; i += 1) {
+      EXP_TABLE[i] = EXP_TABLE[i - 4]
+        ^ EXP_TABLE[i - 5]
+        ^ EXP_TABLE[i - 6]
+        ^ EXP_TABLE[i - 8];
+    }
+    for (var i = 0; i < 255; i += 1) {
+      LOG_TABLE[EXP_TABLE[i] ] = i;
+    }
+
+    var _this = {};
+
+    _this.glog = function(n) {
+
+      if (n < 1) {
+        throw 'glog(' + n + ')';
+      }
+
+      return LOG_TABLE[n];
+    };
+
+    _this.gexp = function(n) {
+
+      while (n < 0) {
+        n += 255;
+      }
+
+      while (n >= 256) {
+        n -= 255;
+      }
+
+      return EXP_TABLE[n];
+    };
+
+    return _this;
+  }();
+
+  //---------------------------------------------------------------------
+  // qrPolynomial
+  //---------------------------------------------------------------------
+
+  function qrPolynomial(num, shift) {
+
+    if (typeof num.length == 'undefined') {
+      throw num.length + '/' + shift;
+    }
+
+    var _num = function() {
+      var offset = 0;
+      while (offset < num.length && num[offset] == 0) {
+        offset += 1;
+      }
+      var _num = new Array(num.length - offset + shift);
+      for (var i = 0; i < num.length - offset; i += 1) {
+        _num[i] = num[i + offset];
+      }
+      return _num;
+    }();
+
+    var _this = {};
+
+    _this.getAt = function(index) {
+      return _num[index];
+    };
+
+    _this.getLength = function() {
+      return _num.length;
+    };
+
+    _this.multiply = function(e) {
+
+      var num = new Array(_this.getLength() + e.getLength() - 1);
+
+      for (var i = 0; i < _this.getLength(); i += 1) {
+        for (var j = 0; j < e.getLength(); j += 1) {
+          num[i + j] ^= QRMath.gexp(QRMath.glog(_this.getAt(i) ) + QRMath.glog(e.getAt(j) ) );
+        }
+      }
+
+      return qrPolynomial(num, 0);
+    };
+
+    _this.mod = function(e) {
+
+      if (_this.getLength() - e.getLength() < 0) {
+        return _this;
+      }
+
+      var ratio = QRMath.glog(_this.getAt(0) ) - QRMath.glog(e.getAt(0) );
+
+      var num = new Array(_this.getLength() );
+      for (var i = 0; i < _this.getLength(); i += 1) {
+        num[i] = _this.getAt(i);
+      }
+
+      for (var i = 0; i < e.getLength(); i += 1) {
+        num[i] ^= QRMath.gexp(QRMath.glog(e.getAt(i) ) + ratio);
+      }
+
+      // recursive call
+      return qrPolynomial(num, 0).mod(e);
+    };
+
+    return _this;
+  };
+
+  //---------------------------------------------------------------------
+  // QRRSBlock
+  //---------------------------------------------------------------------
+
+  var QRRSBlock = function() {
+
+    var RS_BLOCK_TABLE = [
+
+      // L
+      // M
+      // Q
+      // H
+
+      // 1
+      [1, 26, 19],
+      [1, 26, 16],
+      [1, 26, 13],
+      [1, 26, 9],
+
+      // 2
+      [1, 44, 34],
+      [1, 44, 28],
+      [1, 44, 22],
+      [1, 44, 16],
+
+      // 3
+      [1, 70, 55],
+      [1, 70, 44],
+      [2, 35, 17],
+      [2, 35, 13],
+
+      // 4
+      [1, 100, 80],
+      [2, 50, 32],
+      [2, 50, 24],
+      [4, 25, 9],
+
+      // 5
+      [1, 134, 108],
+      [2, 67, 43],
+      [2, 33, 15, 2, 34, 16],
+      [2, 33, 11, 2, 34, 12],
+
+      // 6
+      [2, 86, 68],
+      [4, 43, 27],
+      [4, 43, 19],
+      [4, 43, 15],
+
+      // 7
+      [2, 98, 78],
+      [4, 49, 31],
+      [2, 32, 14, 4, 33, 15],
+      [4, 39, 13, 1, 40, 14],
+
+      // 8
+      [2, 121, 97],
+      [2, 60, 38, 2, 61, 39],
+      [4, 40, 18, 2, 41, 19],
+      [4, 40, 14, 2, 41, 15],
+
+      // 9
+      [2, 146, 116],
+      [3, 58, 36, 2, 59, 37],
+      [4, 36, 16, 4, 37, 17],
+      [4, 36, 12, 4, 37, 13],
+
+      // 10
+      [2, 86, 68, 2, 87, 69],
+      [4, 69, 43, 1, 70, 44],
+      [6, 43, 19, 2, 44, 20],
+      [6, 43, 15, 2, 44, 16],
+
+      // 11
+      [4, 101, 81],
+      [1, 80, 50, 4, 81, 51],
+      [4, 50, 22, 4, 51, 23],
+      [3, 36, 12, 8, 37, 13],
+
+      // 12
+      [2, 116, 92, 2, 117, 93],
+      [6, 58, 36, 2, 59, 37],
+      [4, 46, 20, 6, 47, 21],
+      [7, 42, 14, 4, 43, 15],
+
+      // 13
+      [4, 133, 107],
+      [8, 59, 37, 1, 60, 38],
+      [8, 44, 20, 4, 45, 21],
+      [12, 33, 11, 4, 34, 12],
+
+      // 14
+      [3, 145, 115, 1, 146, 116],
+      [4, 64, 40, 5, 65, 41],
+      [11, 36, 16, 5, 37, 17],
+      [11, 36, 12, 5, 37, 13],
+
+      // 15
+      [5, 109, 87, 1, 110, 88],
+      [5, 65, 41, 5, 66, 42],
+      [5, 54, 24, 7, 55, 25],
+      [11, 36, 12, 7, 37, 13],
+
+      // 16
+      [5, 122, 98, 1, 123, 99],
+      [7, 73, 45, 3, 74, 46],
+      [15, 43, 19, 2, 44, 20],
+      [3, 45, 15, 13, 46, 16],
+
+      // 17
+      [1, 135, 107, 5, 136, 108],
+      [10, 74, 46, 1, 75, 47],
+      [1, 50, 22, 15, 51, 23],
+      [2, 42, 14, 17, 43, 15],
+
+      // 18
+      [5, 150, 120, 1, 151, 121],
+      [9, 69, 43, 4, 70, 44],
+      [17, 50, 22, 1, 51, 23],
+      [2, 42, 14, 19, 43, 15],
+
+      // 19
+      [3, 141, 113, 4, 142, 114],
+      [3, 70, 44, 11, 71, 45],
+      [17, 47, 21, 4, 48, 22],
+      [9, 39, 13, 16, 40, 14],
+
+      // 20
+      [3, 135, 107, 5, 136, 108],
+      [3, 67, 41, 13, 68, 42],
+      [15, 54, 24, 5, 55, 25],
+      [15, 43, 15, 10, 44, 16],
+
+      // 21
+      [4, 144, 116, 4, 145, 117],
+      [17, 68, 42],
+      [17, 50, 22, 6, 51, 23],
+      [19, 46, 16, 6, 47, 17],
+
+      // 22
+      [2, 139, 111, 7, 140, 112],
+      [17, 74, 46],
+      [7, 54, 24, 16, 55, 25],
+      [34, 37, 13],
+
+      // 23
+      [4, 151, 121, 5, 152, 122],
+      [4, 75, 47, 14, 76, 48],
+      [11, 54, 24, 14, 55, 25],
+      [16, 45, 15, 14, 46, 16],
+
+      // 24
+      [6, 147, 117, 4, 148, 118],
+      [6, 73, 45, 14, 74, 46],
+      [11, 54, 24, 16, 55, 25],
+      [30, 46, 16, 2, 47, 17],
+
+      // 25
+      [8, 132, 106, 4, 133, 107],
+      [8, 75, 47, 13, 76, 48],
+      [7, 54, 24, 22, 55, 25],
+      [22, 45, 15, 13, 46, 16],
+
+      // 26
+      [10, 142, 114, 2, 143, 115],
+      [19, 74, 46, 4, 75, 47],
+      [28, 50, 22, 6, 51, 23],
+      [33, 46, 16, 4, 47, 17],
+
+      // 27
+      [8, 152, 122, 4, 153, 123],
+      [22, 73, 45, 3, 74, 46],
+      [8, 53, 23, 26, 54, 24],
+      [12, 45, 15, 28, 46, 16],
+
+      // 28
+      [3, 147, 117, 10, 148, 118],
+      [3, 73, 45, 23, 74, 46],
+      [4, 54, 24, 31, 55, 25],
+      [11, 45, 15, 31, 46, 16],
+
+      // 29
+      [7, 146, 116, 7, 147, 117],
+      [21, 73, 45, 7, 74, 46],
+      [1, 53, 23, 37, 54, 24],
+      [19, 45, 15, 26, 46, 16],
+
+      // 30
+      [5, 145, 115, 10, 146, 116],
+      [19, 75, 47, 10, 76, 48],
+      [15, 54, 24, 25, 55, 25],
+      [23, 45, 15, 25, 46, 16],
+
+      // 31
+      [13, 145, 115, 3, 146, 116],
+      [2, 74, 46, 29, 75, 47],
+      [42, 54, 24, 1, 55, 25],
+      [23, 45, 15, 28, 46, 16],
+
+      // 32
+      [17, 145, 115],
+      [10, 74, 46, 23, 75, 47],
+      [10, 54, 24, 35, 55, 25],
+      [19, 45, 15, 35, 46, 16],
+
+      // 33
+      [17, 145, 115, 1, 146, 116],
+      [14, 74, 46, 21, 75, 47],
+      [29, 54, 24, 19, 55, 25],
+      [11, 45, 15, 46, 46, 16],
+
+      // 34
+      [13, 145, 115, 6, 146, 116],
+      [14, 74, 46, 23, 75, 47],
+      [44, 54, 24, 7, 55, 25],
+      [59, 46, 16, 1, 47, 17],
+
+      // 35
+      [12, 151, 121, 7, 152, 122],
+      [12, 75, 47, 26, 76, 48],
+      [39, 54, 24, 14, 55, 25],
+      [22, 45, 15, 41, 46, 16],
+
+      // 36
+      [6, 151, 121, 14, 152, 122],
+      [6, 75, 47, 34, 76, 48],
+      [46, 54, 24, 10, 55, 25],
+      [2, 45, 15, 64, 46, 16],
+
+      // 37
+      [17, 152, 122, 4, 153, 123],
+      [29, 74, 46, 14, 75, 47],
+      [49, 54, 24, 10, 55, 25],
+      [24, 45, 15, 46, 46, 16],
+
+      // 38
+      [4, 152, 122, 18, 153, 123],
+      [13, 74, 46, 32, 75, 47],
+      [48, 54, 24, 14, 55, 25],
+      [42, 45, 15, 32, 46, 16],
+
+      // 39
+      [20, 147, 117, 4, 148, 118],
+      [40, 75, 47, 7, 76, 48],
+      [43, 54, 24, 22, 55, 25],
+      [10, 45, 15, 67, 46, 16],
+
+      // 40
+      [19, 148, 118, 6, 149, 119],
+      [18, 75, 47, 31, 76, 48],
+      [34, 54, 24, 34, 55, 25],
+      [20, 45, 15, 61, 46, 16]
+    ];
+
+    var qrRSBlock = function(totalCount, dataCount) {
+      var _this = {};
+      _this.totalCount = totalCount;
+      _this.dataCount = dataCount;
+      return _this;
+    };
+
+    var _this = {};
+
+    var getRsBlockTable = function(typeNumber, errorCorrectionLevel) {
+
+      switch(errorCorrectionLevel) {
+      case QRErrorCorrectionLevel.L :
+        return RS_BLOCK_TABLE[(typeNumber - 1) * 4 + 0];
+      case QRErrorCorrectionLevel.M :
+        return RS_BLOCK_TABLE[(typeNumber - 1) * 4 + 1];
+      case QRErrorCorrectionLevel.Q :
+        return RS_BLOCK_TABLE[(typeNumber - 1) * 4 + 2];
+      case QRErrorCorrectionLevel.H :
+        return RS_BLOCK_TABLE[(typeNumber - 1) * 4 + 3];
+      default :
+        return undefined;
+      }
+    };
+
+    _this.getRSBlocks = function(typeNumber, errorCorrectionLevel) {
+
+      var rsBlock = getRsBlockTable(typeNumber, errorCorrectionLevel);
+
+      if (typeof rsBlock == 'undefined') {
+        throw 'bad rs block @ typeNumber:' + typeNumber +
+            '/errorCorrectionLevel:' + errorCorrectionLevel;
+      }
+
+      var length = rsBlock.length / 3;
+
+      var list = [];
+
+      for (var i = 0; i < length; i += 1) {
+
+        var count = rsBlock[i * 3 + 0];
+        var totalCount = rsBlock[i * 3 + 1];
+        var dataCount = rsBlock[i * 3 + 2];
+
+        for (var j = 0; j < count; j += 1) {
+          list.push(qrRSBlock(totalCount, dataCount) );
+        }
+      }
+
+      return list;
+    };
+
+    return _this;
+  }();
+
+  //---------------------------------------------------------------------
+  // qrBitBuffer
+  //---------------------------------------------------------------------
+
+  var qrBitBuffer = function() {
+
+    var _buffer = [];
+    var _length = 0;
+
+    var _this = {};
+
+    _this.getBuffer = function() {
+      return _buffer;
+    };
+
+    _this.getAt = function(index) {
+      var bufIndex = Math.floor(index / 8);
+      return ( (_buffer[bufIndex] >>> (7 - index % 8) ) & 1) == 1;
+    };
+
+    _this.put = function(num, length) {
+      for (var i = 0; i < length; i += 1) {
+        _this.putBit( ( (num >>> (length - i - 1) ) & 1) == 1);
+      }
+    };
+
+    _this.getLengthInBits = function() {
+      return _length;
+    };
+
+    _this.putBit = function(bit) {
+
+      var bufIndex = Math.floor(_length / 8);
+      if (_buffer.length <= bufIndex) {
+        _buffer.push(0);
+      }
+
+      if (bit) {
+        _buffer[bufIndex] |= (0x80 >>> (_length % 8) );
+      }
+
+      _length += 1;
+    };
+
+    return _this;
+  };
+
+  //---------------------------------------------------------------------
+  // qrNumber
+  //---------------------------------------------------------------------
+
+  var qrNumber = function(data) {
+
+    var _mode = QRMode.MODE_NUMBER;
+    var _data = data;
+
+    var _this = {};
+
+    _this.getMode = function() {
+      return _mode;
+    };
+
+    _this.getLength = function(buffer) {
+      return _data.length;
+    };
+
+    _this.write = function(buffer) {
+
+      var data = _data;
+
+      var i = 0;
+
+      while (i + 2 < data.length) {
+        buffer.put(strToNum(data.substring(i, i + 3) ), 10);
+        i += 3;
+      }
+
+      if (i < data.length) {
+        if (data.length - i == 1) {
+          buffer.put(strToNum(data.substring(i, i + 1) ), 4);
+        } else if (data.length - i == 2) {
+          buffer.put(strToNum(data.substring(i, i + 2) ), 7);
+        }
+      }
+    };
+
+    var strToNum = function(s) {
+      var num = 0;
+      for (var i = 0; i < s.length; i += 1) {
+        num = num * 10 + chatToNum(s.charAt(i) );
+      }
+      return num;
+    };
+
+    var chatToNum = function(c) {
+      if ('0' <= c && c <= '9') {
+        return c.charCodeAt(0) - '0'.charCodeAt(0);
+      }
+      throw 'illegal char :' + c;
+    };
+
+    return _this;
+  };
+
+  //---------------------------------------------------------------------
+  // qrAlphaNum
+  //---------------------------------------------------------------------
+
+  var qrAlphaNum = function(data) {
+
+    var _mode = QRMode.MODE_ALPHA_NUM;
+    var _data = data;
+
+    var _this = {};
+
+    _this.getMode = function() {
+      return _mode;
+    };
+
+    _this.getLength = function(buffer) {
+      return _data.length;
+    };
+
+    _this.write = function(buffer) {
+
+      var s = _data;
+
+      var i = 0;
+
+      while (i + 1 < s.length) {
+        buffer.put(
+          getCode(s.charAt(i) ) * 45 +
+          getCode(s.charAt(i + 1) ), 11);
+        i += 2;
+      }
+
+      if (i < s.length) {
+        buffer.put(getCode(s.charAt(i) ), 6);
+      }
+    };
+
+    var getCode = function(c) {
+
+      if ('0' <= c && c <= '9') {
+        return c.charCodeAt(0) - '0'.charCodeAt(0);
+      } else if ('A' <= c && c <= 'Z') {
+        return c.charCodeAt(0) - 'A'.charCodeAt(0) + 10;
+      } else {
+        switch (c) {
+        case ' ' : return 36;
+        case '$' : return 37;
+        case '%' : return 38;
+        case '*' : return 39;
+        case '+' : return 40;
+        case '-' : return 41;
+        case '.' : return 42;
+        case '/' : return 43;
+        case ':' : return 44;
+        default :
+          throw 'illegal char :' + c;
+        }
+      }
+    };
+
+    return _this;
+  };
+
+  //---------------------------------------------------------------------
+  // qr8BitByte
+  //---------------------------------------------------------------------
+
+  var qr8BitByte = function(data) {
+
+    var _mode = QRMode.MODE_8BIT_BYTE;
+    var _data = data;
+    var _bytes = qrcode.stringToBytes(data);
+
+    var _this = {};
+
+    _this.getMode = function() {
+      return _mode;
+    };
+
+    _this.getLength = function(buffer) {
+      return _bytes.length;
+    };
+
+    _this.write = function(buffer) {
+      for (var i = 0; i < _bytes.length; i += 1) {
+        buffer.put(_bytes[i], 8);
+      }
+    };
+
+    return _this;
+  };
+
+  //---------------------------------------------------------------------
+  // qrKanji
+  //---------------------------------------------------------------------
+
+  var qrKanji = function(data) {
+
+    var _mode = QRMode.MODE_KANJI;
+    var _data = data;
+
+    var stringToBytes = qrcode.stringToBytesFuncs['SJIS'];
+    if (!stringToBytes) {
+      throw 'sjis not supported.';
+    }
+    !function(c, code) {
+      // self test for sjis support.
+      var test = stringToBytes(c);
+      if (test.length != 2 || ( (test[0] << 8) | test[1]) != code) {
+        throw 'sjis not supported.';
+      }
+    }('\u53cb', 0x9746);
+
+    var _bytes = stringToBytes(data);
+
+    var _this = {};
+
+    _this.getMode = function() {
+      return _mode;
+    };
+
+    _this.getLength = function(buffer) {
+      return ~~(_bytes.length / 2);
+    };
+
+    _this.write = function(buffer) {
+
+      var data = _bytes;
+
+      var i = 0;
+
+      while (i + 1 < data.length) {
+
+        var c = ( (0xff & data[i]) << 8) | (0xff & data[i + 1]);
+
+        if (0x8140 <= c && c <= 0x9FFC) {
+          c -= 0x8140;
+        } else if (0xE040 <= c && c <= 0xEBBF) {
+          c -= 0xC140;
+        } else {
+          throw 'illegal char at ' + (i + 1) + '/' + c;
+        }
+
+        c = ( (c >>> 8) & 0xff) * 0xC0 + (c & 0xff);
+
+        buffer.put(c, 13);
+
+        i += 2;
+      }
+
+      if (i < data.length) {
+        throw 'illegal char at ' + (i + 1);
+      }
+    };
+
+    return _this;
+  };
+
+  //=====================================================================
+  // GIF Support etc.
+  //
+
+  //---------------------------------------------------------------------
+  // byteArrayOutputStream
+  //---------------------------------------------------------------------
+
+  var byteArrayOutputStream = function() {
+
+    var _bytes = [];
+
+    var _this = {};
+
+    _this.writeByte = function(b) {
+      _bytes.push(b & 0xff);
+    };
+
+    _this.writeShort = function(i) {
+      _this.writeByte(i);
+      _this.writeByte(i >>> 8);
+    };
+
+    _this.writeBytes = function(b, off, len) {
+      off = off || 0;
+      len = len || b.length;
+      for (var i = 0; i < len; i += 1) {
+        _this.writeByte(b[i + off]);
+      }
+    };
+
+    _this.writeString = function(s) {
+      for (var i = 0; i < s.length; i += 1) {
+        _this.writeByte(s.charCodeAt(i) );
+      }
+    };
+
+    _this.toByteArray = function() {
+      return _bytes;
+    };
+
+    _this.toString = function() {
+      var s = '';
+      s += '[';
+      for (var i = 0; i < _bytes.length; i += 1) {
+        if (i > 0) {
+          s += ',';
+        }
+        s += _bytes[i];
+      }
+      s += ']';
+      return s;
+    };
+
+    return _this;
+  };
+
+  //---------------------------------------------------------------------
+  // base64EncodeOutputStream
+  //---------------------------------------------------------------------
+
+  var base64EncodeOutputStream = function() {
+
+    var _buffer = 0;
+    var _buflen = 0;
+    var _length = 0;
+    var _base64 = '';
+
+    var _this = {};
+
+    var writeEncoded = function(b) {
+      _base64 += String.fromCharCode(encode(b & 0x3f) );
+    };
+
+    var encode = function(n) {
+      if (n < 0) {
+        // error.
+      } else if (n < 26) {
+        return 0x41 + n;
+      } else if (n < 52) {
+        return 0x61 + (n - 26);
+      } else if (n < 62) {
+        return 0x30 + (n - 52);
+      } else if (n == 62) {
+        return 0x2b;
+      } else if (n == 63) {
+        return 0x2f;
+      }
+      throw 'n:' + n;
+    };
+
+    _this.writeByte = function(n) {
+
+      _buffer = (_buffer << 8) | (n & 0xff);
+      _buflen += 8;
+      _length += 1;
+
+      while (_buflen >= 6) {
+        writeEncoded(_buffer >>> (_buflen - 6) );
+        _buflen -= 6;
+      }
+    };
+
+    _this.flush = function() {
+
+      if (_buflen > 0) {
+        writeEncoded(_buffer << (6 - _buflen) );
+        _buffer = 0;
+        _buflen = 0;
+      }
+
+      if (_length % 3 != 0) {
+        // padding
+        var padlen = 3 - _length % 3;
+        for (var i = 0; i < padlen; i += 1) {
+          _base64 += '=';
+        }
+      }
+    };
+
+    _this.toString = function() {
+      return _base64;
+    };
+
+    return _this;
+  };
+
+  //---------------------------------------------------------------------
+  // base64DecodeInputStream
+  //---------------------------------------------------------------------
+
+  var base64DecodeInputStream = function(str) {
+
+    var _str = str;
+    var _pos = 0;
+    var _buffer = 0;
+    var _buflen = 0;
+
+    var _this = {};
+
+    _this.read = function() {
+
+      while (_buflen < 8) {
+
+        if (_pos >= _str.length) {
+          if (_buflen == 0) {
+            return -1;
+          }
+          throw 'unexpected end of file./' + _buflen;
+        }
+
+        var c = _str.charAt(_pos);
+        _pos += 1;
+
+        if (c == '=') {
+          _buflen = 0;
+          return -1;
+        } else if (c.match(/^\s$/) ) {
+          // ignore if whitespace.
+          continue;
+        }
+
+        _buffer = (_buffer << 6) | decode(c.charCodeAt(0) );
+        _buflen += 6;
+      }
+
+      var n = (_buffer >>> (_buflen - 8) ) & 0xff;
+      _buflen -= 8;
+      return n;
+    };
+
+    var decode = function(c) {
+      if (0x41 <= c && c <= 0x5a) {
+        return c - 0x41;
+      } else if (0x61 <= c && c <= 0x7a) {
+        return c - 0x61 + 26;
+      } else if (0x30 <= c && c <= 0x39) {
+        return c - 0x30 + 52;
+      } else if (c == 0x2b) {
+        return 62;
+      } else if (c == 0x2f) {
+        return 63;
+      } else {
+        throw 'c:' + c;
+      }
+    };
+
+    return _this;
+  };
+
+  //---------------------------------------------------------------------
+  // gifImage (B/W)
+  //---------------------------------------------------------------------
+
+  var gifImage = function(width, height) {
+
+    var _width = width;
+    var _height = height;
+    var _data = new Array(width * height);
+
+    var _this = {};
+
+    _this.setPixel = function(x, y, pixel) {
+      _data[y * _width + x] = pixel;
+    };
+
+    _this.write = function(out) {
+
+      //---------------------------------
+      // GIF Signature
+
+      out.writeString('GIF87a');
+
+      //---------------------------------
+      // Screen Descriptor
+
+      out.writeShort(_width);
+      out.writeShort(_height);
+
+      out.writeByte(0x80); // 2bit
+      out.writeByte(0);
+      out.writeByte(0);
+
+      //---------------------------------
+      // Global Color Map
+
+      // black
+      out.writeByte(0x00);
+      out.writeByte(0x00);
+      out.writeByte(0x00);
+
+      // white
+      out.writeByte(0xff);
+      out.writeByte(0xff);
+      out.writeByte(0xff);
+
+      //---------------------------------
+      // Image Descriptor
+
+      out.writeString(',');
+      out.writeShort(0);
+      out.writeShort(0);
+      out.writeShort(_width);
+      out.writeShort(_height);
+      out.writeByte(0);
+
+      //---------------------------------
+      // Local Color Map
+
+      //---------------------------------
+      // Raster Data
+
+      var lzwMinCodeSize = 2;
+      var raster = getLZWRaster(lzwMinCodeSize);
+
+      out.writeByte(lzwMinCodeSize);
+
+      var offset = 0;
+
+      while (raster.length - offset > 255) {
+        out.writeByte(255);
+        out.writeBytes(raster, offset, 255);
+        offset += 255;
+      }
+
+      out.writeByte(raster.length - offset);
+      out.writeBytes(raster, offset, raster.length - offset);
+      out.writeByte(0x00);
+
+      //---------------------------------
+      // GIF Terminator
+      out.writeString(';');
+    };
+
+    var bitOutputStream = function(out) {
+
+      var _out = out;
+      var _bitLength = 0;
+      var _bitBuffer = 0;
+
+      var _this = {};
+
+      _this.write = function(data, length) {
+
+        if ( (data >>> length) != 0) {
+          throw 'length over';
+        }
+
+        while (_bitLength + length >= 8) {
+          _out.writeByte(0xff & ( (data << _bitLength) | _bitBuffer) );
+          length -= (8 - _bitLength);
+          data >>>= (8 - _bitLength);
+          _bitBuffer = 0;
+          _bitLength = 0;
+        }
+
+        _bitBuffer = (data << _bitLength) | _bitBuffer;
+        _bitLength = _bitLength + length;
+      };
+
+      _this.flush = function() {
+        if (_bitLength > 0) {
+          _out.writeByte(_bitBuffer);
+        }
+      };
+
+      return _this;
+    };
+
+    var getLZWRaster = function(lzwMinCodeSize) {
+
+      var clearCode = 1 << lzwMinCodeSize;
+      var endCode = (1 << lzwMinCodeSize) + 1;
+      var bitLength = lzwMinCodeSize + 1;
+
+      // Setup LZWTable
+      var table = lzwTable();
+
+      for (var i = 0; i < clearCode; i += 1) {
+        table.add(String.fromCharCode(i) );
+      }
+      table.add(String.fromCharCode(clearCode) );
+      table.add(String.fromCharCode(endCode) );
+
+      var byteOut = byteArrayOutputStream();
+      var bitOut = bitOutputStream(byteOut);
+
+      // clear code
+      bitOut.write(clearCode, bitLength);
+
+      var dataIndex = 0;
+
+      var s = String.fromCharCode(_data[dataIndex]);
+      dataIndex += 1;
+
+      while (dataIndex < _data.length) {
+
+        var c = String.fromCharCode(_data[dataIndex]);
+        dataIndex += 1;
+
+        if (table.contains(s + c) ) {
+
+          s = s + c;
+
+        } else {
+
+          bitOut.write(table.indexOf(s), bitLength);
+
+          if (table.size() < 0xfff) {
+
+            if (table.size() == (1 << bitLength) ) {
+              bitLength += 1;
+            }
+
+            table.add(s + c);
+          }
+
+          s = c;
+        }
+      }
+
+      bitOut.write(table.indexOf(s), bitLength);
+
+      // end code
+      bitOut.write(endCode, bitLength);
+
+      bitOut.flush();
+
+      return byteOut.toByteArray();
+    };
+
+    var lzwTable = function() {
+
+      var _map = {};
+      var _size = 0;
+
+      var _this = {};
+
+      _this.add = function(key) {
+        if (_this.contains(key) ) {
+          throw 'dup key:' + key;
+        }
+        _map[key] = _size;
+        _size += 1;
+      };
+
+      _this.size = function() {
+        return _size;
+      };
+
+      _this.indexOf = function(key) {
+        return _map[key];
+      };
+
+      _this.contains = function(key) {
+        return typeof _map[key] != 'undefined';
+      };
+
+      return _this;
+    };
+
+    return _this;
+  };
+
+  var createDataURL = function(width, height, getPixel) {
+    var gif = gifImage(width, height);
+    for (var y = 0; y < height; y += 1) {
+      for (var x = 0; x < width; x += 1) {
+        gif.setPixel(x, y, getPixel(x, y) );
+      }
+    }
+
+    var b = byteArrayOutputStream();
+    gif.write(b);
+
+    var base64 = base64EncodeOutputStream();
+    var bytes = b.toByteArray();
+    for (var i = 0; i < bytes.length; i += 1) {
+      base64.writeByte(bytes[i]);
+    }
+    base64.flush();
+
+    return 'data:image/gif;base64,' + base64;
+  };
+
+  //---------------------------------------------------------------------
+  // returns qrcode function.
+
+  return qrcode;
+}();
+
+// multibyte support
+!function() {
+
+  qrcode.stringToBytesFuncs['UTF-8'] = function(s) {
+    // http://stackoverflow.com/questions/18729405/how-to-convert-utf8-string-to-byte-array
+    function toUTF8Array(str) {
+      var utf8 = [];
+      for (var i=0; i < str.length; i++) {
+        var charcode = str.charCodeAt(i);
+        if (charcode < 0x80) utf8.push(charcode);
+        else if (charcode < 0x800) {
+          utf8.push(0xc0 | (charcode >> 6),
+              0x80 | (charcode & 0x3f));
+        }
+        else if (charcode < 0xd800 || charcode >= 0xe000) {
+          utf8.push(0xe0 | (charcode >> 12),
+              0x80 | ((charcode>>6) & 0x3f),
+              0x80 | (charcode & 0x3f));
+        }
+        // surrogate pair
+        else {
+          i++;
+          // UTF-16 encodes 0x10000-0x10FFFF by
+          // subtracting 0x10000 and splitting the
+          // 20 bits of 0x0-0xFFFFF into two halves
+          charcode = 0x10000 + (((charcode & 0x3ff)<<10)
+            | (str.charCodeAt(i) & 0x3ff));
+          utf8.push(0xf0 | (charcode >>18),
+              0x80 | ((charcode>>12) & 0x3f),
+              0x80 | ((charcode>>6) & 0x3f),
+              0x80 | (charcode & 0x3f));
+        }
+      }
+      return utf8;
+    }
+    return toUTF8Array(s);
+  };
+
+}();
+
+(function (factory) {
+  if (typeof define === 'function' && define.amd) {
+      define([], factory);
+  } else if (typeof exports === 'object') {
+      module.exports = factory();
+  }
+}(function () {
+    return qrcode;
+}));
+
+</script>
+<script>
+"use strict";
+{
+/* ================= 基本 ================= */
+const CFG = window.KENMAP_CONFIG || {};
+const params = new URLSearchParams(location.search);
+const $app = document.getElementById("app");
+const mem = {};
+const load = (k, d) => { try{ const v = localStorage.getItem(k); return v ? JSON.parse(v) : (k in mem ? mem[k] : d); }catch(e){ return k in mem ? mem[k] : d; } };
+const save = (k, v) => { mem[k] = v; try{ localStorage.setItem(k, JSON.stringify(v)); }catch(e){} };
+const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const uid = n => { const a = "abcdefghjkmnpqrstuvwxyz23456789"; let s = ""; crypto.getRandomValues(new Uint8Array(n||8)).forEach(x => s += a[x % a.length]); return s; };
+const toast = msg => { const t = document.getElementById("toast"); t.textContent = msg; t.classList.add("show"); clearTimeout(toast.t); toast.t = setTimeout(()=>t.classList.remove("show"), 2300); };
+const fmt = m => `${Math.floor(m/60)}:${String(m%60).padStart(2,"0")}`;
+const mmss = s => { const neg = s < 0; s = Math.abs(Math.round(s)); return (neg?"+":"") + `${Math.floor(s/60)}:${String(s%60).padStart(2,"0")}`; };
+const loadScript = src => new Promise(res => { const s = document.createElement("script"); s.src = src; s.onload = () => res(true); s.onerror = () => res(false); document.head.appendChild(s); });
+async function copyText(text){ try{ await navigator.clipboard.writeText(text); toast("コピーしました"); }catch(e){ const ta = document.createElement("textarea"); ta.value = text; ta.style.position = "fixed"; ta.style.opacity = "0"; document.body.appendChild(ta); ta.select(); let ok = false; try{ ok = document.execCommand("copy"); }catch(_){} ta.remove(); if(ok) toast("コピーしました"); else showText("コピーできなかったので、下の文章を選んでコピーしてください", text); } }
+function modal(html, onMount){ const d = document.createElement("div"); d.className = "modal"; d.innerHTML = `<div class="modal-box" role="dialog" aria-modal="true">${html}</div>`; document.body.appendChild(d); const close = () => d.remove(); d.addEventListener("click", e => { if(e.target === d || e.target.closest("[data-close]")) close(); }); if(onMount) onMount(d, close); const f = d.querySelector("button, input, textarea"); if(f) f.focus(); return close; }
+function ask(msg){ return new Promise(res => modal(`<p style="margin:0 0 18px;font-weight:700">${esc(msg)}</p><div class="row" style="justify-content:flex-end"><button class="btn ghost sm" data-n>やめる</button><button class="btn sm" data-y>OK</button></div>`, (d, close) => { d.querySelector("[data-y]").onclick = () => { close(); res(true); }; d.querySelector("[data-n]").onclick = () => { close(); res(false); }; })); }
+function showText(title, text){ modal(`<h3>${esc(title)}</h3><pre class="copy">${esc(text)}</pre><div class="row" style="justify-content:flex-end;margin-top:12px"><button class="btn sm" data-close>閉じる</button></div>`); }
+const PID = load("kp_pid", null) || (() => { const p = uid(10); save("kp_pid", p); return p; })();
+const SVG = {
+  check:`<svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12l5 5 9-10"/></svg>`,
+  arrow:`<svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>`,
+  copy:`<svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/></svg>`,
+  play:`<svg class="icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg>`,
+  mail:`<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#1F6F72" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="3"/><path d="M3 8l9 6 9-6"/></svg>`,
+  gift:`<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#C2412B" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="8" width="18" height="13" rx="2"/><path d="M12 8v13M3 12h18M12 8c-2-4-6-4-6-1s6 1 6 1zm0 0c2-4 6-4 6-1s-6 1-6 1z"/></svg>`
+};
+
+/* ================= 指導法とツール ================= */
+const METHODS = {
+  lecture:{t:"講義でしっかり伝える", s:"講義", d:"大事なポイントを分かりやすく伝える", c:"#1F6F72", bg:"var(--teal-soft)", min:10, title:"講義：大事なポイントを伝える", caution:"話しっぱなしにならないよう、10分に1回は問いかけを入れる", tool:"poll", ic:'<path d="M4 5h16v10H4z"/><path d="M8 19h8M12 15v4"/>'},
+  group:{t:"みんなで話し合う", s:"グループワーク", d:"意見を出し合い、考えを広げる", c:"#E05E3E", bg:"var(--coral-soft)", min:10, title:"グループで話し合う", caution:"最初に役割（司会・記録・発表）とゴールを決める", tool:"qa", ic:'<circle cx="8" cy="9" r="3"/><circle cx="16" cy="9" r="3"/><path d="M3 19c1-3 3-4 5-4s4 1 5 4M11 19c1-3 3-4 5-4s4 1 5 4"/>'},
+  pair:{t:"ペアで話す", s:"ペアワーク", d:"短い時間で全員が話せる", c:"#2C8FC4", bg:"var(--sky-soft)", min:5, title:"ペアで話す", caution:"話す人と聞く人の時間を分けると、全員が話せる", tool:"", ic:'<path d="M4 6h10v7H8l-4 3z"/><path d="M14 10h6v7l-3-2h-3"/>'},
+  case:{t:"事例で考える", s:"事例検討", d:"具体的な場面から判断を考える", c:"#B9860F", bg:"var(--sun-soft)", min:10, title:"事例を見て考える", caution:"まず一人で考える時間をとってから共有する", tool:"poll", ic:'<rect x="5" y="3" width="14" height="18" rx="2"/><path d="M9 8h6M9 12h6M9 16h3"/>'},
+  role:{t:"演じてみる", s:"ロールプレイ", d:"役になって関わり方を試す", c:"#7562D8", bg:"var(--grape-soft)", min:10, title:"ロールプレイ", caution:"演じる人が責められない雰囲気をつくり、観察する人に見るポイントを伝える", tool:"", ic:'<circle cx="9" cy="10" r="5"/><path d="M14 6a5 5 0 1 1 0 9"/><path d="M7 10h.01M11 10h.01"/>'},
+  skill:{t:"手を動かして練習する", s:"実技・シミュレーション", d:"体で覚える、手順を確かめる", c:"#2E9E7B", bg:"var(--mint-soft)", min:15, title:"実技演習", caution:"物品の数と配置を事前に確認し、安全に配慮する", tool:"", ic:'<path d="M7 11V6a2 2 0 0 1 4 0v5M11 10V5a2 2 0 0 1 4 0v6M15 9a2 2 0 0 1 4 0v4a7 7 0 0 1-14 0v-2a2 2 0 0 1 4 0"/>'},
+  quiz:{t:"クイズで確かめる", s:"クイズ", d:"理解度をゲーム感覚で確認", c:"#E05E3E", bg:"var(--coral-soft)", min:5, title:"クイズで確認", caution:"間違えても大丈夫な雰囲気で。答え合わせで解説する", tool:"quiz", ic:'<circle cx="12" cy="12" r="9"/><path d="M9.5 9a2.5 2.5 0 1 1 3.5 2.3c-.6.3-1 .9-1 1.7M12 17h.01"/>'},
+  experience:{t:"体験して気づく", s:"体験学習", d:"体験から感じたことを言葉にする", c:"#2C8FC4", bg:"var(--sky-soft)", min:10, title:"体験する", caution:"体験のあとに「何を感じたか」を言葉にする時間をとる", tool:"wordcloud", ic:'<path d="M12 3l2.5 5 5.5.8-4 3.9.9 5.5L12 15.6 7.1 18.2l.9-5.5-4-3.9 5.5-.8z"/>'},
+  reflect:{t:"じっくり振り返る", s:"リフレクション", d:"学びを自分の言葉にする", c:"#2E9E7B", bg:"var(--mint-soft)", min:5, title:"振り返り", caution:"「できたこと」から振り返ると前向きに話せる", tool:"scale", ic:'<path d="M4 12a8 8 0 1 0 3-6.2"/><path d="M4 4v5h5"/>'}
+};
+const TOOLS = {
+  poll:{n:"投票", d:"選択肢から1つ選んでもらい、意見の分布をその場で見せる", c:"#E05E3E", bg:"var(--coral-soft)", ic:'<path d="M5 20V10M12 20V4M19 20v-7"/>',
+    when:"導入で関心を引きたいとき／判断を問いたいとき／意見がどう分かれるかを見たいとき",
+    how:["問いを口頭やスライドで示す","「開始」を押して、30〜60秒ほど待つ","結果を投影し、「なぜそう思った？」と少数派から聞いてみる"],
+    tips:"正解のない問いにすると参加しやすい。選択肢は3〜4つがちょうどいい。"},
+  wordcloud:{n:"ワードクラウド", d:"一言で答えてもらい、多い言葉ほど大きく表示", c:"#2C8FC4", bg:"var(--sky-soft)", ic:'<path d="M7 18a4 4 0 0 1-.5-8 6 6 0 0 1 11.6 1.5A3.5 3.5 0 0 1 17.5 18z"/>',
+    when:"アイスブレイク／イメージを共有したいとき／体験のあとに感じたことを集めたいとき",
+    how:["「一言で」と伝えてから「開始」","大きくなった言葉と、少数の言葉の両方を拾う","「この言葉を書いた人の気持ち、分かる人？」と広げる"],
+    tips:"20文字までの一言。何度でも送れるので、2〜3個書いてもらってもOK。"},
+  qa:{n:"自由投稿", d:"意見や質問を無記名で集める。本音が出やすい", c:"#B9860F", bg:"var(--sun-soft)", ic:'<path d="M4 5h16v11H9l-5 4z"/>',
+    when:"グループの意見を集めたいとき／講義中の質問を受けたいとき／本音を聞きたいとき",
+    how:["問いを示して「開始」","集まった投稿から、いくつか選んで読み上げる","似た意見をまとめて、次の話につなげる"],
+    tips:"無記名でも、利用者さんや同僚の名前は書かないよう最初に伝える。"},
+  quiz:{n:"理解度チェック", d:"同じ問題を研修の前と後に出し、正答率の変化を見る", c:"#2E9E7B", bg:"var(--mint-soft)", ic:'<rect x="4" y="3" width="16" height="18" rx="2"/><path d="M8 9l2 2 4-4M8 16h8"/>',
+    when:"研修の効果を確かめたいとき／前提知識をそろえたいとき",
+    how:["研修の最初に「事前で開始」","研修の最後に同じ問題を「事後で開始」","前後の正答率を見せて、伸びたところを一緒に喜ぶ"],
+    tips:"答え合わせの解説までがセット。間違えた理由を考えるのがいちばんの学び。"},
+  scale:{n:"自信度スケール", d:"「できそう？」を1〜5で聞き、自信の度合いを見る", c:"#7562D8", bg:"var(--grape-soft)", ic:'<path d="M4 18h16"/><path d="M6 18v-3M10 18V12M14 18V9M18 18V6"/>',
+    when:"研修の最後に、現場で実践できそうかを確かめたいとき",
+    how:["「今日の内容を、明日から現場でできそう？」と聞いて「開始」","分布を見せ、低めの人が多ければ何が不安かを聞く","1か月後に同じ問いを聞くと変化が分かる"],
+    tips:"低い点は悪いことではない。次の学びのヒントになる。"}
+};
+const FIELD_LABEL = {short:"短文回答", long:"長文回答", single:"選択式（1つ）", multi:"チェックボックス（複数）", scale:"段階評価（1〜5）"};
+const icon = (paths, color, size) => `<svg width="${size||22}" height="${size||22}" viewBox="0 0 24 24" fill="none" stroke="${color}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${paths}</svg>`;
+
+/* ================= 保存先（デモ / Supabase） ================= */
+function LocalBackend(){
+  const KEY = "kp2_demo_db";
+  const db = () => Object.assign({sessions:{}, responses:{}, requests:[]}, load(KEY, {}));
+  const put = d => save(KEY, d);
+  const ls = new Set(); let bc = null;
+  try{ bc = new BroadcastChannel("kenmap-kenshu2"); bc.onmessage = e => ls.forEach(f => f(e.data)); }catch(e){}
+  window.addEventListener("storage", e => { if(e.key === KEY) ls.forEach(f => f({code:"*"})); });
+  const emit = code => { ls.forEach(f => f({code})); try{ bc && bc.postMessage({code}); }catch(e){} };
+  const chk = (d, code, key) => { const s = d.sessions[code]; if(!s || s.key !== key) throw new Error("invalid key"); return s; };
+  return {
+    name:"demo",
+    async createSession(o){ const d = db(); d.sessions[o.code] = {code:o.code, key:o.key, title:o.title, content:o.content, active:null, phase:null, state:"open"}; d.responses[o.code] = []; put(d); emit(o.code); },
+    async getSession(code){ const s = db().sessions[code]; if(!s) return null; const {key, ...r} = s; return r; },
+    async updateSession(code, key, patch){ const d = db(); Object.assign(chk(d, code, key), patch); put(d); emit(code); },
+    async addResponse(r){ const d = db(); const s = d.sessions[r.session]; if(!s || s.state !== "open") throw new Error("closed"); (d.responses[r.session] ||= []).push({question_id:r.qid, phase:r.phase, participant:r.pid, value:r.value, created_at:new Date().toISOString()}); put(d); emit(r.session); },
+    async listResponses(code){ return db().responses[code] || []; },
+    async clearResponses(code, key){ const d = db(); chk(d, code, key); d.responses[code] = []; put(d); emit(code); },
+    async requestFeedback(code, key, payload){ const d = db(); chk(d, code, key); const r = {id:uid(10), session_code:code, payload, status:"waiting", feedback:null, questions:null, created_at:new Date().toISOString(), delivered_at:null}; d.requests.push(r); put(d); return r; },
+    async getFeedback(code, key){ const d = db(); chk(d, code, key); return d.requests.filter(r => r.session_code === code).slice(-1)[0] || null; },
+    async adminList(){ return db().requests.slice().reverse(); },
+    async adminDeliver(adminKey, id, feedback, questions){ const d = db(); const r = d.requests.find(x => x.id === id); if(!r) throw new Error("not found"); Object.assign(r, {feedback, questions, status:"delivered", delivered_at:new Date().toISOString()}); put(d); },
+    subscribe(code, fn){ const f = m => { if(m.code === code || m.code === "*") fn(); }; ls.add(f); return () => ls.delete(f); }
+  };
+}
+function SupabaseBackend(sb){
+  const rpc = async (fn, args) => { const {data, error} = await sb.rpc(fn, args); if(error) throw error; return data; };
+  return {
+    name:"supabase",
+    createSession:o => rpc("create_session", {p_code:o.code, p_key:o.key, p_title:o.title, p_content:o.content}),
+    async getSession(code){ const {data, error} = await sb.from("sessions").select("*").eq("code", code).maybeSingle(); if(error) throw error; return data; },
+    async updateSession(code, key, patch){ const cur = await this.getSession(code); const n = Object.assign({}, cur, patch); await rpc("update_session", {p_code:code, p_key:key, p_title:n.title, p_content:n.content, p_active:n.active, p_phase:n.phase, p_state:n.state}); },
+    async addResponse(r){ const {error} = await sb.from("responses").insert({session_code:r.session, question_id:r.qid, phase:r.phase, participant:r.pid, value:r.value}); if(error) throw error; },
+    async listResponses(code){ const {data, error} = await sb.from("responses").select("question_id,phase,participant,value,created_at").eq("session_code", code).order("id", {ascending:true}).limit(5000); if(error) throw error; return data || []; },
+    clearResponses:(code, key) => rpc("clear_responses", {p_code:code, p_key:key}),
+    requestFeedback:(code, key, payload) => rpc("request_feedback", {p_code:code, p_key:key, p_payload:payload}),
+    async getFeedback(code, key){ const d = await rpc("get_feedback", {p_code:code, p_key:key}); return Array.isArray(d) ? (d[0] || null) : d; },
+    adminList:adminKey => rpc("admin_list_requests", {p_admin:adminKey}),
+    adminDeliver:(adminKey, id, feedback, questions) => rpc("admin_deliver", {p_admin:adminKey, p_id:id, p_feedback:feedback, p_questions:questions}),
+    subscribe(code, fn){ const ch = sb.channel("s-" + code + "-" + uid(4)).on("postgres_changes", {event:"*", schema:"public", table:"sessions", filter:"code=eq." + code}, () => fn()).on("postgres_changes", {event:"INSERT", schema:"public", table:"responses", filter:"session_code=eq." + code}, () => fn()).subscribe(); return () => sb.removeChannel(ch); }
+  };
+}
+let BE = null;
+
+/* ================= 集計と表示 ================= */
+const latestPer = rs => { const m = new Map(); rs.forEach(r => m.set(r.participant, r)); return [...m.values()]; };
+function aggregate(t, all){
+  const rs = all.filter(r => r.question_id === t.id);
+  if(t.type === "poll" || t.type === "quiz"){
+    const by = ph => { const list = latestPer(rs.filter(r => (r.phase||null) === ph)); const counts = t.options.map(() => 0); list.forEach(r => { const v = r.value && r.value.choice; if(v >= 0 && v < counts.length) counts[v]++; }); return {n:list.length, counts}; };
+    return t.type === "quiz" ? {pre:by("pre"), post:by("post")} : by(null);
+  }
+  if(t.type === "scale"){ const list = latestPer(rs); const counts = [0,0,0,0,0]; let sum = 0; list.forEach(r => { const v = r.value && r.value.score; if(v >= 1 && v <= 5){ counts[v-1]++; sum += v; } }); return {n:list.length, counts, avg:list.length ? sum/list.length : 0}; }
+  if(t.type === "wordcloud"){ const m = new Map(); rs.forEach(r => { const w = String(r.value && r.value.text || "").trim(); if(w) m.set(w, (m.get(w)||0) + 1); }); return {n:rs.length, words:[...m.entries()].sort((a,b) => b[1]-a[1])}; }
+  return {n:rs.length, posts:rs.map(r => String(r.value && r.value.text || "")).filter(Boolean).reverse()};
+}
+function aggregateSurvey(fields, all){
+  const list = latestPer(all.filter(r => r.question_id === "survey"));
+  return {n:list.length, fields:fields.map(fd => {
+    const vals = list.map(r => r.value && r.value[fd.id]).filter(v => v !== undefined && v !== null && v !== "");
+    if(fd.type === "scale"){ const c = [0,0,0,0,0]; let s = 0; vals.forEach(v => { if(v >= 1 && v <= 5){ c[v-1]++; s += v; } }); return {fd, counts:c, avg:vals.length ? s/vals.length : 0, n:vals.length}; }
+    if(fd.type === "single" || fd.type === "multi"){ const c = fd.options.map(() => 0); vals.forEach(v => (Array.isArray(v) ? v : [v]).forEach(i => { if(i >= 0 && i < c.length) c[i]++; })); return {fd, counts:c, n:vals.length}; }
+    return {fd, texts:vals.map(String), n:vals.length};
+  })};
+}
+function bars(labels, counts, o){
+  o = o || {}; const total = o.total ?? counts.reduce((a,b) => a+b, 0);
+  if(!total) return `<div class="empty">まだ回答はありません</div>`;
+  return `<div class="bars">${labels.map((l,i) => { const p = Math.round(counts[i]/total*100); return `<div class="bar-row"><div>${esc(l)}${o.correct===i ? ' <span class="tag" style="background:var(--mint-soft);color:#14684F">正解</span>' : ""}</div><div class="bar-track"><div class="bar-fill ${o.correct===i?"correct":""}" style="width:${p}%"></div></div><div class="bar-num">${counts[i]}（${p}%）</div></div>`; }).join("")}</div>`;
+}
+function resultHTML(t, all, phase){
+  const a = aggregate(t, all);
+  if(t.type === "poll") return `<p class="muted small" style="margin:0 0 6px">回答 ${a.n}人</p>` + bars(t.options, a.counts);
+  if(t.type === "quiz"){ const r = x => x.n ? Math.round(x.counts[t.correct]/x.n*100) : null; const pre = r(a.pre), post = r(a.post); const show = phase === "post" ? a.post : (phase === "pre" ? a.pre : (a.post.n ? a.post : a.pre));
+    return `<div class="row" style="gap:28px;margin-bottom:8px"><div><div class="muted small">事前の正答率（${a.pre.n}人）</div><div class="big-num">${pre===null?"—":pre+"%"}</div></div><div><div class="muted small">事後の正答率（${a.post.n}人）</div><div class="big-num" style="color:#E05E3E">${post===null?"—":post+"%"}</div></div></div>` + bars(t.options, show.counts, {correct:t.correct, total:show.n}); }
+  if(t.type === "scale") return `<p class="muted small" style="margin:0 0 6px">回答 ${a.n}人・平均 <strong>${a.n ? a.avg.toFixed(1) : "—"}</strong></p>` + bars(["1 できなさそう","2","3","4","5 できそう"], a.counts);
+  if(t.type === "wordcloud"){ if(!a.words.length) return `<div class="empty">まだ回答はありません</div>`; const mx = a.words[0][1]; return `<div class="cloud">${a.words.slice(0,60).map(([w,c]) => `<span style="font-size:${15 + Math.round(c/mx*32)}px" title="${c}件">${esc(w)}</span>`).join("")}</div>`; }
+  if(!a.posts.length) return `<div class="empty">まだ投稿はありません</div>`;
+  return `<p class="muted small" style="margin:0 0 6px">投稿 ${a.n}件</p><div class="posts">${a.posts.map(p => `<div class="post">${esc(p)}</div>`).join("")}</div>`;
+}
+function surveyResultHTML(fields, all){
+  const sa = aggregateSurvey(fields, all);
+  if(!fields.length) return `<div class="empty">アンケートはありません</div>`;
+  return `<p class="muted small">回答 ${sa.n}人</p>` + sa.fields.map(f => `<div style="margin:14px 0"><div style="font-weight:900;font-size:14.5px">${esc(f.fd.label)}</div>${f.fd.type === "scale" ? `<p class="small muted" style="margin:2px 0 6px">平均 ${f.n ? f.avg.toFixed(1) : "—"}（${f.n}人）</p>` + bars(["1","2","3","4","5"], f.counts) : (f.counts ? bars(f.fd.options, f.counts) : (f.texts.length ? `<div class="posts">${f.texts.map(t => `<div class="post">${esc(t)}</div>`).join("")}</div>` : `<div class="empty">まだ回答はありません</div>`))}</div>`).join("");
+}
+function qrSVG(text, cell){ try{ if(window.qrcode){ const q = window.qrcode(0, "M"); q.addData(text); q.make(); return q.createSvgTag({cellSize:cell||4, margin:2, scalable:true}); } }catch(e){} return `<div class="small muted" style="padding:12px">QRコードを表示できませんでした</div>`; }
+const base = () => location.origin + location.pathname;
+const joinURL = code => base() + "?join=" + encodeURIComponent(code);
+const screenURL = code => base() + "?screen=" + encodeURIComponent(code);
+
+/* ================= 講師の状態 ================= */
+const defaultPlan = () => ({title:"", target:"", date:"", minutes:30, kyozai:"", gakushu:"", shido:"", negai:"", purpose:"", goals:["","",""], methods:[]});
+let H = load("kp2_host", null) || {consent:false, plan:defaultPlan(), blocks:[], tools:[], survey:[], session:null, live:{index:0, startedAt:null, blockAt:null}, request:null, reflect:{answers:"", next:""}, history:[], step:"plan", sub:"flow"};
+const saveH = () => save("kp2_host", H);
+let unsub = null, R = [], S = null, tick = null, adminMode = false;
+
+function blockStarts(){ let t = 0; return H.blocks.map(b => { const s = t; t += Number(b.min)||0; return s; }); }
+const totalMin = () => H.blocks.reduce((a,b) => a + (Number(b.min)||0), 0);
+const toolsOf = id => H.tools.filter(t => t.blockId === id);
+const goalsList = () => H.plan.goals.filter(g => g.trim());
+
+/* ================= 画面の枠 ================= */
+function renderHost(){
+  if(adminMode) return renderAdmin();
+  const steps = [["plan","ねらい","なぜやるのか"],["design","デザイン","いつ何をするか"],["live","本番","ツールを使う"],["review","ふりかえり","次へつなぐ"]];
+  $app.innerHTML = `
+  <header class="hero"><div class="wrap"><div class="brand">Ken<b>MaP</b><small>研修・学習会設計支援ツール（試作品）</small></div><span class="mode">${BE.name === "demo" ? "デモモード：この端末の中だけで動きます" : "接続中：受講者のスマホから回答が集まります"}</span></div></header>
+  <nav class="road" aria-label="研修づくりの道のり"><ol>${steps.map(([k,l,s],i) => `<li><button data-step="${k}" ${H.step===k?'aria-current="step"':""}><span class="num">${i+1}</span><span class="lbl">${l}<small>${s}</small></span></button></li>`).join("")}</ol></nav>
+  <main><div class="wrap" id="view"></div></main>
+  <footer class="foot"><a href="../">← アイナスへ戻る</a>｜KenMaP研修・学習会設計支援ツール（試作品） ${BE.name === "demo" ? `｜<button id="to-admin">運営の受付画面を見る（デモ）</button>` : ""}</footer>`;
+  $app.querySelectorAll("[data-step]").forEach(b => b.onclick = () => go(b.dataset.step));
+  const ta = document.getElementById("to-admin"); if(ta) ta.onclick = () => { adminMode = true; renderHost(); };
+  const vw = document.getElementById("view"); vw.classList.add("anim"); setTimeout(() => vw.classList.remove("anim"), 600);
+  if(tick){ clearInterval(tick); tick = null; }
+  ({plan:viewPlan, design:viewDesign, live:viewLive, review:viewReview})[H.step]();
+  if(!H.consent) consentModal();
+}
+function go(step, sub){ H.step = step; if(sub) H.sub = sub; saveH(); renderHost(); window.scrollTo({top:0}); }
+function consentModal(){
+  modal(`<span class="kicker">はじめに</span><h2>KenMaPのデータの使い方</h2>
+  <p class="lead" style="margin-bottom:8px">安心して使っていただくために、最初にお伝えします。</p>
+  <ul style="padding-left:1.2em;margin:0 0 12px">
+  <li><b>受講者は無記名</b>で参加します。ログインも不要です。</li>
+  <li>研修計画（三観・願いなど）は、<b>この端末にだけ</b>保存されます。</li>
+  <li>「分析と発問を依頼する」を押したときだけ、研修計画と結果がKenMaPに届きます。</li>
+  <li>届いたデータは、<b>施設や個人が分からない形</b>で集計し、コンテンツやテンプレートの改善に使います。ある施設の研修内容を、他の施設に見せることはありません。</li>
+  <li>削除を希望されたときは、データを削除します。</li>
+  <li>利用者さんの個人情報は入力しないでください。</li></ul>
+  <div class="row" style="justify-content:flex-end"><button class="btn" data-ok>わかりました、はじめる</button></div>`, (d, close) => { d.querySelector("[data-ok]").onclick = () => { H.consent = true; saveH(); close(); }; });
+}
+
+/* ================= ① ねらい ================= */
+function viewPlan(){
+  const p = H.plan, v = document.getElementById("view"), last = H.history[H.history.length - 1];
+  v.innerHTML = `
+  ${last ? `<div class="carry"><b>前回の自分からの引き継ぎ</b><span class="small muted">（${esc(last.date)}「${esc(last.title)}」）</span><div style="margin-top:4px;white-space:pre-wrap">${esc(last.next)}</div></div>` : ""}
+  <div class="card"><span class="kicker">STEP 1</span><h1>この研修の「ねらい」を決めよう</h1><p class="lead">何を教えるかより先に、「なぜやるのか」を言葉にします。ここで決めた目標が、アンケートとふりかえりの物差しになります。</p>
+  <div class="grid2">
+    <div><label class="f" for="p-title">研修名</label><input type="text" id="p-title" data-k="title" value="${esc(p.title)}" placeholder="例：急変対応ミニ学習会"></div>
+    <div><label class="f" for="p-target">誰に</label><input type="text" id="p-target" data-k="target" value="${esc(p.target)}" placeholder="例：2年目看護師 8名"></div>
+    <div><label class="f" for="p-date">日付</label><input type="date" id="p-date" data-k="date" value="${esc(p.date)}"></div>
+    <div><label class="f" for="p-min">時間（分）</label><input type="number" id="p-min" data-k="minutes" value="${esc(p.minutes)}" min="5" max="480"></div>
+  </div></div>
+  <div class="card"><h2>三観と願い</h2><p class="lead">短くて大丈夫。書くほど、研修の軸がはっきりします。</p>
+  <label class="f" for="p-k">教材観<span class="hint">このテーマは、現場でなぜ大切？ できないと、利用者さんに何が起きる？</span></label><textarea id="p-k" data-k="kyozai">${esc(p.kyozai)}</textarea>
+  <label class="f" for="p-g">学習者観<span class="hint">受講者は今どんな状態？ どこでつまずき、何に不安を感じている？</span></label><textarea id="p-g" data-k="gakushu">${esc(p.gakushu)}</textarea>
+  <label class="f" for="p-s">指導観<span class="hint">話すより、何を体験・対話してもらうと腹落ちする？</span></label><textarea id="p-s" data-k="shido">${esc(p.shido)}</textarea>
+  <label class="f" for="p-n">この研修にかける願い<span class="hint">研修のあと、受講者にどんな姿になってほしい？</span></label><textarea id="p-n" data-k="negai">${esc(p.negai)}</textarea>
+  <div class="row" style="margin-top:12px"><button class="btn sub sm" id="ai-goal">${SVG.copy}三観と願いから、目的・目標の案をAIに聞く（指示文をコピー）</button></div>
+  <label class="f" for="p-p">目的<span class="hint">この研修を行う理由を1文で</span></label><textarea id="p-p" data-k="purpose" style="min-height:60px">${esc(p.purpose)}</textarea>
+  <label class="f">目標<span class="hint">研修のあと「〜できる」ようになること（2〜3個）</span></label>
+  ${p.goals.map((g,i) => `<input type="text" data-goal="${i}" value="${esc(g)}" placeholder="目標${"①②③"[i]}：〜できる" style="margin-bottom:8px" aria-label="目標${i+1}">`).join("")}</div>
+  <div class="card"><h2>どんな感じの研修にしたい？</h2><p class="lead">いくつでも選べます。研修はたいてい、いくつかの指導法を組み合わせてつくります。</p>
+  <div class="chips">${Object.entries(METHODS).map(([k,m]) => `<label class="chip"><input type="checkbox" value="${k}" ${p.methods.includes(k)?"checked":""}><span class="dot" style="background:${m.bg}">${icon(m.ic, m.c)}</span><span><span class="t">${m.t}</span><br><span class="d">${m.d}</span></span><span class="check" aria-hidden="true"></span></label>`).join("")}</div>
+  <div class="row" style="margin-top:18px"><span class="spacer"></span><button class="btn sun" id="next">中身をデザインする ${SVG.arrow}</button></div></div>`;
+  v.querySelectorAll("[data-k]").forEach(el => el.oninput = () => { p[el.dataset.k] = el.type === "number" ? Number(el.value) : el.value; saveH(); });
+  v.querySelectorAll("[data-goal]").forEach(el => el.oninput = () => { p.goals[Number(el.dataset.goal)] = el.value; saveH(); });
+  v.querySelectorAll(".chip input").forEach(el => el.onchange = () => { p.methods = [...v.querySelectorAll(".chip input:checked")].map(x => x.value); saveH(); });
+  document.getElementById("ai-goal").onclick = () => copyText(promptGoals());
+  document.getElementById("next").onclick = () => go("design", "flow");
+}
+function promptGoals(){ const p = H.plan; return `あなたは看護・介護の現場教育に詳しい研修デザイナーです。次の研修計画の「三観」と「願い」から、研修の目的（1文）と目標（「〜できる」の形で3つ）の案を出してください。目標は研修の時間（${p.minutes}分）で達成できる大きさにし、観察できる行動で書いてください。
+
+研修名：${p.title}
+対象：${p.target}
+教材観：${p.kyozai}
+学習者観：${p.gakushu}
+指導観：${p.shido}
+願い：${p.negai}`; }
+
+/* ================= ② デザイン ================= */
+function viewDesign(){
+  const v = document.getElementById("view");
+  const subs = [["flow","時間の流れ"],["tools","使うツール"],["survey","アンケート"],["share","共有する"]];
+  v.innerHTML = `<div class="card" style="padding-bottom:14px"><span class="kicker" style="background:var(--coral-soft);color:#A33A1F">STEP 2</span><h1>研修の中身をデザインしよう</h1><p class="lead" style="margin:0">時間の流れに沿って、いつ・何を・何を使って・何に気をつけるかを決めます。</p></div>
+  <nav class="sub-nav" aria-label="デザインの項目">${subs.map(([k,l],i) => `<button data-sub="${k}" ${H.sub===k?'aria-current="page"':""}>${i+1}. ${l}</button>`).join("")}</nav><div id="sub"></div>`;
+  v.querySelectorAll("[data-sub]").forEach(b => b.onclick = () => { H.sub = b.dataset.sub; saveH(); viewDesign(); });
+  ({flow:subFlow, tools:subTools, survey:subSurvey, share:subShare})[H.sub]();
+}
+const newBlock = (o) => Object.assign({id:uid(6), min:5, title:"", method:"", detail:"", materials:"", caution:"", owner:""}, o||{});
+function draftBlocks(){
+  const ms = H.plan.methods.length ? H.plan.methods : ["lecture","group","reflect"];
+  const list = [newBlock({min:5, title:"導入：ねらいと目標を共有する", detail:"今日の目的と目標を伝え、研修の流れを示す", caution:"最初の5分で「自分ごと」と感じてもらう問いかけを入れる"})];
+  ms.forEach(k => { const m = METHODS[k]; list.push(newBlock({min:m.min, title:m.title, method:k, caution:m.caution})); });
+  list.push(newBlock({min:5, title:"まとめ・アンケート", detail:"目標をもう一度確認し、アンケートに答えてもらう", caution:"「明日から何をするか」を一人ひとりが言葉にして終わる"}));
+  return list;
+}
+function timebarHTML(){
+  const total = totalMin(), plan = Number(H.plan.minutes)||0, max = Math.max(total, plan) || 1;
+  const segs = H.blocks.map(b => { const m = METHODS[b.method]; return `<div class="seg" style="width:${(Number(b.min)||0)/max*100}%;background:${m ? m.c : "#9AA6AC"};border-right:2px solid #fff"></div>`; }).join("");
+  const diff = total - plan;
+  return `<div class="timebar"><span class="lab">合計 ${total}分 / 予定 ${plan}分</span><div class="track" aria-hidden="true">${segs}</div><span class="lab ${diff>0?"over":""}">${diff>0 ? `${diff}分オーバー` : (diff<0 ? `あと${-diff}分` : "ぴったり！")}</span></div>`;
+}
+function subFlow(){
+  const el = document.getElementById("sub");
+  if(!H.blocks.length){
+    el.innerHTML = `<div class="card" style="text-align:center"><h2>まずは流れの下書きをつくりましょう</h2><p class="lead">「ねらい」で選んだ指導法（${H.plan.methods.length ? H.plan.methods.map(k => METHODS[k].s).join("・") : "未選択：講義・グループワーク・振り返り"}）から、導入とまとめを含めた下書きをつくります。あとから自由に変えられます。</p>
+    <div class="row" style="justify-content:center"><button class="btn sun" id="draft">下書きをつくる</button><button class="btn ghost" id="blank">白紙から始める</button></div></div>`;
+    document.getElementById("draft").onclick = () => { H.blocks = draftBlocks(); saveH(); subFlow(); toast("下書きをつくりました"); };
+    document.getElementById("blank").onclick = () => { H.blocks = [newBlock({title:"導入"})]; saveH(); subFlow(); };
+    return;
+  }
+  const starts = blockStarts();
+  el.innerHTML = `<div class="card">${timebarHTML()}<div class="tl">${H.blocks.map((b,i) => blockEditor(b, i, starts[i])).join("")}</div>
+  <div class="addbar"><b class="small">＋ 活動を足す：</b>${Object.entries(METHODS).map(([k,m]) => `<button class="btn ghost xs" data-addm="${k}">${m.s}</button>`).join("")}<button class="btn ghost xs" data-addm="">その他</button></div>
+  <div class="row" style="margin-top:18px"><button class="btn danger sm" id="redraft">下書きからやり直す</button><span class="spacer"></span><button class="btn sun" id="next">使うツールを選ぶ ${SVG.arrow}</button></div></div>`;
+  el.querySelectorAll("[data-b]").forEach(inp => inp.oninput = () => { const b = H.blocks[Number(inp.dataset.i)]; b[inp.dataset.b] = inp.dataset.b === "min" ? Math.max(0, Number(inp.value)||0) : inp.value; saveH(); if(inp.dataset.b === "min" || inp.dataset.b === "method"){ refreshTimes(); } });
+  el.querySelectorAll("[data-ba]").forEach(btn => btn.onclick = async () => { const i = Number(btn.dataset.i), a = btn.dataset.ba, B = H.blocks;
+    if(a === "plus"){ B[i].min = (Number(B[i].min)||0) + 1; } if(a === "minus"){ B[i].min = Math.max(0, (Number(B[i].min)||0) - 1); }
+    if(a === "up" && i > 0) [B[i-1], B[i]] = [B[i], B[i-1]]; if(a === "down" && i < B.length-1) [B[i+1], B[i]] = [B[i], B[i+1]];
+    if(a === "dup") B.splice(i+1, 0, Object.assign({}, B[i], {id:uid(6)}));
+    if(a === "del"){ if(!await ask("この活動を削除しますか？")) return; const id = B[i].id; B.splice(i,1); H.tools.forEach(t => { if(t.blockId === id) t.blockId = ""; }); }
+    saveH(); subFlow(); });
+  el.querySelectorAll("[data-more]").forEach(btn => btn.onclick = () => { const box = document.getElementById("more-" + btn.dataset.more); const open = box.hidden; box.hidden = !open; btn.setAttribute("aria-expanded", String(open)); btn.textContent = open ? "閉じる" : "くわしく書く"; });
+  el.querySelectorAll("[data-addm]").forEach(btn => btn.onclick = () => { const k = btn.dataset.addm, m = METHODS[k]; const at = Math.max(0, H.blocks.length - 1); H.blocks.splice(at, 0, newBlock(m ? {min:m.min, title:m.title, method:k, caution:m.caution} : {title:"新しい活動"})); saveH(); subFlow(); toast("まとめの前に追加しました"); });
+  document.getElementById("redraft").onclick = async () => { if(!await ask("今の流れを消して、下書きからやり直しますか？")) return; H.blocks = draftBlocks(); saveH(); subFlow(); };
+  document.getElementById("next").onclick = () => { H.sub = "tools"; saveH(); viewDesign(); };
+}
+function refreshTimes(){ const starts = blockStarts(); document.querySelectorAll(".blk").forEach((el,i) => { const b = H.blocks[i]; if(!b) return; el.querySelector(".time").textContent = fmt(starts[i]); el.querySelector(".dur").textContent = `${b.min}分`; const m = METHODS[b.method]; el.style.setProperty("--c", m ? m.c : "#9AA6AC"); }); const tb = document.querySelector(".timebar"); if(tb) tb.outerHTML = timebarHTML(); }
+function blockEditor(b, i, start){
+  const m = METHODS[b.method], ts = toolsOf(b.id);
+  const opened = !!(b.detail || b.materials || b.caution || b.owner) && i < 2;
+  return `<div class="blk" style="--c:${m ? m.c : "#9AA6AC"}"><div class="rail"><span class="time">${fmt(start)}</span><span class="dur">${b.min}分</span></div><div class="body">
+  <div class="blk-head"><div class="minbox"><button data-ba="minus" data-i="${i}" aria-label="1分減らす">−</button><input type="number" min="0" data-b="min" data-i="${i}" value="${esc(b.min)}" aria-label="時間（分）"><button data-ba="plus" data-i="${i}" aria-label="1分増やす">＋</button><span class="small muted">分</span></div>
+  <select data-b="method" data-i="${i}" aria-label="指導法" style="width:auto;min-height:40px;padding:4px 10px"><option value="">指導法なし</option>${Object.entries(METHODS).map(([k,x]) => `<option value="${k}" ${b.method===k?"selected":""}>${x.s}</option>`).join("")}</select>
+  ${ts.map(t => `<span class="tag tg">${TOOLS[t.type].n}</span>`).join("")}<span class="spacer"></span>
+  <button class="btn ghost xs" data-ba="up" data-i="${i}" aria-label="上へ">↑</button><button class="btn ghost xs" data-ba="down" data-i="${i}" aria-label="下へ">↓</button><button class="btn ghost xs" data-ba="dup" data-i="${i}">複製</button><button class="btn danger xs" data-ba="del" data-i="${i}">削除</button></div>
+  <label class="sr-only" for="b-t-${i}">何をする</label><input type="text" id="b-t-${i}" data-b="title" data-i="${i}" value="${esc(b.title)}" placeholder="何をする？（例：事例を見て考える）" style="margin-top:10px;font-weight:900">
+  <button class="btn ghost xs" data-more="${i}" aria-expanded="${opened}" style="margin-top:8px">${opened ? "閉じる" : "くわしく書く"}</button>
+  <div id="more-${i}" ${opened ? "" : "hidden"}>
+    <label class="f" for="b-d-${i}">進め方</label><textarea id="b-d-${i}" data-b="detail" data-i="${i}" style="min-height:64px" placeholder="どんな順番で、どう問いかける？">${esc(b.detail)}</textarea>
+    <div class="kv"><div><label class="f" for="b-m-${i}">使うもの</label><input type="text" id="b-m-${i}" data-b="materials" data-i="${i}" value="${esc(b.materials)}" placeholder="例：事例シート、ホワイトボード"></div>
+    <div><label class="f" for="b-o-${i}">担当</label><input type="text" id="b-o-${i}" data-b="owner" data-i="${i}" value="${esc(b.owner)}" placeholder="例：鈴木、田中"></div></div>
+    <label class="f" for="b-c-${i}">注意すること</label><textarea id="b-c-${i}" data-b="caution" data-i="${i}" style="min-height:56px">${esc(b.caution)}</textarea>
+  </div></div></div>`;
+}
+function subTools(){
+  const el = document.getElementById("sub");
+  const rec = new Set(H.plan.methods.map(k => METHODS[k].tool).filter(Boolean));
+  el.innerHTML = `<div class="card"><h2>使いたいツールはありますか？</h2><p class="lead">研修中に受講者のスマホで使えるツールです。どの活動で使うかを決めておくと、本番でワンタッチで開けます。使わなくても大丈夫です。</p>
+  <div class="tools">${Object.entries(TOOLS).map(([k,t]) => `<div class="tool"><div class="row"><span class="ic" style="background:${t.bg}">${icon(t.ic, t.c, 26)}</span>${rec.has(k) ? '<span class="tag rec">おすすめ</span>' : ""}</div><div class="nm">${t.n}</div><div class="ds">${t.d}</div><div class="row"><button class="btn sm" data-addt="${k}">＋ 使う</button><button class="btn ghost sm" data-guide="${k}">使い方ガイド</button></div></div>`).join("")}</div></div>
+  ${H.tools.length ? `<div class="card"><h2>使うツール（${H.tools.length}）</h2><p class="lead">問いの文や選択肢は、受講者のスマホにそのまま表示されます。</p>${H.tools.map((t,i) => toolEditor(t,i)).join("")}</div>` : ""}
+  <div class="row"><button class="btn ghost" id="back">← 時間の流れ</button><span class="spacer"></span><button class="btn sun" id="next">アンケートを決める ${SVG.arrow}</button></div>`;
+  el.querySelectorAll("[data-guide]").forEach(b => b.onclick = () => guideModal(b.dataset.guide));
+  el.querySelectorAll("[data-addt]").forEach(b => b.onclick = () => { const k = b.dataset.addt; const def = {poll:"あなたなら、まずどうしますか？", wordcloud:"このテーマと聞いて、思い浮かぶ言葉は？", qa:"気づいたこと・質問を書いてください", quiz:"【問題】ここに問題文を入れてください", scale:"今日の内容を、明日から現場でできそうですか？"}[k];
+    const blk = H.blocks.find(x => METHODS[x.method] && METHODS[x.method].tool === k);
+    H.tools.push({id:uid(6), type:k, title:def, options:(k==="poll"||k==="quiz") ? ["選択肢A","選択肢B","選択肢C"] : [], correct:0, blockId: blk ? blk.id : ""}); saveH(); subTools(); toast(`${TOOLS[k].n}を追加しました`); });
+  el.querySelectorAll("[data-t]").forEach(inp => inp.oninput = () => { const t = H.tools[Number(inp.dataset.i)], k = inp.dataset.t; if(k === "options") t.options = inp.value.split("\n").map(s => s.trim()).filter(Boolean); else if(k === "correct") t.correct = Number(inp.value); else t[k] = inp.value; saveH(); });
+  el.querySelectorAll("[data-tdel]").forEach(b => b.onclick = async () => { if(!await ask("このツールを外しますか？")) return; H.tools.splice(Number(b.dataset.tdel), 1); saveH(); subTools(); });
+  document.getElementById("back").onclick = () => { H.sub = "flow"; saveH(); viewDesign(); };
+  document.getElementById("next").onclick = () => { H.sub = "survey"; saveH(); viewDesign(); };
+}
+function toolEditor(t, i){
+  const T = TOOLS[t.type], opt = t.type === "poll" || t.type === "quiz";
+  return `<div class="item"><div class="row" style="margin-bottom:8px"><span class="ic" style="width:36px;height:36px;border-radius:12px;display:grid;place-items:center;background:${T.bg}">${icon(T.ic, T.c, 20)}</span><b>${T.n}</b><span class="spacer"></span><button class="btn ghost xs" data-guide2="${t.type}">ガイド</button><button class="btn danger xs" data-tdel="${i}">外す</button></div>
+  <label class="f" for="t-b-${i}" style="margin-top:0">どの活動で使う？</label><select id="t-b-${i}" data-t="blockId" data-i="${i}"><option value="">決めていない</option>${H.blocks.map((b,j) => `<option value="${b.id}" ${t.blockId===b.id?"selected":""}>${fmt(blockStarts()[j])}〜 ${esc(b.title || "（無題の活動）")}</option>`).join("")}</select>
+  <label class="f" for="t-q-${i}">問い</label><input type="text" id="t-q-${i}" data-t="title" data-i="${i}" value="${esc(t.title)}">
+  ${opt ? `<label class="f" for="t-o-${i}">選択肢<span class="hint">1行に1つ</span></label><textarea id="t-o-${i}" data-t="options" data-i="${i}" style="min-height:90px">${esc(t.options.join("\n"))}</textarea>` : ""}
+  ${t.type === "quiz" ? `<label class="f" for="t-c-${i}">正解</label><select id="t-c-${i}" data-t="correct" data-i="${i}">${t.options.map((o,j) => `<option value="${j}" ${t.correct===j?"selected":""}>${esc(o)}</option>`).join("")}</select>` : ""}</div>`;
+}
+document.addEventListener("click", e => { const g = e.target.closest("[data-guide2]"); if(g) guideModal(g.dataset.guide2); });
+function guideModal(k){ const t = TOOLS[k]; modal(`<div class="row" style="margin-bottom:6px"><span style="width:46px;height:46px;border-radius:14px;display:grid;place-items:center;background:${t.bg}">${icon(t.ic, t.c, 26)}</span><h2 style="margin:0">${t.n}の使い方</h2></div><p class="lead">${t.d}</p><dl class="guide"><dt>こんなときに</dt><dd>${esc(t.when)}</dd><dt>進め方</dt><dd><ol style="margin:4px 0;padding-left:1.3em">${t.how.map(h => `<li>${esc(h)}</li>`).join("")}</ol></dd><dt>コツ</dt><dd>${esc(t.tips)}</dd></dl><div class="row" style="justify-content:flex-end;margin-top:16px"><button class="btn sm" data-close>閉じる</button></div>`); }
+function makeSurvey(kind){
+  const f = (type, label, extra) => Object.assign({id:uid(6), type, label, options:[]}, extra||{});
+  if(kind === "arcs") return [f("scale","研修の内容に興味を持てた"), f("scale","自分の現場に関係があると感じた"), f("scale","学んだことを実践できそうだと感じる"), f("scale","参加してよかったと感じる")];
+  if(kind === "goals") return goalsList().map((g,i) => f("scale", `目標${"①②③④⑤"[i]}「${g}」について、できそうだと感じる`));
+  return [f("long","今日いちばんの気づきは何でしたか？"), f("long","まだモヤモヤしていること・疑問は？")];
+}
+function subSurvey(){
+  const el = document.getElementById("sub");
+  el.innerHTML = `<div class="card"><h2>アンケートを決めよう</h2><p class="lead">研修の最後にQRで答えてもらいます。結果は研修が終わったらすぐ見られます。回答は無記名です。</p>
+  <div class="tools">
+    <div class="tool"><div class="nm">意欲（ARCS）4問</div><div class="ds">興味・関連性・自信・満足感を1〜5で聞く</div><button class="btn sub sm" data-preset="arcs">＋ 入れる</button></div>
+    <div class="tool"><div class="nm">目標ごとの達成感</div><div class="ds">「ねらい」で書いた目標（${goalsList().length}個）について、できそうか聞く</div><button class="btn sub sm" data-preset="goals" ${goalsList().length ? "" : "disabled"}>＋ 入れる</button></div>
+    <div class="tool"><div class="nm">気づき・疑問</div><div class="ds">いちばんの気づきと、モヤモヤを自由に書いてもらう</div><button class="btn sub sm" data-preset="free">＋ 入れる</button></div>
+  </div></div>
+  <div class="card"><h2>質問（${H.survey.length}問）</h2>${H.survey.length ? H.survey.map((fd,i) => fieldEditor(fd,i)).join("") : `<div class="empty">上のセットを入れるか、下から質問を足してください</div>`}
+  <div class="row" style="margin-top:8px"><b class="small">＋ 質問を足す：</b>${Object.entries(FIELD_LABEL).map(([k,l]) => `<button class="btn ghost xs" data-addf="${k}">${l}</button>`).join("")}</div></div>
+  <div class="row"><button class="btn ghost" id="back">← 使うツール</button><span class="spacer"></span><button class="btn sun" id="next">設計をまとめて共有する ${SVG.arrow}</button></div>`;
+  el.querySelectorAll("[data-preset]").forEach(b => b.onclick = () => { H.survey.push(...makeSurvey(b.dataset.preset)); saveH(); subSurvey(); toast("質問を入れました"); });
+  el.querySelectorAll("[data-addf]").forEach(b => b.onclick = () => { const k = b.dataset.addf; H.survey.push({id:uid(6), type:k, label:"新しい質問", options:(k==="single"||k==="multi") ? ["選択肢1","選択肢2"] : []}); saveH(); subSurvey(); });
+  el.querySelectorAll("[data-f]").forEach(inp => inp.oninput = () => { const fd = H.survey[Number(inp.dataset.i)]; if(inp.dataset.f === "options") fd.options = inp.value.split("\n").map(s => s.trim()).filter(Boolean); else fd[inp.dataset.f] = inp.value; saveH(); });
+  el.querySelectorAll("[data-fa]").forEach(b => b.onclick = () => { const i = Number(b.dataset.i), a = b.dataset.fa, F = H.survey; if(a === "del") F.splice(i,1); if(a === "up" && i > 0) [F[i-1], F[i]] = [F[i], F[i-1]]; if(a === "down" && i < F.length-1) [F[i+1], F[i]] = [F[i], F[i+1]]; saveH(); subSurvey(); });
+  document.getElementById("back").onclick = () => { H.sub = "tools"; saveH(); viewDesign(); };
+  document.getElementById("next").onclick = () => { H.sub = "share"; saveH(); viewDesign(); };
+}
+function fieldEditor(fd, i){ const opt = fd.type === "single" || fd.type === "multi"; return `<div class="item"><div class="row" style="margin-bottom:6px"><span class="tag">${FIELD_LABEL[fd.type]}</span><span class="spacer"></span><button class="btn ghost xs" data-fa="up" data-i="${i}" aria-label="上へ">↑</button><button class="btn ghost xs" data-fa="down" data-i="${i}" aria-label="下へ">↓</button><button class="btn danger xs" data-fa="del" data-i="${i}">削除</button></div><label class="sr-only" for="f-${i}">質問</label><input type="text" id="f-${i}" data-f="label" data-i="${i}" value="${esc(fd.label)}">${opt ? `<label class="f" for="fo-${i}">選択肢<span class="hint">1行に1つ</span></label><textarea id="fo-${i}" data-f="options" data-i="${i}">${esc(fd.options.join("\n"))}</textarea>` : ""}</div>`; }
+function designText(){
+  const p = H.plan, starts = blockStarts(), L = [];
+  L.push(`【研修名】${p.title}`, `【対象】${p.target}`, `【日時・時間】${p.date}／${p.minutes}分`, `【目的】${p.purpose}`, `【目標】`);
+  goalsList().forEach((g,i) => L.push(`  ${i+1}. ${g}`));
+  L.push(`【指導法】${p.methods.map(k => METHODS[k].s).join("・")}`, "", `■ 時間の流れ（合計${totalMin()}分）`);
+  H.blocks.forEach((b,i) => { const m = METHODS[b.method]; L.push(`${fmt(starts[i])}〜${fmt(starts[i] + (Number(b.min)||0))}（${b.min}分）${b.title}${m ? `［${m.s}］` : ""}`);
+    if(b.detail) L.push(`  進め方：${b.detail}`); if(b.materials) L.push(`  使うもの：${b.materials}`); if(b.caution) L.push(`  注意：${b.caution}`); if(b.owner) L.push(`  担当：${b.owner}`);
+    toolsOf(b.id).forEach(t => L.push(`  ツール：${TOOLS[t.type].n}「${t.title}」${t.options.length ? "（" + t.options.join("／") + "）" : ""}`)); });
+  const free = H.tools.filter(t => !t.blockId); if(free.length){ L.push("", "■ 活動を決めていないツール"); free.forEach(t => L.push(`  ${TOOLS[t.type].n}「${t.title}」`)); }
+  L.push("", "■ アンケート"); H.survey.forEach((f,i) => L.push(`  ${i+1}. ${f.label}（${FIELD_LABEL[f.type]}）${f.options.length ? "：" + f.options.join("／") : ""}`));
+  return L.join("\n");
+}
+function shareCode(){ const data = {v:1, plan:H.plan, blocks:H.blocks, tools:H.tools, survey:H.survey}; return "KENMAP1:" + btoa(unescape(encodeURIComponent(JSON.stringify(data)))); }
+function subShare(){
+  const el = document.getElementById("sub");
+  el.innerHTML = `<div class="card"><h2>設計をまとめて共有する</h2><p class="lead">研修は一人でやらないもの。一緒に研修をする人に、設計をコピーして渡せます。</p>
+  <div class="row" style="margin-bottom:12px"><button class="btn" id="cp-text">${SVG.copy}設計を文章でコピー</button><button class="btn sub" id="cp-code">${SVG.copy}読み込み用コードをコピー</button><button class="btn ghost" id="import">受け取ったコードを読み込む</button></div>
+  <pre class="copy">${esc(designText())}</pre>
+  <div class="future" style="margin-top:14px"><b>これから追加したい機能</b>：複数人での共同編集、合言葉でロックして共有・上書き</div>
+  <div class="row" style="margin-top:18px"><button class="btn ghost" id="back">← アンケート</button><span class="spacer"></span><button class="btn sun" id="next">本番の準備へ ${SVG.arrow}</button></div></div>`;
+  document.getElementById("cp-text").onclick = () => copyText(designText());
+  document.getElementById("cp-code").onclick = () => copyText(shareCode());
+  document.getElementById("import").onclick = () => modal(`<h3>受け取ったコードを読み込む</h3><p class="lead">「KENMAP1:」から始まるコードを貼り付けてください。今の設計は置き換わります。</p><label class="sr-only" for="imp">コード</label><textarea id="imp" style="min-height:120px"></textarea><div class="row" style="justify-content:flex-end;margin-top:12px"><button class="btn ghost sm" data-close>やめる</button><button class="btn sm" id="imp-ok">読み込む</button></div>`, (d, close) => { d.querySelector("#imp-ok").onclick = () => { try{ const s = d.querySelector("#imp").value.trim().replace(/^KENMAP1:/, ""); const data = JSON.parse(decodeURIComponent(escape(atob(s)))); Object.assign(H, {plan:Object.assign(defaultPlan(), data.plan), blocks:data.blocks||[], tools:data.tools||[], survey:data.survey||[]}); saveH(); close(); toast("設計を読み込みました"); viewDesign(); }catch(e){ toast("読み込めませんでした。コードを確かめてください"); } }; });
+  document.getElementById("back").onclick = () => { H.sub = "survey"; saveH(); viewDesign(); };
+  document.getElementById("next").onclick = () => go("live");
+}
+
+/* ================= ③ 本番 ================= */
+const sessionContent = () => ({items:H.tools.map(t => ({id:t.id, type:t.type, title:t.title, options:t.options, correct:t.correct})), survey:{fields:H.survey}});
+async function ensureSession(){ const title = H.plan.title || "研修"; if(!H.session){ const code = uid(5).toUpperCase(), key = uid(16); await BE.createSession({code, key, title, content:sessionContent()}); H.session = {code, key}; saveH(); } else await BE.updateSession(H.session.code, H.session.key, {title, content:sessionContent()}); }
+async function refresh(){ if(!H.session) return; S = await BE.getSession(H.session.code); R = await BE.listResponses(H.session.code); if(H.step === "live") drawLive(); if(H.step === "review" && !(document.activeElement && document.activeElement.closest && document.activeElement.closest("#view textarea"))) drawReviewResults(); const d = document.getElementById("demo"); if(d && S) renderParticipant(d, S, true); }
+function watch(){ if(!H.session) return; if(unsub) unsub(); unsub = BE.subscribe(H.session.code, () => refresh().catch(()=>{})); }
+async function viewLive(){
+  const v = document.getElementById("view");
+  if(!H.blocks.length && !H.tools.length){ v.innerHTML = `<div class="card"><span class="kicker" style="background:var(--sky-soft);color:#0F5A80">STEP 3</span><h1>本番</h1><p class="lead">先に「デザイン」で研修の流れをつくってください。</p><button class="btn sun" id="g">デザインへ</button></div>`; document.getElementById("g").onclick = () => go("design","flow"); return; }
+  v.innerHTML = `<div class="card"><p class="muted">準備しています…</p></div>`;
+  try{ await ensureSession(); }catch(e){ v.innerHTML = `<div class="card"><h2>接続できませんでした</h2><p class="lead">${esc(e.message || e)}</p></div>`; return; }
+  const code = H.session.code;
+  v.innerHTML = `<div class="split"><div class="main">
+    <div class="card"><span class="kicker" style="background:var(--sky-soft);color:#0F5A80">STEP 3</span><h1>いよいよ本番！</h1><p class="lead" style="margin:0">活動ごとにツールの「開始」を押すと、受講者のスマホと投影画面が切り替わります。</p></div>
+    <div id="timer"></div><div id="live-tl"></div>
+  </div><div class="side">
+    <div class="card"><h3>受講者の参加方法</h3><div class="qr">${qrSVG(joinURL(code), 4)}<div class="small muted">参加コード</div><div class="code">${esc(code)}</div><div class="url">${esc(joinURL(code))}</div></div>
+    <div class="row" style="margin-top:10px"><a class="btn sub sm" href="${esc(screenURL(code))}" target="_blank" rel="noopener">投影画面を開く</a><button class="btn ghost sm" id="cp-join">参加URLをコピー</button></div>
+    <div class="row" style="margin-top:8px"><button class="btn danger xs" id="reset">回答をリセット</button><button class="btn danger xs" id="newcode">参加コードを新しくする</button></div></div>
+    ${BE.name === "demo" ? `<div class="demo-panel"><h3>デモ：受講者のスマホ画面</h3><p class="small muted" style="margin-top:0">ここで受講者として回答して、流れを確かめられます。</p><div id="demo"></div></div>` : ""}
+  </div></div>`;
+  document.getElementById("cp-join").onclick = () => copyText(joinURL(code));
+  document.getElementById("reset").onclick = async () => { if(!await ask("この研修の回答をすべて消しますか？")) return; await BE.clearResponses(code, H.session.key); toast("回答をリセットしました"); };
+  document.getElementById("newcode").onclick = async () => { if(!await ask("新しい参加コードを発行しますか？前の回答はこの画面から見られなくなります。")) return; H.session = null; H.request = null; H.live = {index:0, startedAt:null, blockAt:null}; saveH(); if(unsub){ unsub(); unsub = null; } viewLive(); };
+  watch(); await refresh();
+  tick = setInterval(updateClock, 1000);
+}
+function timerVals(){ const L = H.live, b = H.blocks[L.index]; const rem = b ? (Number(b.min)||0)*60 - (Date.now() - L.blockAt)/1000 : 0; return {b, rem, total:Math.round((Date.now() - L.startedAt)/1000)}; }
+function updateClock(){ if(!H.live.startedAt) return; const {b, rem, total} = timerVals(); const c = document.getElementById("clk-rem"), l = document.getElementById("clk-lab"), t = document.getElementById("clk-total"); if(c && b){ c.textContent = mmss(rem); c.classList.toggle("over", rem < 0); } if(l && b) l.textContent = rem >= 0 ? "残り" : "超過"; if(t) t.textContent = mmss(total); }
+function drawTimer(){
+  const box = document.getElementById("timer"); if(!box) return;
+  const L = H.live;
+  if(!L.startedAt){ box.innerHTML = `<div class="timer"><div><div class="small" style="opacity:.8">研修タイマー</div><div class="what">準備ができたらスタート</div></div><span class="spacer"></span><button class="btn sun sm" id="t-start">${SVG.play}研修をはじめる</button></div>`; document.getElementById("t-start").onclick = () => { L.startedAt = Date.now(); L.blockAt = Date.now(); L.index = 0; saveH(); drawLive(); }; return; }
+  const {b} = timerVals();
+  box.innerHTML = `<div class="timer"><div><div class="small" style="opacity:.8">${b ? `いまの活動（${L.index+1}/${H.blocks.length}）` : "すべての活動が終わりました"}</div><div class="what">${b ? esc(b.title || "（無題）") : "お疲れ様でした！沢山頑張りましたね！"}</div></div><span class="spacer"></span>
+  ${b ? `<div style="text-align:right"><div class="small" style="opacity:.8" id="clk-lab">残り</div><div class="clock" id="clk-rem">0:00</div></div>` : ""}<div style="text-align:right"><div class="small" style="opacity:.8">経過</div><div class="clock" style="font-size:22px" id="clk-total">0:00</div></div>
+  <div class="row">${L.index > 0 ? `<button class="btn sub xs" id="t-prev">← 前へ</button>` : ""}${b ? `<button class="btn sun sm" id="t-next">次の活動へ ${SVG.arrow}</button>` : `<button class="btn sun sm" id="t-review">ふりかえりへ</button>`}</div></div>`;
+  updateClock();
+  const nx = document.getElementById("t-next"); if(nx) nx.onclick = () => { L.index++; L.blockAt = Date.now(); saveH(); drawLive(); };
+  const pv = document.getElementById("t-prev"); if(pv) pv.onclick = () => { L.index = Math.max(0, L.index - 1); L.blockAt = Date.now(); saveH(); drawLive(); };
+  const rv = document.getElementById("t-review"); if(rv) rv.onclick = () => go("review");
+}
+function liveTool(t){
+  const on = S && S.active === t.id, T = TOOLS[t.type];
+  const btns = t.type === "quiz" ? `<button class="btn ${on&&S.phase==="pre"?"":"sub"} xs" data-open="${t.id}" data-phase="pre">事前で開始</button><button class="btn ${on&&S.phase==="post"?"":"sub"} xs" data-open="${t.id}" data-phase="post">事後で開始</button>` : `<button class="btn ${on?"":"sub"} xs" data-open="${t.id}">${SVG.play}開始</button>`;
+  return `<div class="item ${on?"active":""}" style="margin:10px 0 0"><div class="row">${on ? '<span class="tag live">受付中</span>' : ""}<span class="tag tg">${T.n}</span><span class="spacer"></span>${btns}${on ? '<button class="btn ghost xs" data-closeq>終了</button>' : ""}<button class="btn ghost xs" data-guide2="${t.type}">ガイド</button></div><div style="font-weight:900;margin-top:6px">${esc(t.title)}</div>${on ? `<div style="margin-top:10px">${resultHTML(t, R, S.phase)}</div>` : ""}</div>`;
+}
+function drawLive(){
+  drawTimer();
+  const box = document.getElementById("live-tl"); if(!box || !S) return;
+  const starts = blockStarts(), L = H.live;
+  const sOn = S.active === "survey";
+  const blocks = H.blocks.map((b,i) => { const m = METHODS[b.method], st = !L.startedAt ? "" : (i < L.index ? "done" : (i === L.index ? "now" : ""));
+    return `<div class="blk ${st}" style="--c:${m ? m.c : "#9AA6AC"}"><div class="rail"><span class="time">${fmt(starts[i])}</span><span class="dur">${b.min}分</span></div><div class="body"><div class="blk-head">${st === "now" ? '<span class="tag live">いまここ</span>' : ""}${m ? `<span class="tag" style="background:${m.bg}">${m.s}</span>` : ""}${b.owner ? `<span class="small muted">担当：${esc(b.owner)}</span>` : ""}</div><div style="font-weight:900;font-size:16.5px;margin-top:4px">${esc(b.title || "（無題の活動）")}</div>
+    ${(b.detail || b.materials || b.caution) ? `<div class="meta">${b.detail ? `<div><b>進め方</b>　${esc(b.detail)}</div>` : ""}${b.materials ? `<div><b>使うもの</b>　${esc(b.materials)}</div>` : ""}${b.caution ? `<div><b>注意</b>　${esc(b.caution)}</div>` : ""}</div>` : ""}
+    ${toolsOf(b.id).map(liveTool).join("")}</div></div>`; }).join("");
+  const free = H.tools.filter(t => !t.blockId);
+  box.innerHTML = `<div class="tl">${blocks}</div>${free.length ? `<div class="card"><h3>そのほかのツール</h3>${free.map(liveTool).join("")}</div>` : ""}
+  <div class="card ${sOn ? "item active" : ""}" style="${sOn ? "border-radius:22px" : ""}"><div class="row">${sOn ? '<span class="tag live">受付中</span>' : ""}<h3 style="margin:0">研修後アンケート（${H.survey.length}問）</h3><span class="spacer"></span><button class="btn ${sOn?"":"sub"} sm" data-open="survey">${SVG.play}アンケートを開始</button>${sOn ? '<button class="btn ghost sm" data-closeq>終了</button>' : ""}</div>${sOn ? `<p class="small muted" style="margin:8px 0 0">回答 ${aggregateSurvey(H.survey, R).n}人。結果は「ふりかえり」ですぐ見られます。</p>` : ""}</div>`;
+  box.querySelectorAll("[data-open]").forEach(b => b.onclick = async () => { await BE.updateSession(H.session.code, H.session.key, {active:b.dataset.open, phase:b.dataset.phase || null}); });
+  box.querySelectorAll("[data-closeq]").forEach(b => b.onclick = async () => { await BE.updateSession(H.session.code, H.session.key, {active:null, phase:null}); });
+}
+
+/* ================= ④ ふりかえり ================= */
+function viewReview(){
+  const v = document.getElementById("view");
+  if(!H.session){ v.innerHTML = `<div class="card"><span class="kicker" style="background:var(--mint-soft);color:#14684F">STEP 4</span><h1>ふりかえり</h1><p class="lead">研修を行うと、ここに結果が届きます。</p></div>`; return; }
+  v.innerHTML = `<div class="card"><span class="kicker" style="background:var(--mint-soft);color:#14684F">STEP 4</span><h1>お疲れ様でした！沢山頑張りましたね！</h1><p class="lead" style="margin:0">準備から本番まで、本当にお疲れ様でした。まずは受講者の声を見てみましょう。アンケートと研修中の結果は、すぐに見られます。分析と、あなたへの問いかけ（発問）は、後日KenMaPから届きます。</p></div>
+  <div id="fb-area"></div>
+  <div class="card"><h2>アンケートの結果</h2><div id="sv-res"></div></div>
+  <div class="card"><h2>研修中のツールの結果</h2><div id="tool-res"></div><div class="row" style="margin-top:10px"><button class="btn ghost sm" id="cp-sum">${SVG.copy}結果のまとめをコピー</button><button class="btn ghost sm" id="csv">CSVでダウンロード</button></div></div>`;
+  document.getElementById("cp-sum").onclick = () => copyText(summaryText());
+  document.getElementById("csv").onclick = downloadCSV;
+  watch(); refresh().catch(()=>{}); drawFeedback();
+}
+function drawReviewResults(){ const a = document.getElementById("sv-res"), b = document.getElementById("tool-res"); if(a) a.innerHTML = surveyResultHTML(H.survey, R); if(b) b.innerHTML = H.tools.length ? H.tools.map(t => `<div class="item"><div class="row"><span class="tag tg">${TOOLS[t.type].n}</span></div><div style="font-weight:900;margin:6px 0 8px">${esc(t.title)}</div>${resultHTML(t, R, null)}</div>`).join("") : `<div class="empty">ツールは使いませんでした</div>`; }
+async function drawFeedback(){
+  const box = document.getElementById("fb-area"); if(!box) return;
+  if(!H.request){
+    box.innerHTML = `<div class="card"><div class="status" style="background:var(--sun-soft)"><span class="st-ic">${SVG.mail}</span><div><h3 style="margin:0">分析と発問を依頼する</h3><div class="small">研修計画・時間の流れ・結果がKenMaPに届き、<b>1週間以内</b>に「良い点」「さらに良く」と、ふりかえりのための問いかけが届きます。</div></div></div>
+    <label class="choice" style="margin-top:12px"><input type="checkbox" id="agree"><span class="small">データの使い方（施設・個人が分からない形で集計し、改善に使う）を確認しました</span></label>
+    <div class="row"><span class="spacer"></span><button class="btn" id="req">依頼する</button></div></div>`;
+    document.getElementById("req").onclick = async () => { if(!document.getElementById("agree").checked){ toast("データの使い方の確認にチェックしてください"); return; }
+      try{ const r = await BE.requestFeedback(H.session.code, H.session.key, {title:H.plan.title, plan:H.plan, design:designText(), summary:summaryText(), prompt:promptFeedback()}); H.request = {id:r.id, at:r.created_at || new Date().toISOString()}; saveH(); toast("依頼しました"); drawFeedback(); }catch(e){ toast("依頼できませんでした"); } };
+    return;
+  }
+  let fb = null; try{ fb = await BE.getFeedback(H.session.code, H.session.key); }catch(e){}
+  const due = new Date(new Date(H.request.at).getTime() + 7*864e5);
+  if(!fb || fb.status !== "delivered"){
+    box.innerHTML = `<div class="card"><div class="status"><span class="st-ic">${SVG.mail}</span><div><h3 style="margin:0">依頼を受け付けました</h3><div class="small">${due.getMonth()+1}月${due.getDate()}日ごろまでに、分析と発問が届きます。</div></div><span class="spacer"></span><button class="btn ghost sm" id="chk">届いているか確認</button></div></div>`;
+    document.getElementById("chk").onclick = () => drawFeedback(); return;
+  }
+  box.innerHTML = `<div class="card"><div class="status" style="background:var(--coral-soft)"><span class="st-ic">${SVG.gift}</span><div><h3 style="margin:0">分析と発問が届きました</h3><div class="small">${new Date(fb.delivered_at).toLocaleDateString("ja-JP")} にKenMaPから</div></div></div>
+    <h3 style="margin-top:16px">フィードバック</h3><div style="white-space:pre-wrap;background:var(--bg);border-radius:16px;padding:14px">${esc(fb.feedback)}</div>
+    <h3 style="margin-top:16px">あなたへの問いかけ</h3><div style="white-space:pre-wrap;background:var(--sky-soft);border-radius:16px;padding:14px;font-weight:700">${esc(fb.questions)}</div>
+    <label class="f" for="r-a">問いへの答え<span class="hint">一緒に研修をした人と話しながら書くのもおすすめです</span></label><textarea id="r-a" data-r="answers">${esc(H.reflect.answers)}</textarea>
+    <div class="row" style="margin-top:10px"><button class="btn sub sm" id="gen">${SVG.copy}答えから「次回意識すること」の案をAIに聞く</button></div>
+    <label class="f" for="r-n">次回意識すること<span class="hint">自分の言葉で1〜2文に。次に「ねらい」を開いたときに表示されます</span></label><textarea id="r-n" data-r="next" style="min-height:64px">${esc(H.reflect.next)}</textarea>
+    <div class="row" style="margin-top:14px"><span class="spacer"></span><button class="btn sun" id="keep">次の研修に引き継ぐ</button></div></div>`;
+  box.querySelectorAll("[data-r]").forEach(el => el.oninput = () => { H.reflect[el.dataset.r] = el.value; saveH(); });
+  document.getElementById("gen").onclick = () => copyText(promptNext(fb.questions));
+  document.getElementById("keep").onclick = () => { if(!H.reflect.next.trim()){ toast("「次回意識すること」を書いてください"); return; } H.history.push({date:H.plan.date || new Date().toISOString().slice(0,10), title:H.plan.title, next:H.reflect.next.trim()}); H.reflect = {answers:"", next:""}; saveH(); toast("次の研修に引き継ぎました"); };
+}
+function summaryText(){
+  const L = [];
+  H.tools.forEach(t => { const a = aggregate(t, R), b = H.blocks.find(x => x.id === t.blockId); L.push(`■${TOOLS[t.type].n}${b ? `（${b.title}）` : ""}：${t.title}`);
+    if(t.type === "poll") t.options.forEach((o,j) => L.push(`  ${o}：${a.counts[j]}人`));
+    if(t.type === "quiz"){ const r = x => x.n ? Math.round(x.counts[t.correct]/x.n*100) + "%" : "—"; L.push(`  正解：${t.options[t.correct] || ""}／事前の正答率 ${r(a.pre)}（${a.pre.n}人）→ 事後 ${r(a.post)}（${a.post.n}人）`); }
+    if(t.type === "scale") L.push(`  平均 ${a.n ? a.avg.toFixed(1) : "—"}（${a.n}人）分布 1:${a.counts[0]} 2:${a.counts[1]} 3:${a.counts[2]} 4:${a.counts[3]} 5:${a.counts[4]}`);
+    if(t.type === "wordcloud") L.push("  " + (a.words.slice(0,30).map(([w,c]) => `${w}(${c})`).join("、") || "回答なし"));
+    if(t.type === "qa") (a.posts.length ? a.posts : ["投稿なし"]).forEach(p => L.push("  ・" + p.replace(/\n/g," "))); });
+  const sa = aggregateSurvey(H.survey, R); L.push(`■アンケート（回答 ${sa.n}人）`);
+  sa.fields.forEach(f => { if(f.fd.type === "scale") L.push(`  ${f.fd.label}：平均 ${f.n ? f.avg.toFixed(1) : "—"}`); else if(f.counts) L.push(`  ${f.fd.label}：` + f.fd.options.map((o,j) => `${o} ${f.counts[j]}`).join("、")); else { L.push(`  ${f.fd.label}`); (f.texts.length ? f.texts : ["回答なし"]).forEach(x => L.push("   ・" + x.replace(/\n/g," "))); } });
+  return L.join("\n");
+}
+function promptFeedback(){ const p = H.plan; return `# 役割
+あなたは、看護・介護の現場教育に詳しい研修アドバイザーです。
+研修を行った講師が、次の研修をより良くできるように、「良い点」と「さらに良く」の視点でフィードバックの下書きを作ります。
+
+# 材料
+<研修計画>
+研修名：${p.title}／対象：${p.target}／時間：${p.minutes}分
+教材観：${p.kyozai}
+学習者観：${p.gakushu}
+指導観：${p.shido}
+願い：${p.negai}
+目的：${p.purpose}
+目標：${goalsList().map((g,i) => `${i+1}. ${g}`).join(" ")}
+</研修計画>
+<研修の設計>
+${designText()}
+</研修の設計>
+<研修中のデータとアンケート>
+${summaryText()}
+</研修中のデータとアンケート>
+
+# 分析の観点
+1. 目標の達成度 2. 受講者の参加の様子 3. 対話の深まり 4. 時間配分 5. アンケートに出てきた気づき・疑問
+
+# 出力の型
+## 良い点（3つ）各項目：何が良かったか／根拠のデータ
+## さらに良く（2つ）各項目：どこをどう変えると良いか／根拠のデータ
+## 次回すぐ試せること（1つ）
+## 講師への問いかけ（3つ）研修のデータにもとづき、講師が自分で振り返れる、答えを含めない開かれた問い
+
+# 書き方の約束
+- 講師を責める表現は使わない。努力と工夫をまず認める
+- 材料にないことは推測で書かない。判断できない観点は「データ不足」と書く
+- どの指摘にも、根拠となる回答や数字を添える
+- 個人が特定できる内容は引用しない`; }
+function promptNext(questions){ return `# 役割
+あなたは、研修を行った講師の振り返りに伴走するメンターです。
+
+# 材料
+問い：
+${questions}
+
+講師の答え：
+${H.reflect.answers}
+
+# やること
+1. 講師の答えから、本人が気づいていることをそのままの言葉で取り出す
+2. 「次回意識すること」の案を2つ出す（各1文、「〜する」の行動の形）
+3. 最後に「自分の言葉に直すとどうなりますか？」と問いかける
+
+# 約束
+- 講師の答えにないことを付け加えない
+- 評価や採点をしない`; }
+function downloadCSV(){
+  const tm = Object.fromEntries(H.tools.map(t => [t.id, t])); const rows = [["項目","種類","事前/事後","回答者（無記名ID）","回答","日時"]];
+  R.forEach(r => { const t = tm[r.question_id]; let ans = "";
+    if(r.question_id === "survey") ans = H.survey.map(fd => { const v = r.value[fd.id]; if(v === undefined) return ""; const x = (fd.type === "single" || fd.type === "multi") ? (Array.isArray(v) ? v : [v]).map(i => fd.options[i]).join("/") : v; return `${fd.label}：${x}`; }).filter(Boolean).join(" | ");
+    else if(t && (t.type === "poll" || t.type === "quiz")) ans = t.options[r.value.choice] ?? ""; else if(t && t.type === "scale") ans = r.value.score; else ans = r.value.text ?? "";
+    rows.push([r.question_id === "survey" ? "アンケート" : (t ? t.title : ""), r.question_id === "survey" ? "アンケート" : (t ? TOOLS[t.type].n : ""), r.phase === "pre" ? "事前" : (r.phase === "post" ? "事後" : ""), r.participant.slice(0,6), ans, r.created_at || ""]); });
+  const csv = "﻿" + rows.map(r => r.map(x => `"${String(x ?? "").replace(/"/g,'""')}"`).join(",")).join("\r\n");
+  const a = document.createElement("a"); a.href = URL.createObjectURL(new Blob([csv], {type:"text/csv"})); a.download = `${H.plan.title || "研修"}_回答.csv`; a.click(); setTimeout(() => URL.revokeObjectURL(a.href), 1500);
+}
+
+/* ================= 運営の受付画面 ================= */
+async function renderAdmin(){
+  const key = load("kp2_admin", "");
+  $app.innerHTML = `<header class="hero"><div class="wrap"><div class="brand">Ken<b>MaP</b><small>運営の受付画面</small></div>${BE.name === "demo" ? `<button class="btn sub sm" id="back-host" style="background:#fff">講師画面にもどる</button>` : ""}</div></header><main><div class="wrap" id="view"></div></main>`;
+  const bh = document.getElementById("back-host"); if(bh) bh.onclick = () => { adminMode = false; renderHost(); };
+  const v = document.getElementById("view");
+  if(BE.name !== "demo" && !key){ v.innerHTML = `<div class="card"><h2>運営用の合言葉</h2><p class="lead">Supabaseの admin_keys に登録した合言葉を入れてください。</p><label class="sr-only" for="ak">合言葉</label><input type="password" id="ak"><div class="row" style="margin-top:12px"><button class="btn" id="ak-ok">ひらく</button></div></div>`; document.getElementById("ak-ok").onclick = () => { save("kp2_admin", document.getElementById("ak").value); renderAdmin(); }; return; }
+  let list = []; try{ list = await BE.adminList(key) || []; }catch(e){ v.innerHTML = `<div class="card"><h2>ひらけませんでした</h2><p class="lead">合言葉を確かめてください。</p><button class="btn ghost sm" id="ak-reset">合言葉を入れ直す</button></div>`; document.getElementById("ak-reset").onclick = () => { save("kp2_admin", ""); renderAdmin(); }; return; }
+  const waiting = list.filter(r => r.status !== "delivered").length;
+  v.innerHTML = `<div class="card"><span class="kicker">運営</span><h1>届いた依頼（未対応 ${waiting}件）</h1><p class="lead">AI用の指示文をコピーして分析の下書きを作り、確認してから「届ける」を押します。目安は依頼から1週間以内です。</p></div>
+  ${list.length ? list.map((r,i) => { const due = new Date(new Date(r.created_at).getTime() + 7*864e5); return `<div class="card"><div class="row"><span class="tag ${r.status==="delivered"?"":"live"}">${r.status === "delivered" ? "届けた" : "未対応"}</span><h3 style="margin:0">${esc(r.payload && r.payload.title || "無題の研修")}</h3><span class="spacer"></span><span class="small muted">依頼 ${new Date(r.created_at).toLocaleDateString("ja-JP")}／期限 ${due.getMonth()+1}月${due.getDate()}日</span></div>
+    <details style="margin-top:8px"><summary>研修の設計と結果を見る</summary><pre class="copy">${esc((r.payload && r.payload.design || "") + "\n\n" + (r.payload && r.payload.summary || ""))}</pre></details>
+    <div class="row" style="margin:10px 0"><button class="btn sub sm" data-cp="${i}">${SVG.copy}AI用の指示文をコピー</button></div>
+    <label class="f" for="fb-${i}">フィードバック（良い点・さらに良く・次回すぐ試せること）</label><textarea id="fb-${i}" style="min-height:140px">${esc(r.feedback || "")}</textarea>
+    <label class="f" for="q-${i}">講師への問いかけ（発問）</label><textarea id="q-${i}">${esc(r.questions || "")}</textarea>
+    <div class="row" style="margin-top:12px"><span class="spacer"></span><button class="btn" data-send="${i}">${r.status === "delivered" ? "内容を更新して届け直す" : "確認したので届ける"}</button></div></div>`; }).join("") : `<div class="card empty">まだ依頼はありません</div>`}`;
+  v.querySelectorAll("[data-cp]").forEach(b => b.onclick = () => copyText(list[Number(b.dataset.cp)].payload.prompt || ""));
+  v.querySelectorAll("[data-send]").forEach(b => b.onclick = async () => { const i = Number(b.dataset.send), fb = document.getElementById("fb-" + i).value.trim(), q = document.getElementById("q-" + i).value.trim(); if(!fb || !q){ toast("フィードバックと問いかけの両方を書いてください"); return; } try{ await BE.adminDeliver(key, list[i].id, fb, q); toast("届けました"); renderAdmin(); }catch(e){ toast("届けられませんでした"); } });
+}
+
+/* ================= 受講者画面 ================= */
+const answered = load("kp2_answered", {});
+const waitHTML = msg => `<div class="card wait"><div class="bub" aria-hidden="true"><i></i><i></i><i></i></div><div>${msg}</div></div>`;
+function renderParticipant(el, s, demo){
+  if(!s){ el.innerHTML = `<div class="card empty">研修が見つかりませんでした。参加コードを確かめてください。</div>`; return; }
+  const key = s.code + ":" + (s.active || "") + ":" + (s.phase || "");
+  if(el.dataset.key === key && el.dataset.title === s.title) return;
+  el.dataset.key = key; el.dataset.title = s.title;
+  const head = demo ? "" : `<div class="p-top"><div class="small" style="opacity:.85;position:relative">KenMaP 研修・学習会</div><div class="p-title">${esc(s.title)}</div></div>`;
+  if(s.state !== "open"){ el.innerHTML = head + `<div class="card empty">この研修の受付は終了しました。</div>`; return; }
+  if(!s.active){ el.innerHTML = head + waitHTML("講師が次の問いを開くまで、少しお待ちください"); return; }
+  const done = answered[key];
+  const warn = `<div class="warn">利用者さんや同僚の名前など、個人が分かることは書かないでください。</div>`;
+  const thanks = msg => `<div class="card thanks"><div class="ok">${SVG.check.replace('class="icon"','width="34" height="34" style="color:#fff"')}</div><h3>${msg}</h3></div>`;
+  if(s.active === "survey"){
+    const fields = (s.content.survey && s.content.survey.fields) || [];
+    if(done){ el.innerHTML = head + thanks("アンケートにご協力いただき、ありがとうございました！"); return; }
+    el.innerHTML = head + `<form class="card" id="sv"><h3>研修後アンケート</h3><p class="small muted" style="margin-top:0">無記名です。率直な声をお聞かせください。</p>${fields.map((fd,i) => fieldHTML(fd,i)).join("")}${fields.some(f => f.type === "short" || f.type === "long") ? warn : ""}<button class="btn" type="submit" style="width:100%">送信する</button></form>`;
+    el.querySelector("#sv").onsubmit = async e => { e.preventDefault(); const val = {};
+      fields.forEach(fd => { if(fd.type === "scale" || fd.type === "single"){ const c = el.querySelector(`input[name="f-${fd.id}"]:checked`); if(c) val[fd.id] = Number(c.value); } else if(fd.type === "multi") val[fd.id] = [...el.querySelectorAll(`input[name="f-${fd.id}"]:checked`)].map(c => Number(c.value)); else { const t = el.querySelector(`[name="f-${fd.id}"]`); if(t && t.value.trim()) val[fd.id] = t.value.trim().slice(0,600); } });
+      await submit(el, s, "survey", null, val, key, demo); };
+    return;
+  }
+  const q = (s.content.items || []).find(x => x.id === s.active); if(!q){ el.innerHTML = head + waitHTML("講師が次の問いを開くまで、少しお待ちください"); return; }
+  const T = TOOLS[q.type], again = q.type === "wordcloud" || q.type === "qa";
+  const label = `<div class="row" style="margin-bottom:6px"><span class="tag" style="background:${T.bg}">${T.n}</span>${q.type === "quiz" ? `<span class="tag">${s.phase === "post" ? "事後" : "事前"}チェック</span>` : ""}</div>`;
+  if(done && !again){ el.innerHTML = head + `<div class="card thanks"><div class="ok">${SVG.check.replace('class="icon"','width="34" height="34" style="color:#fff"')}</div><h3>回答しました！</h3><p class="small muted">画面に結果が映るのを待ちましょう</p><button class="btn ghost sm" id="redo">回答を変える</button></div>`; el.querySelector("#redo").onclick = () => { delete answered[key]; save("kp2_answered", answered); el.dataset.key = ""; renderParticipant(el, s, demo); }; return; }
+  let body = "";
+  if(q.type === "poll" || q.type === "quiz") body = q.options.map((o,j) => `<label class="choice"><input type="radio" name="c" value="${j}" required><span>${esc(o)}</span></label>`).join("");
+  if(q.type === "scale") body = `<div class="scale" role="radiogroup" aria-label="1から5で選ぶ">${[1,2,3,4,5].map(n => `<label><input type="radio" name="c" value="${n}" required>${n}</label>`).join("")}</div><div class="scale-ends"><span>できなさそう</span><span>できそう</span></div>`;
+  if(q.type === "wordcloud") body = `<input type="text" name="t" maxlength="20" required placeholder="一言で（20文字まで）" aria-label="一言">${warn}`;
+  if(q.type === "qa") body = `<textarea name="t" maxlength="400" required placeholder="自由に書いてください" aria-label="投稿"></textarea>${warn}`;
+  el.innerHTML = head + `<form class="card" id="qf">${label}<h3 style="font-size:19px">${esc(q.title)}</h3>${body}${done && again ? '<p class="small" style="color:#14684F;font-weight:700">送信しました。何度でも送れます。</p>' : ""}<button class="btn" type="submit" style="width:100%;margin-top:10px">送信する</button></form>`;
+  el.querySelector("#qf").onsubmit = async e => { e.preventDefault(); const f = e.target; let val;
+    if(q.type === "poll" || q.type === "quiz") val = {choice:Number(f.c.value)}; else if(q.type === "scale") val = {score:Number(f.c.value)}; else val = {text:f.t.value.trim().slice(0, q.type === "wordcloud" ? 20 : 400)};
+    await submit(el, s, q.id, q.type === "quiz" ? (s.phase || "pre") : null, val, key, demo); };
+}
+function fieldHTML(fd, i){ const n = `f-${fd.id}`; let inner = "";
+  if(fd.type === "scale") inner = `<div class="scale">${[1,2,3,4,5].map(v => `<label><input type="radio" name="${n}" value="${v}">${v}</label>`).join("")}</div><div class="scale-ends"><span>そう思わない</span><span>そう思う</span></div>`;
+  if(fd.type === "single") inner = fd.options.map((o,j) => `<label class="choice"><input type="radio" name="${n}" value="${j}"><span>${esc(o)}</span></label>`).join("");
+  if(fd.type === "multi") inner = fd.options.map((o,j) => `<label class="choice"><input type="checkbox" name="${n}" value="${j}"><span>${esc(o)}</span></label>`).join("");
+  if(fd.type === "short") inner = `<input type="text" name="${n}" maxlength="100" aria-label="${esc(fd.label)}">`;
+  if(fd.type === "long") inner = `<textarea name="${n}" maxlength="600" aria-label="${esc(fd.label)}"></textarea>`;
+  return `<fieldset><legend>${i+1}. ${esc(fd.label)}</legend>${inner}</fieldset>`; }
+async function submit(el, s, qid, phase, value, key, demo){
+  const btn = el.querySelector("button[type=submit]"); if(btn) btn.disabled = true;
+  try{ await BE.addResponse({session:s.code, qid, phase, pid:PID, value}); answered[key] = true; save("kp2_answered", answered); toast("送信しました"); el.dataset.key = ""; renderParticipant(el, s, demo); }
+  catch(e){ toast("送信できませんでした。もう一度お試しください"); if(btn) btn.disabled = false; }
+}
+async function startParticipant(code){
+  $app.innerHTML = `<div class="participant" id="p"></div>`; const el = document.getElementById("p");
+  const draw = async () => { try{ renderParticipant(el, await BE.getSession(code), false); }catch(e){ el.innerHTML = `<div class="card empty">接続できませんでした。電波の良い場所で、ページを開き直してください。</div>`; } };
+  BE.subscribe(code, draw); await draw();
+}
+
+/* ================= 投影画面 ================= */
+async function startScreen(code){
+  const draw = async () => {
+    let s, rs; try{ s = await BE.getSession(code); rs = await BE.listResponses(code); }catch(e){ $app.innerHTML = `<div class="screen"><div class="empty">接続できませんでした</div></div>`; return; }
+    if(!s){ $app.innerHTML = `<div class="screen"><div class="empty">研修が見つかりませんでした</div></div>`; return; }
+    const join = `<div class="screen-join">${qrSVG(joinURL(code), 3)}<div><div class="small muted">スマホで参加</div><div class="code">${esc(code)}</div></div></div>`;
+    let body = `<div class="wait" style="font-size:24px"><div class="bub" aria-hidden="true"><i></i><i></i><i></i></div><div>QRコードを読み込んで、お待ちください</div></div>`;
+    if(s.active === "survey"){ const n = latestPer(rs.filter(r => r.question_id === "survey")).length; body = `<div class="screen-q">研修後アンケートにご協力ください</div><div class="big-num" style="font-size:56px">${n}人が回答</div>`; }
+    else if(s.active){ const q = (s.content.items || []).find(x => x.id === s.active); if(q) body = `<div class="screen-q">${esc(q.title)}</div><div>${resultHTML(q, rs, s.phase)}</div>`; }
+    $app.innerHTML = `<div class="screen"><div class="screen-head"><div class="screen-title">${esc(s.title)}</div>${join}</div>${body}</div>`;
+  };
+  BE.subscribe(code, draw); await draw();
+}
+
+/* ================= 起動 ================= */
+(async () => {
+  if(CFG.supabaseUrl && CFG.supabaseAnonKey){ const ok = await loadScript("https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"); if(ok && window.supabase) BE = SupabaseBackend(window.supabase.createClient(CFG.supabaseUrl, CFG.supabaseAnonKey)); }
+  if(!BE) BE = LocalBackend();
+  const join = params.get("join"), screen = params.get("screen");
+  if(join) return startParticipant(join.toUpperCase());
+  if(screen) return startScreen(screen.toUpperCase());
+  if(params.has("admin")) adminMode = true;
+  renderHost();
+})();
+}
+</script>
+</body>
+</html>
