@@ -237,6 +237,8 @@ ol.safety li.sub::before{content:none!important}
 #prolog.guide{align-items:flex-start;padding-top:64px}
 .pcard{pointer-events:auto;max-width:360px;width:100%;background:rgba(20,30,33,.88);color:#F1F5F5;border-radius:18px;padding:18px 18px 14px;text-align:center;line-height:1.75;box-shadow:0 8px 30px rgba(0,0,0,.35)}
 #prologText{margin:0 0 10px;font-size:1.08rem;font-weight:600;white-space:pre-line}
+#prologText.pov{font-size:1.15rem;font-weight:700;line-height:1.8;color:#8FD1C2;text-align:center;animation:povIn 1.2s ease}
+@keyframes povIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
 #prolog.guide #prologText{display:none}
 #prologGuide p{margin:6px 0}
 #prologGuide small{color:#C9D6D6}
@@ -2777,9 +2779,14 @@ async function prologue(which){
   const tok = ++prologTok, S = theme[which], P = $('#prolog');
   const alive = () => tok === prologTok && scene === which && vr.classList.contains('on');
   if(theme.world !== 'living') applyCue({glare:true});
-  /* 1. ストーリーの続きとして、いまの状況を伝える */
-  $('#prologText').textContent = S.intro || ''; $('#prologGuide').hidden = true; $('#feelGuide').hidden = true; $('#prologBtn').textContent = '次へ';
+  /* 0. だれの目線で体験するかを伝える */
+  const who = theme.person || '佐藤さん';
+  $('#prologText').textContent = `${who}の視点で、\n${who}の\n気持ちになって\n体験してみましょう。`; $('#prologText').classList.add('pov');
+  $('#prologGuide').hidden = true; $('#feelGuide').hidden = true; $('#prologBtn').textContent = '次へ';
   P.classList.add('on'); P.classList.remove('guide');
+  await pwait(4500); if(!alive()) return false;
+  /* 1. ストーリーの続きとして、いまの状況を伝える */
+  $('#prologText').classList.remove('pov'); $('#prologText').textContent = S.intro || '';
   await pwait(6000); if(!alive()) return false;
   /* 2. 操作のガイドと練習（1回目だけ。15秒） */
   if(which === 'bad' && !practiced){
